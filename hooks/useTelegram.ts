@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { TelegramWebApp, TelegramUser } from '../types';
 

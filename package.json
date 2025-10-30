@@ -1,5 +1,5 @@
 {
-  "name": "copy-of-fntd-2-wiki-&-casino",
+  "name": "fntd-2-wiki-&-casino",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "react": "18.2.0",
+    "@supabase/supabase-js": "2.43.4",
     "react-dom": "18.2.0"
   },
   "devDependencies": {

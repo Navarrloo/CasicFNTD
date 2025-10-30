@@ -14,7 +14,7 @@ interface Item {
 
 const itemData = {
     currency: [
-        { name: 'Tokenis', icon: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/thumb/4/4a/Currency_Token.png/50px-Currency_Token.png' },
+        { name: 'Tokens', icon: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/thumb/4/4a/Currency_Token.png/50px-Currency_Token.png' },
         { name: 'Souls', icon: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/thumb/6/65/Currency_Soul.png/50px-Currency_Soul.png' },
     ],
     tickets: [

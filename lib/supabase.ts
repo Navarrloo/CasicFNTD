@@ -1,5 +1,4 @@
-
-import { createClient, SupabaseClient } from 'supabase-client'
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Unit } from '../types';
 
 // Define a type for your database schema if you have one
@@ -47,22 +46,34 @@ export interface Database {
   }
 }
 
-// -----------------------------------------------------------------------------
-// ⚠️ IMPORTANT: PASTE YOUR SUPABASE CREDENTIALS HERE! ⚠️
-// You MUST replace the placeholder values below with your actual Supabase
-// project URL and anon (public) key.
+// =============================================================================
+// =============================================================================
 //
-// Find these in your Supabase project's "Project Settings" > "API".
-// -----------------------------------------------------------------------------
-const supabaseUrl = 'https://lakvibnhoebryfuuompn.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxha3ZpYm5ob2VicnlmdXVvbXBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEwMzM0MjksImV4cCI6MjA3NjYwOTQyOX0.Xy04UdJonrGm9RCf1BCPXsoNLCCBzzzvoLuNJiwjqcM';
+//                           !!! ACTION REQUIRED !!!
+//
+//  You MUST replace the placeholder values below with your own Supabase
+//  project's URL and Public (anon) Key for the application to work.
+//
+//  HOW TO GET YOUR KEYS:
+//  1. Go to your Supabase project dashboard: https://supabase.com/dashboard
+//  2. Navigate to "Project Settings" (the gear icon in the left sidebar).
+//  3. Click on "API" in the settings menu.
+//  4. Under the "Project API keys" section, you will find:
+//     - The "Project URL"
+//     - The "public" key (also called the "anon" key).
+//  5. Copy the URL and the public key and paste them into the variables below.
+//
+// =============================================================================
+// =============================================================================
+const supabaseUrl = 'https://YOUR_PROJECT_ID.supabase.co'; // <--- REPLACE WITH YOUR SUPABASE URL
+const supabaseAnonKey = 'YOUR_PUBLIC_ANON_KEY';      // <--- REPLACE WITH YOUR SUPABASE ANON KEY
 
 
 // The App.tsx component will handle connection errors gracefully
 // if these variables are not set correctly.
 let supabase: SupabaseClient<Database> | null = null;
 
-if (supabaseUrl && supabaseAnonKey) {
+if (supabaseUrl && supabaseAnonKey && !supabaseUrl.includes('YOUR_PROJECT_ID') && !supabaseAnonKey.includes('YOUR_PUBLIC_ANON_KEY')) {
     try {
         supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
     } catch (error) {

@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { Unit, Rarity } from '../types';
 import UnitDetailModal from './UnitDetailModal';

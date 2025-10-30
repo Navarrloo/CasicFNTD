@@ -1,5 +1,3 @@
-
-
 import React, { useState, useCallback, useContext, useEffect } from 'react';
 import { Unit, Rarity } from '../types';
 import { UNITS, CASINO_COST } from '../constants';
