@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext, useEffect } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { Unit, Rarity } from '../types';
 import { UNITS, CASINO_COST } from '../constants';
 import UnitCard from './UnitCard';
