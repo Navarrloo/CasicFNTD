@@ -76,7 +76,7 @@ const NavBar: React.FC<NavBarProps> = ({ activePage, setActivePage, isAdmin }) =
     <div 
         className="fixed bottom-0 left-0 right-0 h-20 bg-black/70 backdrop-blur-md border-t border-border-dark/50"
         style={{ 
-            boxShadow: `0 -2px 15px -5px ${activeColor}, inset 0 1px 0px rgba(0, 255, 255, 0.1)`,
+            boxShadow: `0 -2px 15px -5px ${activeColor}, inset 0 1px 0px rgba(255, 50, 50, 0.2)`,
             transition: 'box-shadow 0.4s ease-in-out'
         }}
     >

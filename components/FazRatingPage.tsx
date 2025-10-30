@@ -140,15 +140,15 @@ const TextWithLinks: React.FC<{ text: string; setView: (view: WikiView) => void 
 
 const FazRatingPage: React.FC<FazRatingPageProps> = ({ setView, title }) => {
   return (
-    <div className="container-glow p-4">
-        <div className="flex justify-between items-center mb-6">
+    <div className="container-glow p-4 flex flex-col h-full">
+        <div className="flex justify-between items-center mb-6 flex-shrink-0">
             <h1 className="font-pixel text-lg text-text-light tracking-widest text-glow-cyan">
                 {title}
             </h1>
             <button onClick={() => setView('main')} className="btn btn-yellow">Back</button>
         </div>
         
-        <div className="h-[75vh] overflow-y-auto pr-2 space-y-8">
+        <div className="overflow-y-auto pr-2 space-y-8 flex-grow min-h-0">
             
             {/* Obtainment Section */}
             <div>

@@ -304,7 +304,7 @@ const App: React.FC = () => {
   return (
     <GameContext.Provider value={{ balance, updateBalance, inventory, addToInventory, isLoading }}>
       <div className="bg-transparent min-h-full text-text-light font-pixel selection:bg-accent-green selection:text-background-dark flex flex-col">
-        <main className="flex-grow pt-4 px-2 pb-24 flex flex-col">
+        <main className="flex-grow pt-4 px-2 pb-24 flex flex-col min-h-0">
           {renderPage()}
         </main>
         <NavBar activePage={activePage} setActivePage={setActivePage} isAdmin={isAdmin} />

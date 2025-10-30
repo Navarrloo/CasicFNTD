@@ -18,10 +18,10 @@
         --text-light: #e0e1e6;
         --text-dark: #8b949e;
         
-        --accent-green: #32ff91;
+        --accent-green: #32ff91; /* CRT Green */
         --accent-yellow: #fcee63;
         --accent-purple: #b456f0;
-        --accent-red: #ff3232;
+        --accent-red: #ff3232; /* FNAF Red */
         --accent-cyan: #00ffff;
         --font-pixel: 'VT323', monospace;
       }
@@ -35,6 +35,21 @@
         0%, 100% { opacity: 1; }
         50% { opacity: 0.7; }
       }
+      
+      @keyframes soft-flicker {
+        0%, 100% { opacity: 0.1; }
+        50% { opacity: 0.15; }
+      }
+
+      @keyframes noise {
+        0% { transform: translate(0, 0); }
+        20% { transform: translate(-2px, 2px); }
+        40% { transform: translate(2px, -2px); }
+        60% { transform: translate(-2px, -2px); }
+        80% { transform: translate(2px, 2px); }
+        100% { transform: translate(0, 0); }
+      }
+
 
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
@@ -43,39 +58,54 @@
 
       html, body, #root {
         height: 100%;
+        overflow: hidden;
       }
       body {
-        background-color: var(--background-dark);
+        background-image: 
+          linear-gradient(rgba(2, 4, 10, 0.70), rgba(2, 4, 10, 0.70)),
+          url('https://i.ibb.co/67zf6FYb/Main-Performance-Area.webp');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
         color: var(--text-light);
         font-family: var(--font-pixel);
-        image-rendering: pixelated;
-        image-rendering: -moz-crisp-edges;
-        image-rendering: crisp-edges;
-        
-        --grid-color: rgba(0, 255, 255, 0.07);
-        background-image:
-          linear-gradient(to top, rgba(2, 4, 10, 0.9) 0%, transparent 40%), /* Vignette */
-          linear-gradient(var(--grid-color) 1px, transparent 1px), /* Horizontal grid */
-          linear-gradient(to right, var(--grid-color) 1px, transparent 1px); /* Vertical grid */
-        background-size:
-          100% 100%,
-          50px 50px,
-          50px 50px;
-        animation: pan-grid 60s linear infinite;
+        position: relative;
       }
+      
+      /* FNAF Overlays */
+      /* Overlay is now part of body background-image for better stability */
+
+      body::after { /* Scanlines */
+        content: "";
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: repeating-linear-gradient(0deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0.3) 1px, rgba(0,0,0,0) 2px);
+        pointer-events: none;
+        z-index: 9999;
+        animation: soft-flicker 15s linear infinite;
+      }
+
+      .casino-bg {
+        background-image: 
+          linear-gradient(rgba(13, 17, 28, 0.7), rgba(2, 4, 10, 0.9)),
+          url('https://i.ibb.co/L5v1192/fnaf-sb-arcade-bg.jpg');
+        background-size: cover;
+        background-position: center;
+        height: 100%;
+      }
+
 
       .font-pixel {
         font-family: var(--font-pixel);
         text-transform: uppercase;
       }
 
-      /* New container style */
       .container-glow {
-        background-color: rgba(13, 17, 28, 0.8);
-        border: 1px solid var(--border-light);
-        backdrop-filter: blur(4px);
-        box-shadow: 0 0 10px rgba(0, 255, 255, 0.1), inset 0 0 15px rgba(13, 17, 28, 0.5);
+        background-color: rgba(13, 17, 28, 0.6);
+        border: 1px solid var(--border-dark);
+        backdrop-filter: blur(2px);
+        box-shadow: 0 0 5px rgba(255, 50, 50, 0.1), inset 0 0 10px rgba(13, 17, 28, 0.8);
         padding: 1rem;
+        position: relative;
       }
        .container-glow-red {
         border-color: var(--accent-red);
@@ -83,7 +113,6 @@
        }
 
 
-      /* New button styles */
       .btn {
         font-family: var(--font-pixel);
         text-transform: uppercase;
@@ -303,9 +332,9 @@
   <script type="importmap">
 {
   "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^18.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^18.2.0/",
+    "react/": "https://aistudiocdn.com/react@^18.2.0/",
     "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.77.0",
     "vite": "https://aistudiocdn.com/vite@^7.1.12",
     "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.0"

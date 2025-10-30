@@ -65,15 +65,15 @@ const BonusDisplay: React.FC<{ bonus: { text: string; icon: string } }> = ({ bon
 
 const EstablishmentsPage: React.FC<EstablishmentsPageProps> = ({ setView, title }) => {
   return (
-    <div className="container-glow p-4 animate-fadeIn">
-      <div className="flex justify-between items-center mb-6">
+    <div className="container-glow p-4 animate-fadeIn flex flex-col h-full">
+      <div className="flex justify-between items-center mb-6 flex-shrink-0">
         <h1 className="font-pixel text-lg text-text-light tracking-widest text-glow-cyan">
           {title.toUpperCase()}
         </h1>
         <button onClick={() => setView('main')} className="btn btn-yellow">Back</button>
       </div>
 
-      <div className="h-[75vh] overflow-y-auto pr-2 space-y-8">
+      <div className="overflow-y-auto pr-2 space-y-8 flex-grow min-h-0">
         <div className="bg-black/20 p-4 border border-border-dark">
           <p className="text-text-light">
             Establishments are one of the Main Mechanics in the game. They increase a variety of Stats when obtained.

@@ -30,12 +30,10 @@ const GlitchText: React.FC<{ text: string }> = ({ text }) => (
   </div>
 );
 
-
-const Typewriter: React.FC<{ text: string, onComplete?: () => void }> = ({ text, onComplete }) => {
+const Typewriter: React.FC<{ text: string, onComplete: () => void }> = ({ text, onComplete }) => {
     const [displayedText, setDisplayedText] = useState('');
 
     useEffect(() => {
-        setDisplayedText('');
         let i = 0;
         const intervalId = setInterval(() => {
             if (i < text.length) {
@@ -43,7 +41,7 @@ const Typewriter: React.FC<{ text: string, onComplete?: () => void }> = ({ text,
                 i++;
             } else {
                 clearInterval(intervalId);
-                if(onComplete) onComplete();
+                onComplete();
             }
         }, 50); // Typing speed
         return () => clearInterval(intervalId);
@@ -54,18 +52,35 @@ const Typewriter: React.FC<{ text: string, onComplete?: () => void }> = ({ text,
 
 const MainPage: React.FC = () => {
     const [typingStep, setTypingStep] = useState(0);
+    const messages = [
+        "> BOOTING FAZBEAR OS...",
+        "> WARNING: SYSTEM INTEGRITY COMPROMISED...",
+    ];
 
   return (
     <div className="animate-fadeIn flex flex-col items-center justify-center h-full text-center p-4">
-        <GlitchText text="FNTD 2" />
-        <h2 className="font-pixel text-2xl text-glow-yellow mt-2 mb-8">Wiki & Casino</h2>
         
-        <div className="container-glow max-w-lg w-full text-left p-4 min-h-[180px]">
-            <div className="text-text-light text-base space-y-2">
-                {typingStep >= 0 && <Typewriter text={"> Welcome to the FNTD 2 Holo-Net."} onComplete={() => setTypingStep(1)} />}
-                {typingStep >= 1 && <Typewriter text={"> Accessing database..."} onComplete={() => setTypingStep(2)}/>}
-                {typingStep >= 2 && <p className="text-accent-green">{'>'} Connection successful. 9 Pages, 5 Active Users, 710 Contributions.</p>}
-                {typingStep >= 2 && <p className="mt-4">{'>'} Use the navigation below to access the Wiki, Casino, or Profile.</p>}
+        <img src="https://i.ibb.co/HDtC7c6s/fnaf-fazbear-entertainment-logo-by-underscoreyt-dg3atvz-fullview.png" alt="Fazbear Entertainment" className="w-40 h-40 mb-4 animate-flicker" />
+
+        <GlitchText text="SECURITY LOG" />
+        <h2 className="font-pixel text-2xl text-glow-yellow mt-2 mb-8">NIGHT SHIFT TERMINAL</h2>
+        
+        <div className="container-glow max-w-lg w-full text-left p-4 min-h-[180px] relative">
+            <div className="absolute top-2 right-2 flex items-center gap-2">
+                <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+                <span className="font-pixel text-red-500 text-lg">REC</span>
+            </div>
+             <div className="text-text-light text-base space-y-2">
+                {typingStep > 0 ? <p>{messages[0]}</p> : <Typewriter text={messages[0]} onComplete={() => setTimeout(() => setTypingStep(1), 500)} />}
+                {typingStep > 1 && <p>{messages[1]}</p>}
+                {typingStep === 1 && <Typewriter text={messages[1]} onComplete={() => setTimeout(() => setTypingStep(2), 500)}/>}
+                
+                {typingStep >= 2 && 
+                    <div className="animate-fadeIn">
+                        <p className="text-accent-green">{'>'} CONNECTION ESTABLISHED. WELCOME.</p>
+                        <p className="mt-4">{'>'} USE NAV-BAR TO ACCESS DATABASES.</p>
+                    </div>
+                }
             </div>
         </div>
 

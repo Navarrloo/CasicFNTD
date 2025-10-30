@@ -54,10 +54,10 @@ const ComingSoonView: React.FC<{ onBack: () => void }> = ({ onBack }) => (
 );
 
 const WikiMenuView: React.FC<{ setView: (view: WikiView) => void }> = ({ setView }) => (
-  <div className="container-glow p-4">
-      <h1 className="font-pixel text-2xl text-glow-cyan tracking-widest text-center mb-6 border-b border-accent-cyan/20 pb-4">FNTD 2 WIKI</h1>
+  <div className="container-glow p-4 h-full flex flex-col">
+      <h1 className="font-pixel text-2xl text-glow-cyan tracking-widest text-center mb-6 border-b border-accent-cyan/20 pb-4 flex-shrink-0">FNTD 2 WIKI</h1>
       
-      <div className="space-y-4">
+      <div className="flex-grow overflow-y-auto pr-2 space-y-4 min-h-0">
         <div>
           <h2 className="font-pixel text-lg text-glow-green mb-3">Units & Mechanics</h2>
           <div className="flex flex-col gap-2">
@@ -121,7 +121,7 @@ const WikiPage: React.FC = () => {
   }
 
   return (
-    <div className="animate-fadeIn h-full">
+    <div className="animate-fadeIn h-full flex flex-col">
        {renderContent()}
     </div>
   );

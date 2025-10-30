@@ -55,15 +55,15 @@ const UnitEncyclopediaPage: React.FC<UnitEncyclopediaPageProps> = ({ setView, ti
 
   return (
     <>
-        <div className="container-glow p-4">
-            <div className="flex justify-between items-center mb-6">
+        <div className="container-glow p-4 flex flex-col h-full">
+            <div className="flex justify-between items-center mb-6 flex-shrink-0">
                 <h1 className="font-pixel text-lg text-text-light tracking-widest text-glow-cyan">
                     {title}
                 </h1>
                 <button onClick={() => setView('main')} className="btn btn-yellow">Back</button>
             </div>
             
-            <div className="h-[75vh] overflow-y-auto pr-2 space-y-6">
+            <div className="overflow-y-auto pr-2 space-y-6 flex-grow min-h-0">
                 <div className="bg-black/20 p-4 border border-border-dark">
                     <p className="text-text-light">
                         Units are the main Mechanic of the game. There are currently 9 Rarities of Units: <RarityTag rarityKey={Rarity.Common} />, <RarityTag rarityKey={Rarity.Uncommon} />, <RarityTag rarityKey={Rarity.Rare} />, <RarityTag rarityKey={Rarity.Epic} />, <RarityTag rarityKey={Rarity.Mythic} />, <RarityTag rarityKey={Rarity.Secret} />, <RarityTag rarityKey={Rarity.Nightmare} />, <RarityTag rarityKey={Rarity.Hero} />, and <RarityTag rarityKey={Rarity.Legendary} />.

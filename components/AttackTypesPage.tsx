@@ -29,15 +29,15 @@ const attackTypeData = [
 
 const AttackTypesPage: React.FC<AttackTypesPageProps> = ({ setView, title }) => {
   return (
-    <div className="container-glow p-4 animate-fadeIn">
-        <div className="flex justify-between items-center mb-6">
+    <div className="container-glow p-4 animate-fadeIn flex flex-col h-full">
+        <div className="flex justify-between items-center mb-6 flex-shrink-0">
             <h1 className="font-pixel text-lg text-text-light tracking-widest text-glow-cyan">
                 {title.toUpperCase()}
             </h1>
             <button onClick={() => setView('main')} className="btn btn-yellow">Back</button>
         </div>
 
-        <div className="h-[75vh] overflow-y-auto pr-2 space-y-6">
+        <div className="overflow-y-auto pr-2 space-y-6 flex-grow min-h-0">
             <div className="bg-black/20 p-4 border border-border-dark">
                 <p className="text-text-light">
                     Attack Types are classifiers on how Units attack. There are currently 15 Attack Types.

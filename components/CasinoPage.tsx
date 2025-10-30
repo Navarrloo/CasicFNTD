@@ -85,7 +85,7 @@ const CasinoPage: React.FC = () => {
 
 
   return (
-    <div className="p-4 flex flex-col items-center justify-center min-h-[80vh] animate-fadeIn">
+    <div className="casino-bg p-4 flex flex-col items-center justify-center animate-fadeIn">
       <h1 className="font-pixel text-4xl text-center mb-2 text-glow-purple">Casino</h1>
       <p className="text-center text-text-dark mb-8 font-pixel text-lg">Cost: {CASINO_COST} soul</p>
 

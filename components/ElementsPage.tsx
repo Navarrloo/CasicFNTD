@@ -54,15 +54,15 @@ const MultiplierCell: React.FC<{ multiplier: number }> = ({ multiplier }) => {
 
 const ElementsPage: React.FC<ElementsPageProps> = ({ setView, title }) => {
   return (
-    <div className="container-glow p-4 animate-fadeIn">
-        <div className="flex justify-between items-center mb-4">
+    <div className="container-glow p-4 animate-fadeIn flex flex-col h-full">
+        <div className="flex justify-between items-center mb-4 flex-shrink-0">
             <h1 className="font-pixel text-xl text-text-light tracking-widest text-glow-cyan">
                 {title.toUpperCase()}
             </h1>
             <button onClick={() => setView('main')} className="btn btn-yellow !text-base !px-4 !py-1">Back</button>
         </div>
 
-        <div className="h-[calc(100vh-160px)] overflow-y-auto pr-2 space-y-6">
+        <div className="overflow-y-auto pr-2 space-y-6 flex-grow min-h-0">
             <div className="bg-black/20 p-4 border border-border-dark">
                 <p className="text-text-light text-base">
                     Elements are a Unit Mechanic that allows for strategic gameplay between Units and Enemies.
