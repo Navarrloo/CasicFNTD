@@ -37,7 +37,7 @@ const App: React.FC = () => {
       if (!supabase) {
         console.error("Supabase client is not initialized. Check lib/supabase.ts");
         setDbStatus('error');
-        setConnectionError("Supabase client failed to initialize. Check the browser console for details.");
+        setConnectionError("Supabase credentials are not set. Please edit `lib/supabase.ts` and replace the placeholder values.");
         return;
       }
       
@@ -233,14 +233,38 @@ const App: React.FC = () => {
                   </>
                 ) : (
                   <div className="text-center">
-                    <h1 className="font-pixel text-2xl text-glow-red mb-4">DATABASE CONNECTION ERROR</h1>
-                    <p className="text-text-light text-lg">
-                      Could not connect to the Supabase database.
+                    <h1 className="font-pixel text-2xl text-glow-red mb-4">Supabase Configuration Required</h1>
+                    <p className="text-text-light text-base mb-4">
+                        The app needs to be connected to your database. This is a one-time setup step.
                     </p>
-                    <p className="mt-2 text-text-dark text-base">
-                      Please check your credentials in <code className="bg-black/50 p-1 rounded-sm">lib/supabase.ts</code> and ensure your Supabase project is running.
+                    
+                    <div className="bg-black/30 p-3 border border-border-dark space-y-3 text-left">
+                        <p className="font-pixel text-lg text-accent-yellow">How to fix:</p>
+                        <ol className="text-sm text-text-light list-decimal list-inside space-y-2">
+                            <li>
+                                Open the file: <br /> <code className="bg-black/50 p-1 rounded-sm text-white mt-1 inline-block">lib/supabase.ts</code>
+                            </li>
+                            <li>
+                                Follow the instructions at the top of that file to add your unique Supabase <span className="font-bold text-white">Project URL</span> and <span className="font-bold text-white">Public Key</span>.
+                            </li>
+                            <li>
+                                Save the file and reload this app.
+                            </li>
+                        </ol>
+                    </div>
+
+                    <p className="text-xs text-text-dark/70 mt-4">
+                        Technical Error: {connectionError}
                     </p>
-                    <p className="text-xs text-text-dark/70 mt-4">Error: {connectionError}</p>
+                    
+                    <div className="mt-6 flex justify-center">
+                        <button 
+                            onClick={() => window.location.reload()}
+                            className="btn btn-yellow"
+                        >
+                            Reload App
+                        </button>
+                    </div>
                   </div>
                 )}
               </div>
