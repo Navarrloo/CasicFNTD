@@ -1,5 +1,5 @@
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from 'supabase-client'
 import { Unit } from '../types';
 
 // Define a type for your database schema if you have one
