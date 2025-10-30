@@ -1,0 +1,5 @@
+{
+  "name": "Copy of FNTD 2 Wiki & Casino",
+  "description": "A Telegram Mini App for the FNTD 2 game, featuring a unit wiki, a unit casino, and a user profile with an inventory. Includes a special admin panel for authorized users.",
+  "requestFramePermissions": []
+}
