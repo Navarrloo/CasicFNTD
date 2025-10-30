@@ -9,7 +9,6 @@ import ItemsPage from './ItemsPage';
 import EstablishmentsPage from './EstablishmentsPage';
 import CosmeticsPage from './CosmeticsPage';
 
-// FIX: Define a specific type for the view state to ensure type safety.
 type WikiView = 'main' | 'units' | 'coming_soon' | 'faz_rating' | 'enchantments' | 'elements' | 'attack_types' | 'quests' | 'items' | 'establishments' | 'cosmetics';
 
 interface WikiButtonProps {
@@ -54,7 +53,6 @@ const ComingSoonView: React.FC<{ onBack: () => void }> = ({ onBack }) => (
   </div>
 );
 
-// FIX: Update the 'setView' prop to use the specific WikiView type instead of a generic string.
 const WikiMenuView: React.FC<{ setView: (view: WikiView) => void }> = ({ setView }) => (
   <div className="container-glow p-4">
       <h1 className="font-pixel text-2xl text-glow-cyan tracking-widest text-center mb-6 border-b border-accent-cyan/20 pb-4">FNTD 2 WIKI</h1>
