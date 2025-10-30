@@ -5,7 +5,7 @@ import { UNITS } from '../constants';
 
 interface Profile {
   id: number;
-  username: string;
+  username: string | null;
   first_name: string;
   balance: number;
   inventory: Unit[];
@@ -35,7 +35,7 @@ const AdminPage: React.FC = () => {
       setMessage(`User "${searchTerm}" not found.`);
       console.error(error);
     } else {
-      setFoundUser(data);
+      setFoundUser(data as Profile);
     }
     setIsLoading(false);
   };
@@ -53,9 +53,9 @@ const AdminPage: React.FC = () => {
     
     if (error) {
         setMessage('Error updating balance.');
-    } else {
-        setMessage(`${soulsToAdd} souls added to ${foundUser.username}.`);
-        setFoundUser(data);
+    } else if (data) {
+        setMessage(`${soulsToAdd} souls added to ${foundUser.username || 'the user'}.`);
+        setFoundUser(data as Profile);
         setSoulsToAdd(0);
     }
   };
@@ -75,16 +75,16 @@ const AdminPage: React.FC = () => {
 
     if (error) {
         setMessage('Error giving unit.');
-    } else {
-        setMessage(`${selectedUnit.name} given to ${foundUser.username}.`);
-        setFoundUser(data);
+    } else if (data) {
+        setMessage(`${selectedUnit.name} given to ${foundUser.username || 'the user'}.`);
+        setFoundUser(data as Profile);
         setSelectedUnit(null);
     }
   };
   
   const handleClearInventory = async () => {
     if (!foundUser || !supabase) return;
-    if (!window.confirm(`Are you sure you want to clear inventory for ${foundUser.username}?`)) return;
+    if (!window.confirm(`Are you sure you want to clear inventory for ${foundUser.username || 'this user'}?`)) return;
 
      const { data, error } = await supabase
         .from('profiles')
@@ -95,9 +95,9 @@ const AdminPage: React.FC = () => {
     
     if (error) {
         setMessage('Error clearing inventory.');
-    } else {
-        setMessage(`Inventory cleared for ${foundUser.username}.`);
-        setFoundUser(data);
+    } else if (data) {
+        setMessage(`Inventory cleared for ${foundUser.username || 'the user'}.`);
+        setFoundUser(data as Profile);
     }
   }
 
@@ -106,7 +106,7 @@ const AdminPage: React.FC = () => {
       <div className="admin-panel-container">
         {/* Header/Search */}
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl uppercase">{foundUser ? foundUser.username : "Admin Panel"}</h1>
+          <h1 className="text-xl uppercase">{foundUser ? foundUser.username || "User Profile" : "Admin Panel"}</h1>
           <div className="flex items-center gap-2">
             <input
               type="text"
@@ -131,7 +131,7 @@ const AdminPage: React.FC = () => {
                 <img src={UNITS[0].image} alt="avatar" className="w-16 h-16 mr-4 border-2 border-[#333]"/>
                 <div>
                   <h2 className="text-xl text-white">{foundUser.first_name}</h2>
-                  <p className="text-sm text-gray-400">@{foundUser.username} [{foundUser.id}]</p>
+                  <p className="text-sm text-gray-400">@{foundUser.username || 'no_username'} [{foundUser.id}]</p>
                   <p className="text-sm text-green-400">STATUS: CLEAR</p>
                 </div>
               </div>

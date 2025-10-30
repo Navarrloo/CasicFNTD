@@ -1,6 +1,6 @@
 import React, { useState, useMemo, createContext, useEffect, useCallback } from 'react';
 import { useTelegram } from './hooks/useTelegram';
-import { ADMIN_USERNAMES, STARTING_BALANCE, UNITS } from './constants';
+import { ADMIN_USERNAMES, STARTING_BALANCE } from './constants';
 import NavBar from './components/NavBar';
 import MainPage from './components/MainPage';
 import CasinoPage from './components/CasinoPage';
@@ -74,6 +74,12 @@ const App: React.FC = () => {
 
     const loadUserProfile = async () => {
         setIsLoading(true);
+        if (!supabase) {
+            console.error("Supabase client not available for profile load.");
+            setIsLoading(false);
+            return;
+        }
+        
         const { data: profile, error } = await supabase
             .from('profiles')
             .select('*')
