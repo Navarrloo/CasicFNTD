@@ -62,10 +62,10 @@ const MainPage: React.FC = () => {
         
         <div className="container-glow max-w-lg w-full text-left p-4 min-h-[180px]">
             <div className="text-text-light text-base space-y-2">
-                {typingStep >= 0 && <Typewriter text="> Welcome to the FNTD 2 Holo-Net." onComplete={() => setTypingStep(1)} />}
-                {typingStep >= 1 && <Typewriter text="> Accessing database..." onComplete={() => setTypingStep(2)}/>}
-                {typingStep >= 2 && <p className="text-accent-green">> Connection successful. 9 Pages, 5 Active Users, 710 Contributions.</p>}
-                {typingStep >= 2 && <p className="mt-4">> Use the navigation below to access the Wiki, Casino, or Profile.</p>}
+                {typingStep >= 0 && <Typewriter text={"> Welcome to the FNTD 2 Holo-Net."} onComplete={() => setTypingStep(1)} />}
+                {typingStep >= 1 && <Typewriter text={"> Accessing database..."} onComplete={() => setTypingStep(2)}/>}
+                {typingStep >= 2 && <p className="text-accent-green">{'>'} Connection successful. 9 Pages, 5 Active Users, 710 Contributions.</p>}
+                {typingStep >= 2 && <p className="mt-4">{'>'} Use the navigation below to access the Wiki, Casino, or Profile.</p>}
             </div>
         </div>
 
