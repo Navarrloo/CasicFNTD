@@ -19,6 +19,29 @@ export interface Unit {
   cost: number;
 }
 
+export interface Achievement {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+}
+
+export interface Listing {
+    id: string; // uuid
+    created_at: string;
+    seller_id: number;
+    seller_username: string;
+    unit_id: number;
+    unit_name: string;
+    unit_rarity: Rarity;
+    unit_image: string;
+    asking_price: number;
+    status: 'active' | 'completed' | 'cancelled';
+    // This represents the actual unit data for display
+    unit_data: Unit; 
+}
+
+
 export interface TelegramUser {
   id: number;
   first_name: string;

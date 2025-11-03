@@ -1,9 +1,18 @@
-import { Unit, Rarity } from './types';
+import { Unit, Rarity, Achievement } from './types';
 
 export const ADMIN_USERNAMES = ['NAVARRLO', 'AVE4GE'];
 export const CASINO_COST = 1;
 export const STARTING_BALANCE = 1000;
 export const BALANCE_ICON = 'https://images.weserv.nl/?url=files.catbox.moe/dbovxg.webp';
+
+// --- ACHIEVEMENTS ---
+export const ACHIEVEMENTS: Achievement[] = [
+    { id: 'first_spin', name: 'Lucky Start', description: 'Spin the casino wheel for the first time.', icon: '🎲' },
+    { id: 'wiki_explorer', name: 'Wiki Explorer', description: 'Visit at least 3 different pages in the Wiki.', icon: '📚' },
+    { id: 'novice_collector', name: 'Novice Collector', description: 'Own 5 or more units in your inventory.', icon: '📦' },
+    { id: 'first_trade', name: 'First Deal', description: 'Successfully create your first trade listing.', icon: '🤝' },
+    { id: 'big_spender', name: 'Big Spender', description: 'Spend a total of 1000 souls.', icon: '💸' },
+];
 
 // --- DETAILED UNIT DATA ---
 export interface UnitStatLevel {

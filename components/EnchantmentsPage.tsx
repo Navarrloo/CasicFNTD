@@ -1,7 +1,5 @@
 import React from 'react';
-
-// A type alias from WikiPage.tsx to avoid circular dependencies
-type WikiView = 'main' | 'units' | 'coming_soon' | 'faz_rating' | 'enchantments';
+import { WikiView } from './WikiPage';
 
 interface EnchantmentsPageProps {
   setView: (view: WikiView) => void;

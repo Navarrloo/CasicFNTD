@@ -1,7 +1,5 @@
 import React from 'react';
-
-// A type alias from WikiPage.tsx to avoid circular dependencies
-type WikiView = 'main' | 'units' | 'coming_soon' | 'faz_rating';
+import { WikiView } from './WikiPage';
 
 interface FazRatingPageProps {
   setView: (view: WikiView) => void;
@@ -101,11 +99,11 @@ const linkableTerms: Record<string, WikiView> = {
     'Nightmare': 'coming_soon',
     'Evolution': 'coming_soon',
     'Evolutions': 'coming_soon',
-    'Enchantment': 'coming_soon',
-    'Enchantments': 'coming_soon',
-    'Quests': 'coming_soon',
+    'Enchantment': 'enchantments',
+    'Enchantments': 'enchantments',
+    'Quests': 'quests',
     'Merchant': 'coming_soon',
-    'Establishment Card': 'coming_soon',
+    'Establishment Card': 'establishments',
     'Season': 'coming_soon',
     'Seasons': 'coming_soon',
     'Battlepass': 'coming_soon',

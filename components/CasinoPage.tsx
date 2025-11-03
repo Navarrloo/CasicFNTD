@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useContext } from 'react';
-import { Unit, Rarity } from '../types';
-import { UNITS, CASINO_COST } from '../constants';
-import UnitCard from './UnitCard';
-import { GameContext } from '../App';
+import { Unit, Rarity } from '../../types';
+import { UNITS, CASINO_COST } from '../../constants';
+import UnitCard from './shared/UnitCard';
+import { GameContext } from '../../App';
 
 const getRarityStyles = (rarity: Rarity): { color: string; shadow: string } => {
   switch (rarity) {
@@ -30,6 +30,7 @@ const CasinoPage: React.FC = () => {
     if (isSpinning || !game || game.balance < CASINO_COST) return;
 
     game.updateBalance(game.balance - CASINO_COST);
+    game.unlockAchievement('first_spin');
 
     setIsSpinning(true);
     setWonUnit(null);

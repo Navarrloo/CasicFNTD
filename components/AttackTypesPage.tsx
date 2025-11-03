@@ -1,7 +1,6 @@
 import React from 'react';
+import { WikiView } from './WikiPage';
 
-// A type alias from WikiPage.tsx
-type WikiView = 'main' | 'units' | 'coming_soon' | 'faz_rating' | 'enchantments' | 'elements' | 'attack_types';
 
 interface AttackTypesPageProps {
   setView: (view: WikiView) => void;

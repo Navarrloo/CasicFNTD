@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { GameContext } from '../../App';
+
 import FazRatingPage from './FazRatingPage';
 import UnitEncyclopediaPage from './UnitEncyclopediaPage';
 import EnchantmentsPage from './EnchantmentsPage';
@@ -9,7 +11,7 @@ import ItemsPage from './ItemsPage';
 import EstablishmentsPage from './EstablishmentsPage';
 import CosmeticsPage from './CosmeticsPage';
 
-type WikiView = 'main' | 'units' | 'coming_soon' | 'faz_rating' | 'enchantments' | 'elements' | 'attack_types' | 'quests' | 'items' | 'establishments' | 'cosmetics';
+export type WikiView = 'main' | 'units' | 'coming_soon' | 'faz_rating' | 'enchantments' | 'elements' | 'attack_types' | 'quests' | 'items' | 'establishments' | 'cosmetics';
 
 interface WikiButtonProps {
   label: string;
@@ -91,6 +93,20 @@ const WikiMenuView: React.FC<{ setView: (view: WikiView) => void }> = ({ setView
 
 const WikiPage: React.FC = () => {
   const [view, setView] = React.useState<WikiView>('main');
+  const game = useContext(GameContext);
+  const [visited, setVisited] = useState<Set<WikiView>>(new Set(['main']));
+
+  useEffect(() => {
+    if (view !== 'main' && !visited.has(view)) {
+        const newVisited = new Set(visited);
+        newVisited.add(view);
+        setVisited(newVisited);
+
+        if (newVisited.size >= 4) { // main + 3 others
+            game?.unlockAchievement('wiki_explorer');
+        }
+    }
+  }, [view, visited, game]);
 
   const renderContent = () => {
     switch(view) {

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Unit, Rarity } from '../types';
-import UnitDetailModal from './UnitDetailModal';
-import { UNITS } from '../constants';
+import { Unit, Rarity } from '../../types';
+import UnitDetailModal from './shared/UnitDetailModal';
+import { UNITS } from '../../constants';
+import { WikiView } from './WikiPage';
 
-
-type WikiView = 'main' | 'units' | 'coming_soon' | 'faz_rating';
 
 interface UnitEncyclopediaPageProps {
   setView: (view: WikiView) => void;

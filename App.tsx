@@ -1,16 +1,18 @@
 import React, { useState, useMemo, createContext, useEffect, useCallback } from 'react';
 import { useTelegram } from './hooks/useTelegram';
-import { ADMIN_USERNAMES, STARTING_BALANCE } from './constants';
-import NavBar from './components/NavBar';
+import { ADMIN_USERNAMES, STARTING_BALANCE, ACHIEVEMENTS } from './constants';
+import NavBar from './components/layout/NavBar';
 import MainPage from './components/MainPage';
 import CasinoPage from './components/CasinoPage';
 import ProfilePage from './components/ProfilePage';
 import AdminPage from './components/AdminPage';
 import WikiPage from './components/WikiPage';
+import TradePage from './components/trade/TradePage';
 import { Unit } from './types';
 import { supabase } from './lib/supabase';
+import ToastProvider from './components/shared/ToastProvider';
 
-type Page = 'main' | 'wiki' | 'casino' | 'profile' | 'admin';
+type Page = 'main' | 'wiki' | 'casino' | 'profile' | 'admin' | 'trade';
 type DbStatus = 'connecting' | 'ok' | 'error';
 
 interface GameContextType {
@@ -18,7 +20,12 @@ interface GameContextType {
   updateBalance: (newBalance: number) => Promise<void>;
   inventory: Unit[];
   addToInventory: (unit: Unit) => Promise<void>;
+  removeFromInventory: (unitToRemove: Unit, unitIndex: number) => Promise<void>;
   isLoading: boolean;
+  achievements: string[];
+  unlockAchievement: (achievementId: string) => void;
+  showToast: (message: string, type?: 'success' | 'error') => void;
+  userProfile: { id: number; username: string; } | null;
 }
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -26,11 +33,19 @@ export const GameContext = createContext<GameContextType | null>(null);
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState<Page>('main');
   const { user } = useTelegram();
+  const [userProfile, setUserProfile] = useState<{id: number, username: string} | null>(null);
   const [balance, setBalance] = useState<number>(0);
   const [inventory, setInventory] = useState<Unit[]>([]);
+  const [achievements, setAchievements] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [dbStatus, setDbStatus] = useState<DbStatus>('connecting');
   const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+      setToast({ message, type });
+      setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     const checkConnection = async () => {
@@ -95,7 +110,10 @@ const App: React.FC = () => {
         if (profile) {
             setBalance(profile.balance);
             const userInventory = Array.isArray(profile.inventory) ? profile.inventory : [];
+            const userAchievements = Array.isArray(profile.achievements) ? profile.achievements : [];
             setInventory(userInventory);
+            setAchievements(userAchievements);
+            setUserProfile({id: profile.id, username: profile.username || 'unknown' });
         } else {
             const { data: newProfile, error: insertError } = await supabase
                 .from('profiles')
@@ -105,6 +123,7 @@ const App: React.FC = () => {
                     first_name: user.first_name,
                     balance: STARTING_BALANCE,
                     inventory: [],
+                    achievements: [],
                 })
                 .select()
                 .single();
@@ -114,6 +133,8 @@ const App: React.FC = () => {
             } else if (newProfile) {
                 setBalance(newProfile.balance);
                 setInventory(newProfile.inventory || []);
+                setAchievements(newProfile.achievements || []);
+                setUserProfile({id: newProfile.id, username: newProfile.username || 'unknown' });
             }
         }
         setIsLoading(false);
@@ -122,43 +143,67 @@ const App: React.FC = () => {
     loadUserProfile();
   }, [user, dbStatus]);
 
+  const unlockAchievement = useCallback(async (achievementId: string) => {
+    if (!user || !supabase || achievements.includes(achievementId)) return;
+
+    const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
+    if (!achievement) return;
+
+    showToast(`Achievement Unlocked: ${achievement.name}!`, 'success');
+
+    const newAchievements = [...achievements, achievementId];
+    setAchievements(newAchievements);
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ achievements: newAchievements })
+      .eq('id', user.id);
+    
+    if (error) {
+      console.error('Failed to save achievements', error);
+      // Revert state if DB update fails
+      setAchievements(achievements);
+    }
+  }, [user, achievements, showToast]);
+
   const addToInventory = useCallback(async (unit: Unit) => {
     if (!user || !supabase) return;
     
-    setInventory(current => [...current, unit]);
+    const newInventory = [...inventory, unit];
+    setInventory(newInventory);
 
-    const { data, error: fetchError } = await supabase
-        .from('profiles')
-        .select('inventory')
-        .eq('id', user.id)
-        .single();
-    
-    if (fetchError) {
-        console.error('Error fetching inventory before update:', fetchError);
-        setInventory(current => current.slice(0, -1));
-        return;
-    }
-
-    const dbInventory = data && Array.isArray(data.inventory) ? data.inventory : [];
-    const newInventory = [...dbInventory, unit];
-    
-    const { error: updateError } = await supabase
+    const { error } = await supabase
         .from('profiles')
         .update({ inventory: newInventory })
         .eq('id', user.id);
     
-    if (updateError) {
-        console.error("Failed to update inventory in DB:", updateError);
-        const { data: revertData, error: revertError } = await supabase
-            .from('profiles')
-            .select('inventory')
-            .eq('id', user.id)
-            .single();
-        if (!revertError && revertData) {
-            setInventory(Array.isArray(revertData.inventory) ? revertData.inventory : []);
+    if (error) {
+        console.error("Failed to update inventory in DB:", error);
+        setInventory(inventory); // Revert on failure
+    } else {
+        if(newInventory.length >= 5){
+            unlockAchievement('novice_collector');
         }
     }
-  }, [user]);
+  }, [user, inventory, unlockAchievement]);
+  
+  const removeFromInventory = useCallback(async (unitToRemove: Unit, unitIndex: number) => {
+    if (!user || !supabase) return;
+    
+    const newInventory = [...inventory];
+    newInventory.splice(unitIndex, 1);
+    setInventory(newInventory);
+
+    const { error } = await supabase
+        .from('profiles')
+        .update({ inventory: newInventory })
+        .eq('id', user.id);
+
+    if (error) {
+        console.error("Failed to update inventory in DB:", error);
+        setInventory(inventory); // Revert on failure
+    }
+  }, [user, inventory]);
 
   const updateBalance = useCallback(async (newBalance: number) => {
     if (!user || !supabase) return;
@@ -292,6 +337,8 @@ const App: React.FC = () => {
         return <WikiPage />;
       case 'casino':
         return <CasinoPage />;
+      case 'trade':
+        return <TradePage />;
       case 'profile':
         return <ProfilePage />;
       case 'admin':
@@ -302,13 +349,15 @@ const App: React.FC = () => {
   };
 
   return (
-    <GameContext.Provider value={{ balance, updateBalance, inventory, addToInventory, isLoading }}>
-      <div className="bg-transparent h-full text-text-light font-pixel selection:bg-accent-green selection:text-background-dark flex flex-col">
-        <main className="flex-grow pt-4 px-2 pb-24 flex flex-col min-h-0">
-          {renderPage()}
-        </main>
-        <NavBar activePage={activePage} setActivePage={setActivePage} isAdmin={isAdmin} />
-      </div>
+    <GameContext.Provider value={{ balance, updateBalance, inventory, addToInventory, removeFromInventory, isLoading, achievements, unlockAchievement, showToast, userProfile }}>
+      <ToastProvider toast={toast}>
+        <div className="bg-transparent h-full text-text-light font-pixel selection:bg-accent-green selection:text-background-dark flex flex-col">
+          <main className="flex-grow pt-4 px-2 pb-24 flex flex-col min-h-0">
+            {renderPage()}
+          </main>
+          <NavBar activePage={activePage} setActivePage={setActivePage} isAdmin={isAdmin} />
+        </div>
+      </ToastProvider>
     </GameContext.Provider>
   );
 };

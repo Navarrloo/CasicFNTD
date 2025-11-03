@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { WikiView } from './WikiPage';
 
-type WikiView = 'main' | 'units' | 'coming_soon' | 'faz_rating' | 'enchantments' | 'quests';
 type QuestTab = 'daily' | 'weekly' | 'special';
 
 interface QuestsPageProps {

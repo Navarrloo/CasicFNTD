@@ -1,6 +1,5 @@
 import React from 'react';
-
-type WikiView = 'main' | 'units' | 'coming_soon' | 'faz_rating' | 'enchantments' | 'items';
+import { WikiView } from './WikiPage';
 
 interface ItemsPageProps {
   setView: (view: WikiView) => void;

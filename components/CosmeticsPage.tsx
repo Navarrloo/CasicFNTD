@@ -1,6 +1,6 @@
 import React from 'react';
+import { WikiView } from './WikiPage';
 
-type WikiView = 'main' | 'cosmetics';
 
 interface CosmeticsPageProps {
   setView: (view: WikiView) => void;
