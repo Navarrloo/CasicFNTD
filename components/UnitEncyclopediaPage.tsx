@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Unit, Rarity } from '../../types';
+import { Unit, Rarity } from '../types';
 import UnitDetailModal from './shared/UnitDetailModal';
-import { UNITS } from '../../constants';
+import { UNITS } from '../constants';
 import { WikiView } from './WikiPage';
 
 
@@ -83,7 +83,7 @@ const UnitEncyclopediaPage: React.FC<UnitEncyclopediaPageProps> = ({ setView, ti
                     <div className="bg-black/20 p-4 border border-border-dark">
                         <h3 className="font-pixel text-lg text-glow-purple mb-4 tracking-widest">Season 1</h3>
                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                            {UNITS.map((unit) => (
+                            {UNITS.map((unit: Unit) => (
                                 <UnitWikiCard key={unit.id} unit={unit} onClick={() => openModal(unit)} />
                             ))}
                         </div>

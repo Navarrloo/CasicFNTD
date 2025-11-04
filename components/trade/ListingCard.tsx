@@ -105,7 +105,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onAction }) => {
             {isOwner ? (
                 <button className="btn btn-yellow !text-sm !py-1" onClick={handleCancel}>Cancel</button>
             ) : (
-                <button className="btn btn-green !text-sm !py-1" onClick={handleBuy} disabled={game?.balance < listing.asking_price}>
+                <button className="btn btn-green !text-sm !py-1" onClick={handleBuy} disabled={!game || game.balance < listing.asking_price}>
                     Buy
                 </button>
             )}

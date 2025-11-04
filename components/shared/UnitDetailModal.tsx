@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Unit, Rarity } from '../../types';
-import { BALANCE_ICON, UNIT_DETAILS, UnitDetails, UnitStatLevel } from '../../constants';
+import { BALANCE_ICON, UNIT_DETAILS, UnitDetails, UnitStatLevel, UnitHistory } from '../../constants';
 
 interface UnitDetailModalProps {
   unit: Unit | null;
@@ -143,7 +143,7 @@ const UnitDetailModal: React.FC<UnitDetailModalProps> = ({ unit, isOpen, onClose
                       <div className="mt-4">
                           <h3 className="font-pixel text-lg text-glow-purple mb-2">History</h3>
                           <div className="bg-black/30 p-2 border-l-2 border-accent-purple text-sm">
-                              {unitDetails.history.map(entry => (
+                              {unitDetails.history.map((entry: UnitHistory) => (
                                   <p key={entry.date} className="text-text-dark">
                                       <span className="text-text-light">{entry.date}:</span> {entry.change}
                                   </p>
