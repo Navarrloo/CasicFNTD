@@ -31,13 +31,8 @@ export interface Listing {
     created_at: string;
     seller_id: number;
     seller_username: string;
-    unit_id: number;
-    unit_name: string;
-    unit_rarity: Rarity;
-    unit_image: string;
     asking_price: number;
     status: 'active' | 'completed' | 'cancelled';
-    // This represents the actual unit data for display
     unit_data: Unit; 
 }
 
