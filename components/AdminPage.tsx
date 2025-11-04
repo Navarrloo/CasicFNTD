@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { supabase } from '../../lib/supabase';
-import { Unit } from '../../types';
-import { UNITS } from '../../constants';
+import { supabase } from '../lib/supabase';
+import { Unit } from '../types';
+import { UNITS } from '../constants';
 
 interface Profile {
   id: number;
@@ -161,7 +161,7 @@ const AdminPage: React.FC = () => {
               <div className="flex flex-col gap-1">
                 <h3 className="text-center text-gray-400 text-sm border-b border-[#333] pb-1">GIVE</h3>
                 <div className="admin-list">
-                  {UNITS.map(unit => (
+                  {UNITS.map((unit: Unit) => (
                     <p 
                       key={unit.id} 
                       onClick={() => setSelectedUnit(unit)} 

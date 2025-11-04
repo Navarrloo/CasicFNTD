@@ -1,5 +1,5 @@
 import React from 'react';
-import { HomeIcon, AdminIcon, WikiIcon, CasinoIcon, ProfileIcon, TradeIcon } from '../shared/Icons';
+import { HomeIcon, AdminIcon, WikiIcon, CasinoIcon, ProfileIcon, TradeIcon } from './shared/Icons';
 
 type Page = 'main' | 'wiki' | 'casino' | 'profile' | 'admin' | 'trade';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Unit, Rarity } from '../../types';
+import { Unit, Rarity } from '../types';
 
 interface UnitCardProps {
   unit: Unit;

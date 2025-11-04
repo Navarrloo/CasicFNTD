@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useContext } from 'react';
-import { Unit, Rarity } from '../../types';
-import { UNITS, CASINO_COST } from '../../constants';
+import { Unit, Rarity } from '../types';
+import { UNITS, CASINO_COST } from '../constants';
 import UnitCard from './shared/UnitCard';
 import { GameContext } from '../App';
 
@@ -47,7 +47,7 @@ const CasinoPage: React.FC = () => {
         clearInterval(spinInterval);
 
         const weightedUnits: Unit[] = [];
-        UNITS.forEach(unit => {
+        UNITS.forEach((unit: Unit) => {
           let weight = 1;
           switch(unit.rarity) {
             case Rarity.Common: weight = 100; break;
