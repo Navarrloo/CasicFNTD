@@ -74,7 +74,7 @@ const ProfilePage: React.FC = () => {
   return (
     <>
       <div className="p-2 animate-fadeIn flex flex-col h-full">
-        <div className="container-glow flex-grow flex flex-col p-4">
+        <div className="container-glow flex-grow flex flex-col p-4 min-h-0">
           <div className="flex-shrink-0 flex items-center gap-4 mb-4 pb-4 border-b-2 border-border-dark">
             <div className="w-20 h-20 bg-black/50 border-2 border-border-light flex items-center justify-center">
               <ProfileIcon className="w-12 h-12 text-accent-green" />

@@ -35,10 +35,7 @@ const CreateListingModal: React.FC<CreateListingModalProps> = ({ isOpen, onClose
         }
         setIsLoading(true);
 
-        // 1. Remove unit from inventory
-        await game.removeFromInventory(selectedUnit.unit, selectedUnit.index);
-
-        // 2. Create listing in DB
+        // 1. Create listing in DB first for safety
         const { error } = await supabase
             .from('listings')
             .insert({
@@ -51,15 +48,15 @@ const CreateListingModal: React.FC<CreateListingModalProps> = ({ isOpen, onClose
         if (error) {
             console.error("Error creating listing:", error);
             game.showToast('Failed to create listing.', 'error');
-            // IMPORTANT: Add the unit back to inventory if the DB insert fails
-            await game.addToInventory(selectedUnit.unit);
+            setIsLoading(false);
         } else {
+            // 2. On success, remove unit from inventory
+            await game.removeFromInventory(selectedUnit.unit, selectedUnit.index);
             game.showToast('Listing created successfully!', 'success');
             game.unlockAchievement('first_trade');
             onListingCreated();
-            handleClose();
+            handleClose(); // This also sets isLoading to false
         }
-        setIsLoading(false);
     };
 
 

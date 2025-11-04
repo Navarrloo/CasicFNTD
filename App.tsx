@@ -149,10 +149,7 @@ const App: React.FC = () => {
     const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
     if (!achievement) return;
 
-    showToast(`Achievement Unlocked: ${achievement.name}!`, 'success');
-
     const newAchievements = [...achievements, achievementId];
-    setAchievements(newAchievements);
 
     const { error } = await supabase
       .from('profiles')
@@ -161,14 +158,17 @@ const App: React.FC = () => {
     
     if (error) {
       console.error('Failed to save achievements', error);
-      // Revert state if DB update fails
-      setAchievements(achievements);
+      showToast('Failed to save achievement progress.', 'error');
+    } else {
+      setAchievements(newAchievements);
+      showToast(`Achievement Unlocked: ${achievement.name}!`, 'success');
     }
-  }, [user, achievements, showToast]);
+  }, [user, achievements, supabase, showToast]);
 
   const addToInventory = useCallback(async (unit: Unit) => {
     if (!user || !supabase) return;
     
+    const oldInventory = inventory;
     const newInventory = [...inventory, unit];
     setInventory(newInventory);
 
@@ -179,17 +179,18 @@ const App: React.FC = () => {
     
     if (error) {
         console.error("Failed to update inventory in DB:", error);
-        setInventory(inventory); // Revert on failure
+        setInventory(oldInventory); // Revert on failure
     } else {
         if(newInventory.length >= 5){
             unlockAchievement('novice_collector');
         }
     }
-  }, [user, inventory, unlockAchievement]);
+  }, [user, inventory, unlockAchievement, supabase]);
   
   const removeFromInventory = useCallback(async (_unitToRemove: Unit, unitIndex: number) => {
     if (!user || !supabase) return;
     
+    const oldInventory = inventory;
     const newInventory = [...inventory];
     newInventory.splice(unitIndex, 1);
     setInventory(newInventory);
@@ -201,9 +202,9 @@ const App: React.FC = () => {
 
     if (error) {
         console.error("Failed to update inventory in DB:", error);
-        setInventory(inventory); // Revert on failure
+        setInventory(oldInventory); // Revert on failure
     }
-  }, [user, inventory]);
+  }, [user, inventory, supabase]);
 
   const updateBalance = useCallback(async (newBalance: number) => {
     if (!user || !supabase) return;
@@ -219,7 +220,7 @@ const App: React.FC = () => {
       console.error("Failed to update balance", error);
       setBalance(oldBalance);
     }
-  }, [balance, user]);
+  }, [balance, user, supabase]);
 
   const isAdmin = useMemo(() => {
     if (!user?.username) return false;
