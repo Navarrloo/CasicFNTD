@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { GameContext } from '../../App';
+import { GameContext } from '../App';
 
 import FazRatingPage from './FazRatingPage';
 import UnitEncyclopediaPage from './UnitEncyclopediaPage';

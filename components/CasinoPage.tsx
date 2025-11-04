@@ -2,7 +2,7 @@ import React, { useState, useCallback, useContext } from 'react';
 import { Unit, Rarity } from '../../types';
 import { UNITS, CASINO_COST } from '../../constants';
 import UnitCard from './shared/UnitCard';
-import { GameContext } from '../../App';
+import { GameContext } from '../App';
 
 const getRarityStyles = (rarity: Rarity): { color: string; shadow: string } => {
   switch (rarity) {

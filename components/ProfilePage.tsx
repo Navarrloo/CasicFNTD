@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { useTelegram } from '../../hooks/useTelegram';
 import UnitCard from './shared/UnitCard';
-import { GameContext } from '../../App';
+import { GameContext } from '../App';
 import { BALANCE_ICON } from '../../constants';
 import UnitDetailModal from './shared/UnitDetailModal';
 import { Unit } from '../../types';
