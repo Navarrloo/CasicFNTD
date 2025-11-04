@@ -187,7 +187,7 @@ const App: React.FC = () => {
     }
   }, [user, inventory, unlockAchievement]);
   
-  const removeFromInventory = useCallback(async (unitToRemove: Unit, unitIndex: number) => {
+  const removeFromInventory = useCallback(async (_unitToRemove: Unit, unitIndex: number) => {
     if (!user || !supabase) return;
     
     const newInventory = [...inventory];
