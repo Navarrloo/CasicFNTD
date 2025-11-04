@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useTelegram } from '../hooks/useTelegram';
 import UnitCard from './shared/UnitCard';
 import { GameContext } from '../App';
@@ -7,8 +7,94 @@ import UnitDetailModal from './shared/UnitDetailModal';
 import { Unit } from '../types';
 import { ProfileIcon } from './shared/Icons';
 import AchievementsList from './achievements/AchievementsList';
+import { supabase } from '../lib/supabase';
 
 type ProfileTab = 'inventory' | 'achievements' | 'leaderboard';
+
+const LeaderboardView: React.FC = () => {
+    const game = useContext(GameContext);
+    const [leaderboard, setLeaderboard] = useState<{ username: string | null, balance: number }[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchLeaderboard = async () => {
+            if (!supabase) {
+                setError("Database connection not available.");
+                setLoading(false);
+                return;
+            }
+
+            setLoading(true);
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('username, balance')
+                .order('balance', { ascending: false })
+                .limit(50); // Top 50 players
+
+            if (error) {
+                console.error("Error fetching leaderboard:", error);
+                setError("Could not load leaderboard data.");
+                setLeaderboard([]);
+            } else {
+                setLeaderboard(data);
+                setError(null);
+            }
+            setLoading(false);
+        };
+
+        fetchLeaderboard();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex-grow flex items-center justify-center">
+                <p className="text-glow-cyan animate-pulse">Loading Leaderboard...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex-grow flex items-center justify-center text-center py-10 px-4 bg-black/20 border-2 border-dashed border-border-dark">
+                <p className="text-glow-red">{error}</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex-grow overflow-y-auto pr-2 min-h-0">
+            <table className="stats-table w-full">
+                <thead>
+                    <tr>
+                        <th className="w-16">Rank</th>
+                        <th>Player</th>
+                        <th className="text-right">Souls</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {leaderboard.map((player, index) => {
+                        const isCurrentUser = player.username === game?.userProfile?.username;
+                        return (
+                            <tr key={index} className={isCurrentUser ? 'bg-yellow-800/50' : ''}>
+                                <td className={`text-center font-bold ${isCurrentUser ? 'text-glow-yellow' : 'text-text-light'}`}>
+                                    #{index + 1}
+                                </td>
+                                <td className={`${isCurrentUser ? 'text-glow-yellow' : 'text-text-light'}`}>
+                                    @{player.username || 'unknown'}
+                                </td>
+                                <td className={`text-right font-pixel ${isCurrentUser ? 'text-glow-yellow' : 'text-accent-yellow'}`}>
+                                    {player.balance.toLocaleString()}
+                                </td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        </div>
+    );
+};
+
 
 const ProfilePage: React.FC = () => {
   const { user } = useTelegram();
@@ -59,13 +145,7 @@ const ProfilePage: React.FC = () => {
         case 'achievements':
             return <AchievementsList />;
         case 'leaderboard':
-            return (
-                <div className="flex-grow flex items-center justify-center text-center py-10 px-4 bg-black/20 border-2 border-dashed border-border-dark">
-                  <div>
-                      <p className="text-text-dark font-pixel text-sm">Leaderboard Coming Soon!</p>
-                  </div>
-                </div>
-            );
+            return <LeaderboardView />;
         default:
             return null;
     }

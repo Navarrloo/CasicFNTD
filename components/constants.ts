@@ -1,4 +1,4 @@
-import { Unit, Rarity, Achievement } from './types';
+import { Unit, Rarity, Achievement } from '../types';
 
 export const ADMIN_USERNAMES = ['NAVARRLO', 'AVE4GE'];
 export const CASINO_COST = 1;
