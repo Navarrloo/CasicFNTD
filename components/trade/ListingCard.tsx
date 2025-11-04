@@ -25,7 +25,8 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onAction }) => {
         }
 
         const { error } = await supabase.rpc('buy_listing', {
-            listing_id_to_buy: listing.id
+            listing_id_to_buy: listing.id,
+            buyer_user_id: game.userProfile.id
         });
 
         if (error) {
@@ -41,11 +42,12 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onAction }) => {
     };
 
     const handleCancel = async () => {
-        if (!game || !supabase) return;
+        if (!game || !game.userProfile || !supabase) return;
         if (!window.confirm('Are you sure you want to cancel this listing? The unit will be returned to your inventory.')) return;
         
         const { error } = await supabase.rpc('cancel_listing', {
-            listing_id_to_cancel: listing.id
+            listing_id_to_cancel: listing.id,
+            seller_user_id: game.userProfile.id
         });
 
         if (error) {
