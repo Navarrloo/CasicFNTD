@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { GameContext } from '../../App';
-import { ACHIEVEMENTS } from '../../constants';
+import { ACHIEVEMENTS } from '../constants';
 
 const AchievementsList: React.FC = () => {
     const game = useContext(GameContext);

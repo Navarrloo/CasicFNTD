@@ -1,6 +1,6 @@
 import React, { useState, useMemo, createContext, useEffect, useCallback } from 'react';
 import { useTelegram } from './hooks/useTelegram';
-import { ADMIN_USERNAMES, STARTING_BALANCE, ACHIEVEMENTS } from './constants';
+import { ADMIN_USERNAMES, STARTING_BALANCE, ACHIEVEMENTS } from './components/constants';
 import NavBar from './components/layout/NavBar';
 import MainPage from './components/MainPage';
 import CasinoPage from './components/CasinoPage';

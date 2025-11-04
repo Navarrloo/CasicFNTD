@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Unit, Rarity } from '../../types';
-import { BALANCE_ICON, UNIT_DETAILS, UnitDetails, UnitStatLevel, UnitHistory } from '../../constants';
+import { BALANCE_ICON, UNIT_DETAILS, UnitDetails, UnitStatLevel, UnitHistory, UnitPassive } from '../constants';
 
 interface UnitDetailModalProps {
   unit: Unit | null;
@@ -123,7 +123,7 @@ const UnitDetailModal: React.FC<UnitDetailModalProps> = ({ unit, isOpen, onClose
                   {unitDetails.passives && unitDetails.passives.length > 0 && (
                       <div className="mb-4">
                           <h3 className="font-pixel text-lg text-glow-purple mb-2">Passives</h3>
-                          {unitDetails.passives.map(passive => (
+                          {unitDetails.passives.map((passive: UnitPassive) => (
                               <div key={passive.name} className="bg-black/30 p-2 border-l-2 border-accent-purple">
                                   <p className="font-bold text-text-light">{passive.name}</p>
                                   <p className="text-sm text-text-dark">{passive.description}</p>

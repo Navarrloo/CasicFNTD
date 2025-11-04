@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Unit } from '../types';
-import { UNITS } from '../constants';
+import { UNITS } from './constants';
 
 interface Profile {
   id: number;

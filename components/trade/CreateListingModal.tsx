@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Unit } from '../../types';
 import { GameContext } from '../../App';
 import UnitCard from '../shared/UnitCard';
-import { BALANCE_ICON } from '../../constants';
+import { BALANCE_ICON } from '../constants';
 import { supabase } from '../../lib/supabase';
 
 interface CreateListingModalProps {

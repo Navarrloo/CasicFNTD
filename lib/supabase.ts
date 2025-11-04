@@ -37,6 +37,9 @@ drop policy if exists "Allow all users to read active listings" on public.listin
 drop policy if exists "Allow user to read their own listings" on public.listings;
 drop policy if exists "Allow user to create their own listings" on public.listings;
 drop policy if exists "Allow user to cancel their own listings" on public.listings;
+drop policy if exists "Allow public read access to profiles" on public.profiles;
+drop policy if exists "Allow public read access to listings" on public.listings;
+
 
 -- Create new, more permissive policies that allow the app to function without a backend auth server.
 -- WARNING: These policies are not fully secure and trust the client.

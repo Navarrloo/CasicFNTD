@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Unit, Rarity } from '../types';
 import UnitDetailModal from './shared/UnitDetailModal';
-import { UNITS } from '../constants';
+import { UNITS } from './constants';
 import { WikiView } from './WikiPage';
 
 
