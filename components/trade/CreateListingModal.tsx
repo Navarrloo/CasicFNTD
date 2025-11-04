@@ -43,6 +43,7 @@ const CreateListingModal: React.FC<CreateListingModalProps> = ({ isOpen, onClose
                 seller_username: game.userProfile.username,
                 unit_data: selectedUnit.unit,
                 asking_price: price,
+                status: 'active', // Explicitly set status to make it visible on the market
             });
         
         if (error) {

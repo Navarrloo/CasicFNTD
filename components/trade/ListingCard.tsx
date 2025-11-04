@@ -23,71 +23,40 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onAction }) => {
         if (!window.confirm(`Buy ${listing.unit_data.name} for ${listing.asking_price} souls?`)) {
             return;
         }
-        
-        // This should ideally be a single database transaction/RPC call for safety.
-        // For now, we proceed step-by-step.
 
-        // 1. Debit buyer
-        const newBalance = game.balance - listing.asking_price;
-        await game.updateBalance(newBalance);
+        const { error } = await supabase.rpc('buy_listing', {
+            listing_id_to_buy: listing.id
+        });
 
-        // 2. Mark listing as completed
-        const { error: updateError } = await supabase
-            .from('listings')
-            .update({ status: 'completed' })
-            .eq('id', listing.id);
-
-        if (updateError) {
-            console.error("Error updating listing:", updateError);
-            game.showToast('Purchase failed!', 'error');
-            await game.updateBalance(game.balance); // Revert balance
-            return;
-        }
-        
-        // 3. Add unit to buyer's inventory
-        await game.addToInventory(listing.unit_data);
-        
-        // 4. Credit seller
-        const { data: sellerProfile, error: fetchError } = await supabase
-            .from('profiles')
-            .select('balance')
-            .eq('id', listing.seller_id)
-            .single();
-
-        if (fetchError || !sellerProfile) {
-            console.error("Could not find seller to credit:", fetchError);
-            // This is a critical error state. The item is sold but seller not paid.
-            // A transaction would prevent this.
+        if (error) {
+            console.error("Error buying item:", error);
+            game.showToast(error.message, 'error');
+            onAction(); // Refresh listings to remove the stale one
         } else {
-            const newSellerBalance = sellerProfile.balance + listing.asking_price;
-            await supabase.from('profiles').update({ balance: newSellerBalance }).eq('id', listing.seller_id);
+            game.showToast('Purchase successful! Refreshing...', 'success');
+            // The database is now the source of truth. Reload the app to get the
+            // latest profile state (balance, inventory) safely.
+            setTimeout(() => window.location.reload(), 1500);
         }
-        
-        game.showToast('Purchase successful!', 'success');
-        onAction();
     };
 
     const handleCancel = async () => {
         if (!game || !supabase) return;
         if (!window.confirm('Are you sure you want to cancel this listing? The unit will be returned to your inventory.')) return;
         
-        // 1. Mark listing as cancelled
-        const { error: updateError } = await supabase
-            .from('listings')
-            .update({ status: 'cancelled' })
-            .eq('id', listing.id);
+        const { error } = await supabase.rpc('cancel_listing', {
+            listing_id_to_cancel: listing.id
+        });
 
-        if (updateError) {
-            console.error("Error cancelling listing:", updateError);
-            game.showToast('Failed to cancel listing!', 'error');
-            return;
+        if (error) {
+            console.error("Error cancelling listing:", error);
+            game.showToast(error.message, 'error');
+            onAction(); // Refresh on error
+        } else {
+            game.showToast('Listing cancelled! Refreshing...', 'success');
+            // The database is updated. Reload the app to get the correct inventory.
+            setTimeout(() => window.location.reload(), 1500);
         }
-        
-        // 2. Return unit to seller's inventory
-        await game.addToInventory(listing.unit_data);
-        
-        game.showToast('Listing cancelled.', 'success');
-        onAction();
     };
 
 
