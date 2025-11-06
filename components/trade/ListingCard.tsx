@@ -4,6 +4,7 @@ import { GameContext } from '../../App';
 import UnitCard from '../shared/UnitCard';
 import { BALANCE_ICON } from '../constants';
 import { supabase } from '../../lib/supabase';
+import { SoundManager } from '../../utils/sounds';
 
 interface ListingCardProps {
     listing: Listing;
@@ -44,6 +45,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onAction }) => {
                 otherParty: listing.seller_username,
             });
             
+            SoundManager.play('success');
             game.showToast('Purchase successful! Refreshing...', 'success');
             // The database is now the source of truth. Reload the app to get the
             // latest profile state (balance, inventory) safely.

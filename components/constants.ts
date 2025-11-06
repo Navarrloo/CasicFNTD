@@ -3,15 +3,20 @@ import { Unit, Rarity, Achievement } from '../types';
 export const ADMIN_USERNAMES = ['NAVARRLO', 'AVE4GE'];
 export const CASINO_COST = 1;
 export const STARTING_BALANCE = 1000;
-export const BALANCE_ICON = 'https://images.weserv.nl/?url=files.catbox.moe/dbovxg.webp';
+export const BALANCE_ICON = 'https://d2u1z1lopyfwlx.cloudfront.net/thumbnails/7a2e09b9-42bd-519d-9b46-9229efb5638c/37c62ba0-801e-5cbb-9817-26e7c0828519.jpg';
 
 // --- ACHIEVEMENTS ---
 export const ACHIEVEMENTS: Achievement[] = [
-    { id: 'first_spin', name: 'Lucky Start', description: 'Spin the casino wheel for the first time.', icon: '🎲' },
-    { id: 'wiki_explorer', name: 'Wiki Explorer', description: 'Visit at least 3 different pages in the Wiki.', icon: '📚' },
-    { id: 'novice_collector', name: 'Novice Collector', description: 'Own 5 or more units in your inventory.', icon: '📦' },
-    { id: 'first_trade', name: 'First Deal', description: 'Successfully create your first trade listing.', icon: '🤝' },
-    { id: 'big_spender', name: 'Big Spender', description: 'Spend a total of 1000 souls.', icon: '💸' },
+    { id: 'first_spin', name: 'Lucky Start', description: 'Spin the casino wheel for the first time.', icon: '🎲', reward: 50 },
+    { id: 'wiki_explorer', name: 'Wiki Explorer', description: 'Visit at least 3 different pages in the Wiki.', icon: '📚', reward: 75 },
+    { id: 'novice_collector', name: 'Novice Collector', description: 'Own 5 or more units in your inventory.', icon: '📦', reward: 100 },
+    { id: 'first_trade', name: 'First Deal', description: 'Successfully create your first trade listing.', icon: '🤝', reward: 150 },
+    { id: 'big_spender', name: 'Big Spender', description: 'Spend a total of 1000 souls.', icon: '💸', reward: 200 },
+    { id: 'millionaire', name: 'Millionaire', description: 'Have 10,000 souls at once.', icon: '💰', reward: 500 },
+    { id: 'lucky_7', name: 'Lucky Seven', description: 'Win a Mythic or better unit.', icon: '🍀', reward: 300 },
+    { id: 'trader_pro', name: 'Trader Pro', description: 'Complete 10 trades on marketplace.', icon: '🏪', reward: 400 },
+    { id: 'battle_winner', name: 'Battle Master', description: 'Win 5 PvP battles.', icon: '⚔️', reward: 250 },
+    { id: 'crafter', name: 'Master Crafter', description: 'Craft your first unit.', icon: '⚒️', reward: 200 },
 ];
 
 // --- DETAILED UNIT DATA ---

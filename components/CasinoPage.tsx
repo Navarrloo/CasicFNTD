@@ -3,6 +3,7 @@ import { Unit, Rarity } from '../types';
 import { UNITS, CASINO_COST } from './constants';
 import UnitCard from './shared/UnitCard';
 import { GameContext } from '../App';
+import { SoundManager } from '../utils/sounds';
 
 const getRarityStyles = (rarity: Rarity): { color: string; shadow: string } => {
   switch (rarity) {
@@ -32,6 +33,7 @@ const CasinoPage: React.FC = () => {
     game.updateBalance(game.balance - CASINO_COST);
     game.unlockAchievement('first_spin');
 
+    SoundManager.play('spin');
     setIsSpinning(true);
     setWonUnit(null);
     setShowWinModal(false);
@@ -70,6 +72,20 @@ const CasinoPage: React.FC = () => {
         setWonUnit(finalUnit);
         game.addToInventory(finalUnit);
         game.recordUnitWin(finalUnit.id);
+        
+        // Check for rare unit achievement
+        if ([Rarity.Mythic, Rarity.Secret, Rarity.Nightmare, Rarity.Hero, Rarity.Legendary].includes(finalUnit.rarity)) {
+          game.unlockAchievement('lucky_7');
+          SoundManager.play('rare');
+        } else {
+          SoundManager.play('win');
+        }
+        
+        // Check millionaire achievement
+        if (game.balance >= 10000) {
+          game.unlockAchievement('millionaire');
+        }
+        
         setIsSpinning(false);
         setDisplayedUnit(finalUnit);
         setTimeout(() => setShowWinModal(true), 300);
@@ -87,7 +103,7 @@ const CasinoPage: React.FC = () => {
 
 
   return (
-    <div className="casino-bg p-4 flex flex-col items-center justify-center animate-fadeIn">
+    <div className="p-4 flex flex-col items-center justify-center animate-fadeIn">
       <h1 className="font-pixel text-4xl text-center mb-2 text-glow-purple">Casino</h1>
       <p className="text-center text-text-dark mb-8 font-pixel text-lg">Cost: {CASINO_COST} soul</p>
 

@@ -129,6 +129,26 @@ export interface Database {
           total_spent: number | null
           total_earned: number | null
           transaction_history: any[] | null
+          claimed_achievement_rewards: string[] | null
+          last_wheel_spin_date: string | null
+          quest_progress: any | null
+          last_quest_reset: string | null
+          referral_code: string | null
+          referred_users: string[] | null
+          referral_earned: number | null
+          referred_by: string | null
+          pending_gifts: any[] | null
+          battlepass_level: number | null
+          battlepass_xp: number | null
+          battlepass_premium: boolean | null
+          battlepass_claimed: number[] | null
+          lottery_tickets: number | null
+          lottery_jackpot: number | null
+          balance_history: any[] | null
+          pvp_wins: number | null
+          pvp_losses: number | null
+          pvp_rating: number | null
+          trade_count: number | null
         }
         Insert: {
           id: number
@@ -144,6 +164,26 @@ export interface Database {
           total_spent?: number | null
           total_earned?: number | null
           transaction_history?: any[] | null
+          claimed_achievement_rewards?: string[] | null
+          last_wheel_spin_date?: string | null
+          quest_progress?: any | null
+          last_quest_reset?: string | null
+          referral_code?: string | null
+          referred_users?: string[] | null
+          referral_earned?: number | null
+          referred_by?: string | null
+          pending_gifts?: any[] | null
+          battlepass_level?: number | null
+          battlepass_xp?: number | null
+          battlepass_premium?: boolean | null
+          battlepass_claimed?: number[] | null
+          lottery_tickets?: number | null
+          lottery_jackpot?: number | null
+          balance_history?: any[] | null
+          pvp_wins?: number | null
+          pvp_losses?: number | null
+          pvp_rating?: number | null
+          trade_count?: number | null
         }
         Update: {
           id?: number
@@ -159,6 +199,26 @@ export interface Database {
           total_spent?: number | null
           total_earned?: number | null
           transaction_history?: any[] | null
+          claimed_achievement_rewards?: string[] | null
+          last_wheel_spin_date?: string | null
+          quest_progress?: any | null
+          last_quest_reset?: string | null
+          referral_code?: string | null
+          referred_users?: string[] | null
+          referral_earned?: number | null
+          referred_by?: string | null
+          pending_gifts?: any[] | null
+          battlepass_level?: number | null
+          battlepass_xp?: number | null
+          battlepass_premium?: boolean | null
+          battlepass_claimed?: number[] | null
+          lottery_tickets?: number | null
+          lottery_jackpot?: number | null
+          balance_history?: any[] | null
+          pvp_wins?: number | null
+          pvp_losses?: number | null
+          pvp_rating?: number | null
+          trade_count?: number | null
         }
         Relationships: []
       }
