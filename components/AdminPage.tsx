@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Unit } from '../types';
-import { UNITS } from './constants';
+import { UNITS, BALANCE_ICON } from './constants';
 
 interface Profile {
   id: number;
@@ -19,6 +19,7 @@ const AdminPage: React.FC = () => {
 
   const [soulsToAdd, setSoulsToAdd] = useState<number>(0);
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
+  const [massAmount, setMassAmount] = useState<number>(100);
 
   const handleSearch = async () => {
     if (!searchTerm || !supabase) return;
@@ -99,14 +100,66 @@ const AdminPage: React.FC = () => {
         setMessage(`Inventory cleared for ${foundUser.username || 'the user'}.`);
         setFoundUser(data as Profile);
     }
+  };
+
+  const handleGiveAllSouls = async () => {
+    if (!supabase || massAmount <= 0) return;
+
+    if (!window.confirm(`Give ${massAmount} souls to ALL users?`)) return;
+
+    const { data: allProfiles, error: fetchError } = await supabase
+        .from('profiles')
+        .select('id, balance');
+
+    if (fetchError) {
+        setMessage('Failed to fetch users.');
+        return;
+    }
+
+    // Update all users
+    let successCount = 0;
+    for (const profile of allProfiles || []) {
+        const { error } = await supabase
+            .from('profiles')
+            .update({ balance: profile.balance + massAmount })
+            .eq('id', profile.id);
+        
+        if (!error) successCount++;
+    }
+
+    setMessage(`Gave ${massAmount} souls to ${successCount} users!`);
   }
 
   return (
-    <div className="p-2 animate-fadeIn">
-      <div className="admin-panel-container">
+    <div className="p-2 animate-fadeIn h-full flex flex-col">
+      <div className="admin-panel-container flex-grow flex flex-col">
+        {/* Mass Actions */}
+        <div className="bg-accent-red/20 border-2 border-accent-red p-4 mb-4">
+          <h2 className="font-pixel text-xl text-glow-red mb-3">⚠️ MASS ACTIONS</h2>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <img src={BALANCE_ICON} alt="Souls" className="w-6 h-6" />
+              <input
+                type="number"
+                value={massAmount}
+                onChange={e => setMassAmount(parseInt(e.target.value) || 0)}
+                className="admin-input w-32 text-center text-xl"
+                placeholder="100"
+              />
+            </div>
+            <button
+              onClick={handleGiveAllSouls}
+              className="btn btn-red flex-grow"
+            >
+              Give to ALL Players
+            </button>
+          </div>
+          <p className="text-xs text-accent-yellow mt-2">⚠️ This will give souls to every user in database!</p>
+        </div>
+
         {/* Header/Search */}
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl uppercase">{foundUser ? foundUser.username || "User Profile" : "Admin Panel"}</h1>
+          <h1 className="text-xl uppercase">{foundUser ? foundUser.username || "User Profile" : "Player Management"}</h1>
           <div className="flex items-center gap-2">
             <input
               type="text"

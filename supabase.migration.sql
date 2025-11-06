@@ -54,7 +54,10 @@ ADD COLUMN IF NOT EXISTS pvp_losses integer DEFAULT 0,
 ADD COLUMN IF NOT EXISTS pvp_rating integer DEFAULT 1000,
 
 -- Trade tracking
-ADD COLUMN IF NOT EXISTS trade_count integer DEFAULT 0;
+ADD COLUMN IF NOT EXISTS trade_count integer DEFAULT 0,
+
+-- Tutorial system
+ADD COLUMN IF NOT EXISTS tutorial_completed boolean DEFAULT false;
 
 -- Verify the changes
 SELECT column_name, data_type, column_default 

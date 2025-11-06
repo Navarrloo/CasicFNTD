@@ -20,9 +20,11 @@ import LotteryPage from './components/LotteryPage';
 import AdvancedStatsPage from './components/AdvancedStatsPage';
 import SettingsPage from './components/SettingsPage';
 import MorePage from './components/MorePage';
+import TutorialOverlay from './components/TutorialOverlay';
 import { Unit } from './types';
 import { supabase } from './lib/supabase';
 import ToastProvider from './components/shared/ToastProvider';
+import { UNITS } from './components/constants';
 
 type Page = 'main' | 'wiki' | 'casino' | 'profile' | 'admin' | 'trade' | 'more' | 'crafting' | 'wheel' | 'quests' | 'pvp' | 'referral' | 'gifts' | 'battlepass' | 'lottery' | 'advanced_stats' | 'settings';
 type DbStatus = 'connecting' | 'ok' | 'error';
@@ -46,6 +48,9 @@ interface GameContextType {
   recordUnitWin: (unitId: number) => Promise<void>;
   addTransaction: (transaction: { type: 'purchase' | 'sale' | 'cancel', unit: Unit, price: number, otherParty?: string }) => Promise<void>;
   tradeCount: number;
+  tutorialActive: boolean;
+  tutorialStep: number;
+  setActivePage: (page: any) => void;
 }
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -73,6 +78,10 @@ const App: React.FC = () => {
   const [totalSpent, setTotalSpent] = useState<number>(0);
   const [totalEarned, setTotalEarned] = useState<number>(0);
   const [tradeCount, setTradeCount] = useState<number>(0);
+  
+  // Tutorial state
+  const [showTutorial, setShowTutorial] = useState<boolean>(false);
+  const [tutorialStep, setTutorialStep] = useState<number>(0);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
       setToast({ message, type });
@@ -147,6 +156,21 @@ const App: React.FC = () => {
             setAchievements(userAchievements);
             setUserProfile({id: profile.id, username: profile.username || 'unknown' });
             
+            // Check if tutorial should be shown
+            if (!profile.tutorial_completed && userInventory.length === 0) {
+                // Give starter units if somehow missing
+                const starterUnits = UNITS.filter(u => [101, 102, 103].includes(u.id));
+                await supabase.from('profiles')
+                    .update({ inventory: starterUnits })
+                    .eq('id', profile.id);
+                setInventory(starterUnits);
+                
+                setTimeout(() => {
+                    setShowTutorial(true);
+                    setTutorialStep(0);
+                }, 500);
+            }
+            
             // Load daily bonus data
             setDailyStreak(profile.daily_streak || 0);
             setLastDailyBonusDate(profile.last_daily_bonus_date || null);
@@ -198,10 +222,22 @@ const App: React.FC = () => {
             if (insertError) {
                 console.error('Error creating profile', insertError);
             } else if (newProfile) {
-                setBalance(newProfile.balance);
-                setInventory(newProfile.inventory || []);
-                setAchievements(newProfile.achievements || []);
-                setUserProfile({id: newProfile.id, username: newProfile.username || 'unknown' });
+                // Give starter units (Freddy, Bonnie, Chica)
+                const starterUnits = UNITS.filter(u => [101, 102, 103].includes(u.id));
+                
+                const { data: updatedProfile } = await supabase
+                    .from('profiles')
+                    .update({ inventory: starterUnits })
+                    .eq('id', newProfile.id)
+                    .select()
+                    .single();
+
+                const finalProfile = updatedProfile || newProfile;
+                
+                setBalance(finalProfile.balance);
+                setInventory(starterUnits);
+                setAchievements(finalProfile.achievements || []);
+                setUserProfile({id: finalProfile.id, username: finalProfile.username || 'unknown' });
                 setDailyStreak(0);
                 setLastDailyBonusDate(null);
                 setUnitStats({});
@@ -209,8 +245,12 @@ const App: React.FC = () => {
                 setTotalSpent(0);
                 setTotalEarned(0);
                 setTradeCount(0);
-                // Show daily bonus for new users
-                setTimeout(() => setShowDailyBonus(true), 1000);
+                
+                // Start tutorial for new users
+                setTimeout(() => {
+                    setShowTutorial(true);
+                    setTutorialStep(0);
+                }, 500);
             }
         }
         setIsLoading(false);
@@ -597,6 +637,9 @@ const App: React.FC = () => {
       recordUnitWin,
       addTransaction,
       tradeCount,
+      tutorialActive: showTutorial,
+      tutorialStep,
+      setActivePage,
     }}>
       <ToastProvider toast={toast}>
         <div className="bg-transparent h-full text-text-light font-pixel selection:bg-accent-green selection:text-background-dark flex flex-col">
@@ -605,12 +648,28 @@ const App: React.FC = () => {
           </main>
           <NavBar activePage={activePage} setActivePage={setActivePage} isAdmin={isAdmin} />
           <DailyBonusModal
-            isOpen={showDailyBonus}
+            isOpen={showDailyBonus && !showTutorial}
             onClose={() => setShowDailyBonus(false)}
             onClaim={claimDailyBonus}
             streakDays={dailyStreak}
             nextBonus={getDailyBonusAmount()}
           />
+          {showTutorial && (
+            <TutorialOverlay
+              step={tutorialStep}
+              onNext={() => setTutorialStep(s => s + 1)}
+              onComplete={async () => {
+                setShowTutorial(false);
+                if (userProfile && supabase) {
+                  await supabase.from('profiles')
+                    .update({ tutorial_completed: true })
+                    .eq('id', userProfile.id);
+                }
+              }}
+              activePage={activePage}
+              setActivePage={setActivePage}
+            />
+          )}
         </div>
       </ToastProvider>
     </GameContext.Provider>

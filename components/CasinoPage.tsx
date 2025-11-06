@@ -28,9 +28,15 @@ const CasinoPage: React.FC = () => {
   const game = useContext(GameContext);
 
   const handleSpin = useCallback(() => {
-    if (isSpinning || !game || game.balance < CASINO_COST) return;
+    if (isSpinning || !game) return;
+    
+    // Allow free spin during tutorial
+    const isTutorialSpin = game.tutorialActive && game.tutorialStep === 4;
+    if (!isTutorialSpin && game.balance < CASINO_COST) return;
 
-    game.updateBalance(game.balance - CASINO_COST);
+    if (!isTutorialSpin) {
+      game.updateBalance(game.balance - CASINO_COST);
+    }
     game.unlockAchievement('first_spin');
 
     SoundManager.play('spin');
@@ -121,8 +127,9 @@ const CasinoPage: React.FC = () => {
 
       <button
         onClick={handleSpin}
-        disabled={isSpinning || !game || game.balance < CASINO_COST}
+        disabled={isSpinning || !game || (game.balance < CASINO_COST && !game.tutorialActive)}
         className="btn btn-green font-pixel text-2xl px-8 py-4"
+        data-tutorial="spin-button"
       >
         {isSpinning ? 'Spinning...' : 'Spin!'}
       </button>

@@ -149,6 +149,7 @@ export interface Database {
           pvp_losses: number | null
           pvp_rating: number | null
           trade_count: number | null
+          tutorial_completed: boolean | null
         }
         Insert: {
           id: number
@@ -184,6 +185,7 @@ export interface Database {
           pvp_losses?: number | null
           pvp_rating?: number | null
           trade_count?: number | null
+          tutorial_completed?: boolean | null
         }
         Update: {
           id?: number
@@ -219,6 +221,7 @@ export interface Database {
           pvp_losses?: number | null
           pvp_rating?: number | null
           trade_count?: number | null
+          tutorial_completed?: boolean | null
         }
         Relationships: []
       }

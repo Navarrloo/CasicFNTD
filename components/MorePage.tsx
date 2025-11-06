@@ -34,6 +34,7 @@ const MorePage: React.FC<MorePageProps> = ({ onNavigate }) => {
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
                 className="p-6 bg-black/50 border-2 border-border-light hover:border-accent-cyan transition-all text-center"
+                data-tutorial={`${item.id}-button`}
               >
                 <div className="text-5xl mb-3">{item.icon}</div>
                 <p className="font-pixel text-lg text-text-light mb-2">

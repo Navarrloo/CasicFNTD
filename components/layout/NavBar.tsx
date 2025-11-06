@@ -86,48 +86,68 @@ const NavBar: React.FC<NavBarProps> = ({ activePage, setActivePage, isAdmin }) =
         }}
     >
       <div className="flex justify-around items-center h-full">
-        <NavItem
-          label="Main"
-          icon={<HomeIcon className="w-full h-full"/>}
-          isActive={activePage === 'main'}
-          onClick={() => setActivePage('main')}
-          activeColor={colors.yellow}
-        />
-        <NavItem
-          label="Wiki"
-          icon={<WikiIcon className="w-full h-full"/>}
-          isActive={activePage === 'wiki'}
-          onClick={() => setActivePage('wiki')}
-          activeColor={colors.green}
-        />
-        <NavItem
-          label="Casino"
-          icon={<CasinoIcon className="w-full h-full"/>}
-          isActive={activePage === 'casino'}
-          onClick={() => setActivePage('casino')}
-          activeColor={colors.purple}
-        />
-         <NavItem
-          label="Trade"
-          icon={<TradeIcon className="w-full h-full"/>}
-          isActive={activePage === 'trade'}
-          onClick={() => setActivePage('trade')}
-          activeColor={colors.cyan}
-        />
-        <NavItem
-          label="More"
-          icon={<svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>}
-          isActive={activePage === 'more' || ['crafting', 'wheel', 'pvp', 'gifts', 'lottery', 'advanced_stats'].includes(activePage)}
-          onClick={() => setActivePage('more')}
-          activeColor={colors.purple}
-        />
-        <NavItem
-          label="Profile"
-          icon={<ProfileIcon className="w-full h-full"/>}
-          isActive={activePage === 'profile'}
-          onClick={() => setActivePage('profile')}
-          activeColor={colors.green}
-        />
+        <div data-nav="main">
+          <NavItem
+            label="Main"
+            icon={<HomeIcon className="w-full h-full"/>}
+            isActive={activePage === 'main'}
+            onClick={() => setActivePage('main')}
+            activeColor={colors.yellow}
+          />
+        </div>
+        <div data-nav="wiki">
+        <div data-tutorial="wiki-nav">
+          <NavItem
+            label="Wiki"
+            icon={<WikiIcon className="w-full h-full"/>}
+            isActive={activePage === 'wiki'}
+            onClick={() => setActivePage('wiki')}
+            activeColor={colors.green}
+          />
+        </div>
+        </div>
+        <div data-nav="casino">
+        <div data-tutorial="casino-nav">
+          <NavItem
+            label="Casino"
+            icon={<CasinoIcon className="w-full h-full"/>}
+            isActive={activePage === 'casino'}
+            onClick={() => setActivePage('casino')}
+            activeColor={colors.purple}
+          />
+        </div>
+        </div>
+        <div data-nav="trade">
+          <NavItem
+            label="Trade"
+            icon={<TradeIcon className="w-full h-full"/>}
+            isActive={activePage === 'trade'}
+            onClick={() => setActivePage('trade')}
+            activeColor={colors.cyan}
+          />
+        </div>
+        <div data-nav="more">
+        <div data-tutorial="more-nav">
+          <NavItem
+            label="More"
+            icon={<svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>}
+            isActive={activePage === 'more' || ['crafting', 'wheel', 'pvp', 'gifts', 'lottery', 'advanced_stats'].includes(activePage)}
+            onClick={() => setActivePage('more')}
+            activeColor={colors.purple}
+          />
+        </div>
+        </div>
+        <div data-nav="profile">
+        <div data-tutorial="profile-nav">
+          <NavItem
+            label="Profile"
+            icon={<ProfileIcon className="w-full h-full"/>}
+            isActive={activePage === 'profile'}
+            onClick={() => setActivePage('profile')}
+            activeColor={colors.green}
+          />
+        </div>
+        </div>
         {isAdmin && (
           <NavItem
             label="Admin"
