@@ -47,6 +47,20 @@ export interface TelegramUser {
   is_premium?: boolean;
 }
 
+export interface Scammer {
+  id: string;
+  roblox_username: string;
+  telegram_nickname: string | null;
+  telegram_username: string | null;
+  reason: string;
+  description: string | null;
+  damage_amount: number | null;
+  proof_images: string[];
+  status: 'pending' | 'verified';
+  added_by: number;
+  created_at: string;
+}
+
 export interface TelegramWebApp {
   initData: string;
   initDataUnsafe: {

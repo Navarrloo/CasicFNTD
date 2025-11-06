@@ -255,6 +255,55 @@ export interface Database {
             }
         ]
       }
+      scammers: {
+        Row: {
+          id: string;
+          roblox_username: string;
+          telegram_nickname: string | null;
+          telegram_username: string | null;
+          reason: string;
+          description: string | null;
+          damage_amount: number | null;
+          proof_images: string[];
+          status: 'pending' | 'verified';
+          added_by: number;
+          created_at: string;
+        }
+        Insert: {
+          id?: string;
+          roblox_username: string;
+          telegram_nickname?: string | null;
+          telegram_username?: string | null;
+          reason: string;
+          description?: string | null;
+          damage_amount?: number | null;
+          proof_images?: string[];
+          status?: 'pending' | 'verified';
+          added_by: number;
+          created_at?: string;
+        }
+        Update: {
+          id?: string;
+          roblox_username?: string;
+          telegram_nickname?: string | null;
+          telegram_username?: string | null;
+          reason?: string;
+          description?: string | null;
+          damage_amount?: number | null;
+          proof_images?: string[];
+          status?: 'pending' | 'verified';
+          added_by?: number;
+          created_at?: string;
+        }
+        Relationships: [
+            {
+              foreignKeyName: 'scammers_added_by_fkey'
+              columns: ['added_by']
+              referencedRelation: 'profiles'
+              referencedColumns: ['id']
+            }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

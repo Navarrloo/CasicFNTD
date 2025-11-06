@@ -8,6 +8,7 @@ import ProfilePage from './components/ProfilePage';
 import AdminPage from './components/AdminPage';
 import WikiPage from './components/WikiPage';
 import TradePage from './components/trade/TradePage';
+import ScammersPage from './components/ScammersPage';
 import DailyBonusModal from './components/DailyBonusModal';
 import CraftingPage from './components/CraftingPage';
 import WheelOfFortunePage from './components/WheelOfFortunePage';
@@ -26,7 +27,7 @@ import { supabase } from './lib/supabase';
 import ToastProvider from './components/shared/ToastProvider';
 import { UNITS } from './components/constants';
 
-type Page = 'main' | 'wiki' | 'casino' | 'profile' | 'admin' | 'trade' | 'more' | 'crafting' | 'wheel' | 'quests' | 'pvp' | 'referral' | 'gifts' | 'battlepass' | 'lottery' | 'advanced_stats' | 'settings';
+type Page = 'main' | 'wiki' | 'casino' | 'profile' | 'admin' | 'trade' | 'scammers' | 'more' | 'crafting' | 'wheel' | 'quests' | 'pvp' | 'referral' | 'gifts' | 'battlepass' | 'lottery' | 'advanced_stats' | 'settings';
 type DbStatus = 'connecting' | 'ok' | 'error';
 
 interface GameContextType {
@@ -579,6 +580,8 @@ const App: React.FC = () => {
         return <CasinoPage />;
       case 'trade':
         return <TradePage />;
+      case 'scammers':
+        return <ScammersPage userId={user?.id || 0} isAdmin={isAdmin} />;
       case 'profile':
         return <ProfilePage />;
       case 'admin':

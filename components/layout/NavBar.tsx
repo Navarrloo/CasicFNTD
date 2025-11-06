@@ -1,7 +1,7 @@
 import React from 'react';
-import { HomeIcon, AdminIcon, WikiIcon, CasinoIcon, ProfileIcon, TradeIcon } from '../shared/Icons';
+import { HomeIcon, AdminIcon, WikiIcon, CasinoIcon, ProfileIcon, TradeIcon, ScammersIcon } from '../shared/Icons';
 
-type Page = 'main' | 'wiki' | 'casino' | 'profile' | 'admin' | 'trade' | 'more';
+type Page = 'main' | 'wiki' | 'casino' | 'profile' | 'admin' | 'trade' | 'scammers' | 'more';
 
 interface NavBarProps {
   activePage: string;
@@ -71,6 +71,7 @@ const NavBar: React.FC<NavBarProps> = ({ activePage, setActivePage, isAdmin }) =
       wiki: colors.green,
       casino: colors.purple,
       trade: colors.cyan,
+      scammers: colors.red,
       profile: colors.green,
       admin: colors.red,
       more: colors.purple
@@ -124,6 +125,15 @@ const NavBar: React.FC<NavBarProps> = ({ activePage, setActivePage, isAdmin }) =
             isActive={activePage === 'trade'}
             onClick={() => setActivePage('trade')}
             activeColor={colors.cyan}
+          />
+        </div>
+        <div data-nav="scammers">
+          <NavItem
+            label="Scam"
+            icon={<ScammersIcon className="w-full h-full"/>}
+            isActive={activePage === 'scammers'}
+            onClick={() => setActivePage('scammers')}
+            activeColor={colors.red}
           />
         </div>
         <div data-nav="more">
