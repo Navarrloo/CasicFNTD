@@ -101,16 +101,36 @@ const ReportScammerModal: React.FC<ReportScammerModalProps> = ({ userId, onClose
     setIsSubmitting(true);
 
     try {
+      console.log('Uploading images...');
       const imageUrls = await uploadScammerProofs(selectedFiles);
+      console.log('Images uploaded:', imageUrls);
+      
+      console.log('Adding scammer to database...');
       await addScammer(formData, imageUrls, userId);
+      console.log('Scammer added successfully');
       
       previewUrls.forEach(url => URL.revokeObjectURL(url));
       
+      alert('Жалоба успешно отправлена! Спасибо за помощь в борьбе со скамерами.');
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error reporting scammer:', error);
-      alert('Ошибка при отправке жалобы. Попробуйте снова.');
+      
+      // Более детальное сообщение об ошибке
+      let errorMessage = 'Ошибка при отправке жалобы.';
+      
+      if (error.message) {
+        if (error.message.includes('storage')) {
+          errorMessage = 'Ошибка загрузки фото. Убедитесь, что bucket создан в Supabase.';
+        } else if (error.message.includes('permission') || error.message.includes('policy')) {
+          errorMessage = 'Ошибка доступа. Проверьте права в Supabase.';
+        } else {
+          errorMessage = `Ошибка: ${error.message}`;
+        }
+      }
+      
+      alert(errorMessage + '\n\nПодробности в консоли (F12)');
     } finally {
       setIsSubmitting(false);
     }
