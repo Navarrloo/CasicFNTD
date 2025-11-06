@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { supabase } from '../../lib/supabase';
 import { GameContext } from '../../App';
-import { Listing } from '../../types';
+import { Listing, Rarity } from '../../types';
 import ListingCard from './ListingCard';
 import CreateListingModal from './CreateListingModal';
+import FiltersBar from './FiltersBar';
+import { useRealtimeListings } from '../../hooks/useRealtimeListings';
 
 type TradeTab = 'market' | 'my_listings';
 
@@ -12,6 +14,13 @@ const TradePage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<TradeTab>('market');
+    const [search, setSearch] = useState<string>('');
+    const [rarity, setRarity] = useState<Rarity | 'All'>('All');
+    const [minPrice, setMinPrice] = useState<number | ''>('');
+    const [maxPrice, setMaxPrice] = useState<number | ''>('');
+    const [sort, setSort] = useState<'date_desc' | 'price_asc' | 'price_desc'>('date_desc');
+    const [page, setPage] = useState<number>(1);
+    const pageSize = 24;
     const game = useContext(GameContext);
 
     const fetchListings = async () => {
@@ -37,6 +46,21 @@ const TradePage: React.FC = () => {
         fetchListings();
     }, []);
 
+    useRealtimeListings(supabase, fetchListings);
+
+    const resetFilters = () => {
+        setSearch('');
+        setRarity('All');
+        setMinPrice('');
+        setMaxPrice('');
+        setSort('date_desc');
+        setPage(1);
+    };
+
+    useEffect(() => {
+        setPage(1);
+    }, [search, rarity, minPrice, maxPrice, sort, activeTab]);
+
     const TabButton: React.FC<{label: string, tabName: TradeTab}> = ({ label, tabName }) => (
       <button 
         onClick={() => setActiveTab(tabName)}
@@ -46,8 +70,31 @@ const TradePage: React.FC = () => {
       </button>
     );
 
-    const myListings = listings.filter(l => l.seller_id === game?.userProfile?.id);
-    const marketListings = listings.filter(l => l.seller_id !== game?.userProfile?.id);
+    const myListings = useMemo(() => listings.filter(l => l.seller_id === game?.userProfile?.id), [listings, game?.userProfile?.id]);
+    const marketListings = useMemo(() => listings.filter(l => l.seller_id !== game?.userProfile?.id), [listings, game?.userProfile?.id]);
+
+    const filteredSortedPaged = useMemo(() => {
+        const source = activeTab === 'market' ? marketListings : myListings;
+        const searchLower = search.trim().toLowerCase();
+        let result = source.filter(l => {
+            const matchesName = searchLower === '' || l.unit_data.name.toLowerCase().includes(searchLower);
+            const matchesRarity = rarity === 'All' || l.unit_data.rarity === rarity;
+            const priceOkMin = minPrice === '' || l.asking_price >= minPrice;
+            const priceOkMax = maxPrice === '' || l.asking_price <= maxPrice;
+            return matchesName && matchesRarity && priceOkMin && priceOkMax;
+        });
+        if (sort === 'date_desc') {
+            result = result.slice().sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        } else if (sort === 'price_asc') {
+            result = result.slice().sort((a, b) => a.asking_price - b.asking_price);
+        } else if (sort === 'price_desc') {
+            result = result.slice().sort((a, b) => b.asking_price - a.asking_price);
+        }
+        const start = (page - 1) * pageSize;
+        const end = start + pageSize;
+        const pageItems = result.slice(start, end);
+        return { items: pageItems, total: result.length };
+    }, [marketListings, myListings, activeTab, search, rarity, minPrice, maxPrice, sort, page]);
 
     const renderContent = () => {
         if (isLoading) {
@@ -58,17 +105,17 @@ const TradePage: React.FC = () => {
             );
         }
 
-        const listingsToDisplay = activeTab === 'market' ? marketListings : myListings;
+        const listingsToDisplay = filteredSortedPaged.items;
 
-        if (listingsToDisplay.length === 0) {
+        if (filteredSortedPaged.total === 0) {
             return (
                 <div className="flex-grow flex items-center justify-center text-center py-10 px-4 bg-black/20 border-2 border-dashed border-border-dark">
                     <div>
                         <p className="text-text-dark font-pixel text-sm">
-                            {activeTab === 'market' ? 'No units for sale right now.' : 'You have no active listings.'}
+                            {activeTab === 'market' ? 'No units matching filters.' : 'No listings matching filters.'}
                         </p>
                         <p className="text-text-dark/50 mt-2 text-sm">
-                            {activeTab === 'market' ? 'Check back later!' : 'Create a listing to sell a unit.'}
+                            Try changing filters or reset them.
                         </p>
                     </div>
                 </div>
@@ -82,6 +129,11 @@ const TradePage: React.FC = () => {
                         <ListingCard key={listing.id} listing={listing} onAction={fetchListings} />
                     ))}
                 </div>
+                {filteredSortedPaged.total > page * pageSize && (
+                    <div className="mt-3 flex justify-center">
+                        <button className="btn btn-yellow" onClick={() => setPage(p => p + 1)}>Load more</button>
+                    </div>
+                )}
             </div>
         );
     };
@@ -100,6 +152,21 @@ const TradePage: React.FC = () => {
                         <div className="flex gap-2">
                            <TabButton label="Market" tabName="market" />
                            <TabButton label="My Listings" tabName="my_listings" />
+                        </div>
+                        <div className="mt-3">
+                            <FiltersBar 
+                                search={search}
+                                setSearch={setSearch}
+                                rarity={rarity}
+                                setRarity={setRarity}
+                                minPrice={minPrice}
+                                maxPrice={maxPrice}
+                                setMinPrice={setMinPrice}
+                                setMaxPrice={setMaxPrice}
+                                sort={sort}
+                                setSort={setSort}
+                                onReset={resetFilters}
+                            />
                         </div>
                     </div>
                     

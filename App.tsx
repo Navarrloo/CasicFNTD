@@ -1,6 +1,6 @@
 import React, { useState, useMemo, createContext, useEffect, useCallback } from 'react';
 import { useTelegram } from './hooks/useTelegram';
-import { ADMIN_USERNAMES, STARTING_BALANCE, ACHIEVEMENTS } from './components/constants';
+import { ADMIN_USERNAMES, STARTING_BALANCE, ACHIEVEMENTS, CASINO_COST } from './components/constants';
 import NavBar from './components/layout/NavBar';
 import MainPage from './components/MainPage';
 import CasinoPage from './components/CasinoPage';
@@ -8,6 +8,7 @@ import ProfilePage from './components/ProfilePage';
 import AdminPage from './components/AdminPage';
 import WikiPage from './components/WikiPage';
 import TradePage from './components/trade/TradePage';
+import DailyBonusModal from './components/DailyBonusModal';
 import { Unit } from './types';
 import { supabase } from './lib/supabase';
 import ToastProvider from './components/shared/ToastProvider';
@@ -26,6 +27,13 @@ interface GameContextType {
   unlockAchievement: (achievementId: string) => void;
   showToast: (message: string, type?: 'success' | 'error') => void;
   userProfile: { id: number; username: string; } | null;
+  unitStats: Record<number, number>;
+  totalSpins: number;
+  totalSpent: number;
+  totalEarned: number;
+  dailyStreak: number;
+  recordUnitWin: (unitId: number) => Promise<void>;
+  addTransaction: (transaction: { type: 'purchase' | 'sale' | 'cancel', unit: Unit, price: number, otherParty?: string }) => Promise<void>;
 }
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -41,6 +49,17 @@ const App: React.FC = () => {
   const [dbStatus, setDbStatus] = useState<DbStatus>('connecting');
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
+  
+  // Daily bonus state
+  const [dailyStreak, setDailyStreak] = useState<number>(0);
+  const [lastDailyBonusDate, setLastDailyBonusDate] = useState<string | null>(null);
+  const [showDailyBonus, setShowDailyBonus] = useState<boolean>(false);
+  
+  // Statistics state
+  const [unitStats, setUnitStats] = useState<Record<number, number>>({});
+  const [totalSpins, setTotalSpins] = useState<number>(0);
+  const [totalSpent, setTotalSpent] = useState<number>(0);
+  const [totalEarned, setTotalEarned] = useState<number>(0);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
       setToast({ message, type });
@@ -114,6 +133,32 @@ const App: React.FC = () => {
             setInventory(userInventory);
             setAchievements(userAchievements);
             setUserProfile({id: profile.id, username: profile.username || 'unknown' });
+            
+            // Load daily bonus data
+            setDailyStreak(profile.daily_streak || 0);
+            setLastDailyBonusDate(profile.last_daily_bonus_date || null);
+            
+            // Load statistics
+            setUnitStats(profile.unit_stats || {});
+            setTotalSpins(profile.total_spins || 0);
+            setTotalSpent(profile.total_spent || 0);
+            setTotalEarned(profile.total_earned || 0);
+            
+            // Check if daily bonus is available
+            const lastDate = profile.last_daily_bonus_date;
+            if (!lastDate) {
+              setTimeout(() => setShowDailyBonus(true), 1000);
+            } else {
+              const today = new Date().toISOString().split('T')[0];
+              const lastClaim = new Date(lastDate).toISOString().split('T')[0];
+              const yesterday = new Date();
+              yesterday.setDate(yesterday.getDate() - 1);
+              const yesterdayStr = yesterday.toISOString().split('T')[0];
+              
+              if (lastClaim !== today && (lastClaim === yesterdayStr || lastClaim !== yesterdayStr)) {
+                setTimeout(() => setShowDailyBonus(true), 1000);
+              }
+            }
         } else {
             const { data: newProfile, error: insertError } = await supabase
                 .from('profiles')
@@ -124,6 +169,13 @@ const App: React.FC = () => {
                     balance: STARTING_BALANCE,
                     inventory: [],
                     achievements: [],
+                    daily_streak: 0,
+                    last_daily_bonus_date: null,
+                    unit_stats: {},
+                    total_spins: 0,
+                    total_spent: 0,
+                    total_earned: 0,
+                    transaction_history: [],
                 })
                 .select()
                 .single();
@@ -135,6 +187,14 @@ const App: React.FC = () => {
                 setInventory(newProfile.inventory || []);
                 setAchievements(newProfile.achievements || []);
                 setUserProfile({id: newProfile.id, username: newProfile.username || 'unknown' });
+                setDailyStreak(0);
+                setLastDailyBonusDate(null);
+                setUnitStats({});
+                setTotalSpins(0);
+                setTotalSpent(0);
+                setTotalEarned(0);
+                // Show daily bonus for new users
+                setTimeout(() => setShowDailyBonus(true), 1000);
             }
         }
         setIsLoading(false);
@@ -142,6 +202,33 @@ const App: React.FC = () => {
 
     loadUserProfile();
   }, [user, dbStatus]);
+
+  const checkDailyBonus = useCallback((lastDate: string | null, currentStreak: number) => {
+    if (!lastDate) {
+      // Never claimed, show bonus
+      setTimeout(() => setShowDailyBonus(true), 1000);
+      return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const lastClaim = new Date(lastDate).toISOString().split('T')[0];
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    if (lastClaim === today) {
+      // Already claimed today
+      return;
+    }
+
+    if (lastClaim === yesterdayStr) {
+      // Continuous streak
+      setTimeout(() => setShowDailyBonus(true), 1000);
+    } else {
+      // Streak broken, reset to 1
+      setTimeout(() => setShowDailyBonus(true), 1000);
+    }
+  }, []);
 
   const unlockAchievement = useCallback(async (achievementId: string) => {
     if (!user || !supabase || achievements.includes(achievementId)) return;
@@ -205,6 +292,113 @@ const App: React.FC = () => {
         setInventory(oldInventory); // Revert on failure
     }
   }, [user, inventory, supabase]);
+
+  const claimDailyBonus = useCallback(async (amount: number) => {
+    if (!user || !supabase) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    let newStreak = 1;
+    if (lastDailyBonusDate) {
+      const lastClaim = new Date(lastDailyBonusDate).toISOString().split('T')[0];
+      if (lastClaim === yesterdayStr) {
+        newStreak = dailyStreak + 1;
+      }
+    }
+
+    const newBalance = balance + amount;
+    setBalance(newBalance);
+    setDailyStreak(newStreak);
+    setLastDailyBonusDate(today);
+    setTotalEarned(totalEarned + amount);
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        balance: newBalance,
+        daily_streak: newStreak,
+        last_daily_bonus_date: today,
+        total_earned: totalEarned + amount,
+      })
+      .eq('id', user.id);
+
+    if (error) {
+      console.error("Failed to claim daily bonus", error);
+      showToast('Failed to claim daily bonus', 'error');
+    } else {
+      showToast(`Daily bonus claimed! +${amount} souls`, 'success');
+    }
+  }, [user, supabase, balance, dailyStreak, lastDailyBonusDate, totalEarned, showToast]);
+
+  const recordUnitWin = useCallback(async (unitId: number) => {
+    if (!user || !supabase) return;
+
+    const newStats = { ...unitStats };
+    newStats[unitId] = (newStats[unitId] || 0) + 1;
+    setUnitStats(newStats);
+
+    const newSpins = totalSpins + 1;
+    const newSpent = totalSpent + CASINO_COST;
+    setTotalSpins(newSpins);
+    setTotalSpent(newSpent);
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        unit_stats: newStats,
+        total_spins: newSpins,
+        total_spent: newSpent,
+      })
+      .eq('id', user.id);
+
+    if (error) {
+      console.error("Failed to update statistics", error);
+    }
+  }, [user, supabase, unitStats, totalSpins, totalSpent]);
+
+  const addTransaction = useCallback(async (transaction: { type: 'purchase' | 'sale' | 'cancel', unit: Unit, price: number, otherParty?: string }) => {
+    if (!user || !supabase) return;
+
+    const { data: profile, error: fetchError } = await supabase
+      .from('profiles')
+      .select('transaction_history')
+      .eq('id', user.id)
+      .single();
+
+    if (fetchError) {
+      console.error("Failed to fetch transaction history", fetchError);
+      return;
+    }
+
+    const history = profile?.transaction_history || [];
+    const newHistory = Array.isArray(history) ? [...history] : [];
+    
+    const newTransaction = {
+      id: `${Date.now()}-${Math.random()}`,
+      type: transaction.type,
+      unit: transaction.unit,
+      price: transaction.price,
+      date: new Date().toISOString(),
+      otherParty: transaction.otherParty,
+    };
+
+    newHistory.push(newTransaction);
+    
+    // Keep only last 100 transactions
+    const trimmedHistory = newHistory.slice(-100);
+
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ transaction_history: trimmedHistory })
+      .eq('id', user.id);
+
+    if (updateError) {
+      console.error("Failed to update transaction history", updateError);
+    }
+  }, [user, supabase]);
 
   const updateBalance = useCallback(async (newBalance: number) => {
     if (!user || !supabase) return;
@@ -349,14 +543,46 @@ const App: React.FC = () => {
     }
   };
 
+  const getDailyBonusAmount = useCallback(() => {
+    const baseReward = 50;
+    if (dailyStreak >= 7) return baseReward * 3;
+    if (dailyStreak >= 3) return baseReward * 2;
+    return baseReward;
+  }, [dailyStreak]);
+
   return (
-    <GameContext.Provider value={{ balance, updateBalance, inventory, addToInventory, removeFromInventory, isLoading, achievements, unlockAchievement, showToast, userProfile }}>
+    <GameContext.Provider value={{ 
+      balance, 
+      updateBalance, 
+      inventory, 
+      addToInventory, 
+      removeFromInventory, 
+      isLoading, 
+      achievements, 
+      unlockAchievement, 
+      showToast, 
+      userProfile,
+      unitStats,
+      totalSpins,
+      totalSpent,
+      totalEarned,
+      dailyStreak,
+      recordUnitWin,
+      addTransaction,
+    }}>
       <ToastProvider toast={toast}>
         <div className="bg-transparent h-full text-text-light font-pixel selection:bg-accent-green selection:text-background-dark flex flex-col">
           <main className="flex-grow pt-4 px-2 pb-24 flex flex-col min-h-0">
             {renderPage()}
           </main>
           <NavBar activePage={activePage} setActivePage={setActivePage} isAdmin={isAdmin} />
+          <DailyBonusModal
+            isOpen={showDailyBonus}
+            onClose={() => setShowDailyBonus(false)}
+            onClaim={claimDailyBonus}
+            streakDays={dailyStreak}
+            nextBonus={getDailyBonusAmount()}
+          />
         </div>
       </ToastProvider>
     </GameContext.Provider>

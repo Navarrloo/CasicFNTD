@@ -7,9 +7,11 @@ import UnitDetailModal from './shared/UnitDetailModal';
 import { Unit } from '../types';
 import { ProfileIcon } from './shared/Icons';
 import AchievementsList from './achievements/AchievementsList';
+import StatsView from './StatsView';
+import TransactionHistoryView from './TransactionHistoryView';
 import { supabase } from '../lib/supabase';
 
-type ProfileTab = 'inventory' | 'achievements' | 'leaderboard';
+type ProfileTab = 'inventory' | 'achievements' | 'stats' | 'history' | 'leaderboard';
 
 const LeaderboardView: React.FC = () => {
     const game = useContext(GameContext);
@@ -146,6 +148,17 @@ const ProfilePage: React.FC = () => {
             return <AchievementsList />;
         case 'leaderboard':
             return <LeaderboardView />;
+        case 'stats':
+            return game ? (
+                <StatsView 
+                    unitStats={game.unitStats}
+                    totalSpins={game.totalSpins}
+                    totalSpent={game.totalSpent}
+                    totalEarned={game.totalEarned}
+                />
+            ) : null;
+        case 'history':
+            return <TransactionHistoryView />;
         default:
             return null;
     }
@@ -172,9 +185,11 @@ const ProfilePage: React.FC = () => {
             </div>
           </div>
           
-          <div className="flex gap-2 mb-4 flex-shrink-0">
+          <div className="flex gap-2 mb-4 flex-shrink-0 flex-wrap">
             <TabButton label="Inventory" tabName="inventory" />
             <TabButton label="Achievements" tabName="achievements" />
+            <TabButton label="Stats" tabName="stats" />
+            <TabButton label="History" tabName="history" />
             <TabButton label="Leaderboard" tabName="leaderboard" />
           </div>
 

@@ -69,6 +69,7 @@ const CasinoPage: React.FC = () => {
         const finalUnit = weightedUnits[Math.floor(Math.random() * weightedUnits.length)];
         setWonUnit(finalUnit);
         game.addToInventory(finalUnit);
+        game.recordUnitWin(finalUnit.id);
         setIsSpinning(false);
         setDisplayedUnit(finalUnit);
         setTimeout(() => setShowWinModal(true), 300);
@@ -113,24 +114,93 @@ const CasinoPage: React.FC = () => {
          <p className="text-glow-red mt-4 font-pixel text-lg">Not enough souls</p>
       )}
 
-      {/* Win Modal */}
+      {/* Win Modal with Enhanced Effects */}
       {showWinModal && wonUnit && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+          {/* Particle effects for rare units */}
+          {[Rarity.Mythic, Rarity.Secret, Rarity.Nightmare, Rarity.Hero, Rarity.Legendary].includes(wonUnit.rarity) && (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              {[...Array(20)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-2 h-2 rounded-full animate-pulse"
+                  style={{
+                    backgroundColor: rarityStyles.color,
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    animationDelay: `${Math.random() * 2}s`,
+                    animationDuration: `${2 + Math.random() * 2}s`,
+                    boxShadow: `0 0 10px ${rarityStyles.shadow}`,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+          
           <div 
-            className="relative p-4 text-center bg-background-dark border"
-            style={{ borderColor: rarityStyles.color, boxShadow: `0 0 20px ${rarityStyles.shadow}`}}
+            className="relative p-6 text-center bg-background-dark border-2 animate-fadeIn"
+            style={{ 
+              borderColor: rarityStyles.color, 
+              boxShadow: `0 0 30px ${rarityStyles.shadow}, inset 0 0 20px rgba(0,0,0,0.5)`,
+              animation: 'pulse 2s ease-in-out infinite'
+            }}
           >
-             <h2 className="text-2xl font-pixel mb-4" style={{ color: rarityStyles.color, textShadow: `0 0 8px ${rarityStyles.shadow}`}}>You Won!</h2>
-             <div className="mx-auto w-40 h-56 mb-4">
-                <UnitCard unit={wonUnit} />
-             </div>
-             <p className="font-pixel text-xl mt-4 mb-6">{wonUnit.name}</p>
-             <button
+            {/* Glow effect for rare units */}
+            {[Rarity.Mythic, Rarity.Secret, Rarity.Nightmare, Rarity.Hero, Rarity.Legendary].includes(wonUnit.rarity) && (
+              <div 
+                className="absolute inset-0 opacity-30"
+                style={{
+                  background: `radial-gradient(circle, ${rarityStyles.color}20 0%, transparent 70%)`,
+                  animation: 'pulse 1.5s ease-in-out infinite'
+                }}
+              />
+            )}
+            
+            <div className="relative z-10">
+              <h2 
+                className="text-3xl font-pixel mb-2 animate-pulse" 
+                style={{ 
+                  color: rarityStyles.color, 
+                  textShadow: `0 0 10px ${rarityStyles.shadow}, 0 0 20px ${rarityStyles.shadow}`,
+                  animation: 'pulse 1s ease-in-out infinite'
+                }}
+              >
+                {wonUnit.rarity === Rarity.Legendary ? 'LEGENDARY WIN!' : 
+                 wonUnit.rarity === Rarity.Hero ? 'HERO WIN!' :
+                 wonUnit.rarity === Rarity.Nightmare ? 'NIGHTMARE WIN!' :
+                 wonUnit.rarity === Rarity.Secret ? 'SECRET WIN!' :
+                 wonUnit.rarity === Rarity.Mythic ? 'MYTHIC WIN!' : 'YOU WON!'}
+              </h2>
+              
+              <div className="mx-auto w-40 h-56 mb-4 transform scale-110 transition-transform duration-300">
+                <div 
+                  className="relative"
+                  style={{
+                    filter: `drop-shadow(0 0 15px ${rarityStyles.shadow})`,
+                  }}
+                >
+                  <UnitCard unit={wonUnit} />
+                </div>
+              </div>
+              
+              <p 
+                className="font-pixel text-2xl mb-2" 
+                style={{ 
+                  color: rarityStyles.color,
+                  textShadow: `0 0 8px ${rarityStyles.shadow}`
+                }}
+              >
+                {wonUnit.name}
+              </p>
+              <p className="text-text-dark text-sm mb-6">{wonUnit.rarity}</p>
+              
+              <button
                 onClick={closeModal}
-                className="btn btn-green w-full"
-             >
+                className="btn btn-green w-full text-lg"
+              >
                 Awesome!
-             </button>
+              </button>
+            </div>
           </div>
         </div>
       )}

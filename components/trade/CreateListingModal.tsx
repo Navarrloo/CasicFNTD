@@ -16,6 +16,7 @@ const CreateListingModal: React.FC<CreateListingModalProps> = ({ isOpen, onClose
     const [selectedUnit, setSelectedUnit] = useState<{unit: Unit, index: number} | null>(null);
     const [price, setPrice] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     const resetState = () => {
         setSelectedUnit(null);
@@ -33,6 +34,11 @@ const CreateListingModal: React.FC<CreateListingModalProps> = ({ isOpen, onClose
             game?.showToast('Invalid unit or price.', 'error');
             return;
         }
+        const MIN = 1;
+        const MAX = 10_000_000;
+        if (price < MIN) { setErrorMsg(`Minimum price is ${MIN}.`); return; }
+        if (price > MAX) { setErrorMsg(`Maximum price is ${MAX}.`); return; }
+        setErrorMsg(null);
         setIsLoading(true);
 
         // 1. Create listing in DB first for safety
@@ -53,6 +59,12 @@ const CreateListingModal: React.FC<CreateListingModalProps> = ({ isOpen, onClose
         } else {
             // 2. On success, remove unit from inventory
             await game.removeFromInventory(selectedUnit.unit, selectedUnit.index);
+            // Record transaction for seller (listing created)
+            await game.addTransaction({
+                type: 'sale',
+                unit: selectedUnit.unit,
+                price: price,
+            });
             game.showToast('Listing created successfully!', 'success');
             game.unlockAchievement('first_trade');
             onListingCreated();
@@ -101,6 +113,9 @@ const CreateListingModal: React.FC<CreateListingModalProps> = ({ isOpen, onClose
                             onChange={e => setPrice(parseInt(e.target.value) || 0)}
                         />
                      </div>
+                     {errorMsg && (
+                        <p className="text-accent-yellow text-xs mt-1">{errorMsg}</p>
+                     )}
                 </div>
 
                  <button 
