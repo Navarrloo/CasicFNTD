@@ -166,19 +166,19 @@ const ProfilePage: React.FC = () => {
 
   return (
     <>
-      <div className="p-2 animate-fadeIn flex flex-col h-full">
-        <div className="container-glow flex-grow flex flex-col p-4 min-h-0">
-          <div className="flex-shrink-0 flex items-center gap-4 mb-4 pb-4 border-b-2 border-border-dark">
+      <div className="p-4 animate-fadeIn flex flex-col h-full">
+        <div className="container-glow flex-grow flex flex-col p-6 min-h-0">
+          <div className="flex-shrink-0 flex items-center gap-4 mb-6 pb-6 border-b-2 border-border-light">
             <div className="w-20 h-20 bg-black/50 border-2 border-border-light flex items-center justify-center">
               <ProfileIcon className="w-12 h-12 text-accent-green" />
             </div>
             <div>
-              <h1 className="font-pixel text-2xl text-glow-green">
+              <h1 className="font-pixel text-3xl text-glow-green">
                 {user?.username || 'Player Profile'}
               </h1>
-              <div className="flex items-center gap-2 mt-2">
-                <img src={BALANCE_ICON} alt="Souls" className="w-6 h-6" />
-                <span className="font-pixel text-xl text-glow-yellow">
+              <div className="flex items-center gap-3 mt-3">
+                <img src={BALANCE_ICON} alt="Souls" className="w-8 h-8" />
+                <span className="font-pixel text-2xl text-glow-yellow">
                   {game?.balance.toLocaleString()}
                 </span>
               </div>

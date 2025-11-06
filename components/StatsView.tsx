@@ -51,22 +51,22 @@ const StatsView: React.FC<StatsViewProps> = ({
   return (
     <div className="flex-grow overflow-y-auto pr-2 min-h-0 space-y-4">
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-black/30 p-3 border border-border-dark">
-          <p className="text-text-dark text-xs mb-1">Total Spins</p>
-          <p className="font-pixel text-xl text-glow-purple">{totalSpins}</p>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-black/50 p-4 border-2 border-border-light">
+          <p className="text-text-light text-sm mb-2">Total Spins</p>
+          <p className="font-pixel text-2xl text-glow-purple">{totalSpins}</p>
         </div>
-        <div className="bg-black/30 p-3 border border-border-dark">
-          <p className="text-text-dark text-xs mb-1">Units Won</p>
-          <p className="font-pixel text-xl text-glow-cyan">{totalUnits}</p>
+        <div className="bg-black/50 p-4 border-2 border-border-light">
+          <p className="text-text-light text-sm mb-2">Units Won</p>
+          <p className="font-pixel text-2xl text-glow-cyan">{totalUnits}</p>
         </div>
-        <div className="bg-black/30 p-3 border border-border-dark">
-          <p className="text-text-dark text-xs mb-1">Souls Spent</p>
-          <p className="font-pixel text-xl text-glow-red">{totalSpent.toLocaleString()}</p>
+        <div className="bg-black/50 p-4 border-2 border-border-light">
+          <p className="text-text-light text-sm mb-2">Souls Spent</p>
+          <p className="font-pixel text-2xl text-glow-red">{totalSpent.toLocaleString()}</p>
         </div>
-        <div className="bg-black/30 p-3 border border-border-dark">
-          <p className="text-text-dark text-xs mb-1">Souls Earned</p>
-          <p className="font-pixel text-xl text-glow-green">{totalEarned.toLocaleString()}</p>
+        <div className="bg-black/50 p-4 border-2 border-border-light">
+          <p className="text-text-light text-sm mb-2">Souls Earned</p>
+          <p className="font-pixel text-2xl text-glow-green">{totalEarned.toLocaleString()}</p>
         </div>
       </div>
 

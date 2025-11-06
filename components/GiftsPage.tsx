@@ -107,10 +107,10 @@ const GiftsPage: React.FC = () => {
   if (!game) return null;
 
   return (
-    <div className="p-2 animate-fadeIn h-full flex flex-col">
-      <div className="container-glow flex-grow flex flex-col p-4 min-h-0">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="font-pixel text-2xl text-glow-purple">🎁 Gifts</h1>
+    <div className="p-4 animate-fadeIn h-full flex flex-col">
+      <div className="container-glow flex-grow flex flex-col p-6 min-h-0">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="font-pixel text-3xl text-glow-purple">🎁 GIFTS</h1>
           <button onClick={() => setShowSendModal(true)} className="btn btn-green !py-2">
             Send Gift
           </button>

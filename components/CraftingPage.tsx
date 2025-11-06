@@ -123,9 +123,9 @@ const CraftingPage: React.FC = () => {
   };
 
   return (
-    <div className="p-2 animate-fadeIn h-full flex flex-col">
-      <div className="container-glow flex-grow flex flex-col p-4 min-h-0">
-        <h1 className="font-pixel text-2xl text-glow-purple mb-4">⚒️ Crafting Workshop</h1>
+    <div className="p-4 animate-fadeIn h-full flex flex-col">
+      <div className="container-glow flex-grow flex flex-col p-6 min-h-0">
+        <h1 className="font-pixel text-3xl text-glow-purple mb-6">⚒️ CRAFTING</h1>
 
         {/* Recipes */}
         <div className="grid grid-cols-2 gap-2 mb-4 flex-shrink-0">

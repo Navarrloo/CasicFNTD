@@ -56,15 +56,15 @@ const AchievementsList: React.FC = () => {
                             style={{ boxShadow: isUnlocked ? '0 0 10px -2px var(--accent-yellow)' : 'none' }}
                         >
                             <div className="flex items-center gap-4 mb-2">
-                                <div className={`text-4xl ${!isUnlocked ? 'grayscale' : ''}`}>
-                                    {achievement.icon}
-                                </div>
-                                <div className="flex-grow">
-                                    <h3 className={`font-pixel text-lg ${isUnlocked ? 'text-glow-yellow' : 'text-text-light'}`}>
-                                        {achievement.name}
-                                    </h3>
-                                    <p className="text-sm text-text-dark">{achievement.description}</p>
-                                </div>
+                            <div className={`text-4xl ${!isUnlocked ? 'grayscale' : ''}`}>
+                                {achievement.icon}
+                            </div>
+                            <div className="flex-grow">
+                                <h3 className={`font-pixel text-lg ${isUnlocked ? 'text-glow-yellow' : 'text-text-light'}`}>
+                                    {achievement.name}
+                                </h3>
+                                <p className="text-sm text-text-dark">{achievement.description}</p>
+                            </div>
                                 <div className="flex items-center gap-1">
                                     <img src={BALANCE_ICON} alt="Souls" className="w-5 h-5" />
                                     <span className="font-pixel text-accent-yellow">{achievement.reward}</span>

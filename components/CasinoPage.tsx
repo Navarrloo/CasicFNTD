@@ -104,8 +104,8 @@ const CasinoPage: React.FC = () => {
 
   return (
     <div className="p-4 flex flex-col items-center justify-center animate-fadeIn">
-      <h1 className="font-pixel text-4xl text-center mb-2 text-glow-purple">Casino</h1>
-      <p className="text-center text-text-dark mb-8 font-pixel text-lg">Cost: {CASINO_COST} soul</p>
+      <h1 className="font-pixel text-5xl text-center mb-4 text-glow-purple">CASINO</h1>
+      <p className="text-center text-text-light mb-8 font-pixel text-xl">Cost: {CASINO_COST} soul</p>
 
       <div className="relative w-56 h-72 mb-8 flex items-center justify-center p-4 container-glow">
         {displayedUnit ? (
@@ -195,8 +195,8 @@ const CasinoPage: React.FC = () => {
                     filter: `drop-shadow(0 0 15px ${rarityStyles.shadow})`,
                   }}
                 >
-                  <UnitCard unit={wonUnit} />
-                </div>
+                <UnitCard unit={wonUnit} />
+             </div>
               </div>
               
               <p 
@@ -210,12 +210,12 @@ const CasinoPage: React.FC = () => {
               </p>
               <p className="text-text-dark text-sm mb-6">{wonUnit.rarity}</p>
               
-              <button
+             <button
                 onClick={closeModal}
                 className="btn btn-green w-full text-lg"
-              >
+             >
                 Awesome!
-              </button>
+             </button>
             </div>
           </div>
         </div>

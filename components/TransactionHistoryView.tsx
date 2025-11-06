@@ -92,7 +92,7 @@ const TransactionHistoryView: React.FC = () => {
         {sortedTransactions.map((tx) => (
           <div 
             key={tx.id} 
-            className="bg-black/30 border border-border-dark p-3 flex items-center gap-3"
+            className="bg-black/50 border-2 border-border-light p-4 flex items-center gap-3"
           >
             <div className="w-16 h-20 flex-shrink-0">
               <img 

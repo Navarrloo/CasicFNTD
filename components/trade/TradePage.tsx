@@ -140,11 +140,11 @@ const TradePage: React.FC = () => {
 
     return (
         <>
-            <div className="p-2 animate-fadeIn h-full flex flex-col">
+            <div className="p-4 animate-fadeIn h-full flex flex-col">
                 <div className="container-glow flex flex-col flex-grow">
-                    <div className="flex-shrink-0 p-2 border-b-2 border-border-dark">
+                    <div className="flex-shrink-0 p-4 border-b-2 border-border-light">
                         <div className="flex justify-between items-center mb-4">
-                            <h1 className="font-pixel text-2xl text-glow-cyan">Marketplace</h1>
+                            <h1 className="font-pixel text-3xl text-glow-cyan">MARKETPLACE</h1>
                             <button className="btn btn-green" onClick={() => setIsModalOpen(true)}>
                                 Create Listing
                             </button>

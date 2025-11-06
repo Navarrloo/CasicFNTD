@@ -90,9 +90,9 @@ const LotteryPage: React.FC = () => {
   if (!game) return null;
 
   return (
-    <div className="p-2 animate-fadeIn h-full flex flex-col">
-      <div className="container-glow flex-grow flex flex-col p-4 min-h-0">
-        <h1 className="font-pixel text-3xl text-glow-purple mb-4 text-center">🎫 Soul Lottery</h1>
+    <div className="p-4 animate-fadeIn h-full flex flex-col">
+      <div className="container-glow flex-grow flex flex-col p-6 min-h-0">
+        <h1 className="font-pixel text-4xl text-glow-purple mb-6 text-center">🎫 LOTTERY</h1>
 
         {/* Jackpot Display */}
         <div className="bg-black/50 border-2 border-accent-yellow p-6 mb-4 text-center">

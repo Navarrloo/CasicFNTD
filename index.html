@@ -15,8 +15,8 @@
         --background-med: #0d111c;
         --border-light: #414a63;
         --border-dark: #1e2433;
-        --text-light: #e0e1e6;
-        --text-dark: #8b949e;
+        --text-light: #f0f1f6;
+        --text-dark: #b0b5be;
         
         --accent-green: #32ff91; /* CRT Green */
         --accent-yellow: #fcee63;
@@ -62,7 +62,7 @@
       }
       body {
         background-image: 
-          linear-gradient(rgba(2, 4, 10, 0.70), rgba(2, 4, 10, 0.70)),
+          linear-gradient(rgba(2, 4, 10, 0.85), rgba(2, 4, 10, 0.90)),
           url('https://i.ibb.co/67zf6FYb/Main-Performance-Area.webp');
         background-size: cover;
         background-position: center;
@@ -75,14 +75,7 @@
       /* FNAF Overlays */
       /* Overlay is now part of body background-image for better stability */
 
-      body::after { /* Scanlines */
-        content: "";
-        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: repeating-linear-gradient(0deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0.3) 1px, rgba(0,0,0,0) 2px);
-        pointer-events: none;
-        z-index: 9999;
-        animation: soft-flicker 15s linear infinite;
-      }
+      /* Scanlines effect removed for better readability */
 
 
 
@@ -92,10 +85,10 @@
       }
 
       .container-glow {
-        background-color: rgba(13, 17, 28, 0.6);
-        border: 1px solid var(--border-dark);
-        backdrop-filter: blur(2px);
-        box-shadow: 0 0 5px rgba(255, 50, 50, 0.1), inset 0 0 10px rgba(13, 17, 28, 0.8);
+        background-color: rgba(13, 17, 28, 0.95);
+        border: 2px solid var(--border-light);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
         padding: 1rem;
         position: relative;
       }
@@ -313,9 +306,9 @@
       }
       .stats-table th, .stats-table td {
         border: 1px solid var(--border-dark);
-        padding: 4px 8px;
+        padding: 8px 12px;
         text-align: left;
-        font-size: 14px;
+        font-size: 15px;
       }
       .stats-table th {
         background-color: var(--border-dark);

@@ -117,7 +117,7 @@ const NavBar: React.FC<NavBarProps> = ({ activePage, setActivePage, isAdmin }) =
         <NavItem
           label="More"
           icon={<svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>}
-          isActive={activePage === 'more' || ['crafting', 'wheel', 'quests', 'pvp', 'referral', 'gifts', 'battlepass', 'lottery', 'advanced_stats', 'settings'].includes(activePage)}
+          isActive={activePage === 'more' || ['crafting', 'wheel', 'pvp', 'gifts', 'lottery', 'advanced_stats'].includes(activePage)}
           onClick={() => setActivePage('more')}
           activeColor={colors.purple}
         />

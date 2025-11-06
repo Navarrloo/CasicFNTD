@@ -111,9 +111,9 @@ const WheelOfFortunePage: React.FC = () => {
   if (!game) return null;
 
   return (
-    <div className="p-2 animate-fadeIn h-full flex flex-col">
-      <div className="container-glow flex-grow flex flex-col items-center justify-center p-4">
-        <h1 className="font-pixel text-3xl text-glow-yellow mb-2">🎡 Wheel of Fortune</h1>
+    <div className="p-4 animate-fadeIn h-full flex flex-col">
+      <div className="container-glow flex-grow flex flex-col items-center justify-center p-6">
+        <h1 className="font-pixel text-4xl text-glow-yellow mb-4">🎡 WHEEL</h1>
         
         {canSpinFree && (
           <p className="text-accent-green font-pixel mb-4 animate-pulse">

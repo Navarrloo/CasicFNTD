@@ -75,9 +75,9 @@ const AdvancedStatsPage: React.FC = () => {
   if (!game) return null;
 
   return (
-    <div className="p-2 animate-fadeIn h-full flex flex-col">
-      <div className="container-glow flex-grow flex flex-col p-4 min-h-0">
-        <h1 className="font-pixel text-2xl text-glow-cyan mb-4">📊 Advanced Statistics</h1>
+    <div className="p-4 animate-fadeIn h-full flex flex-col">
+      <div className="container-glow flex-grow flex flex-col p-6 min-h-0">
+        <h1 className="font-pixel text-3xl text-glow-cyan mb-6">📊 STATISTICS</h1>
 
         <div className="flex-grow overflow-y-auto pr-2 min-h-0 space-y-4">
           {/* Collection Progress */}

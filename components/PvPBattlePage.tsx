@@ -140,11 +140,11 @@ const PvPBattlePage: React.FC = () => {
   };
 
   return (
-    <div className="p-2 animate-fadeIn h-full flex flex-col">
-      <div className="container-glow flex-grow flex flex-col p-4 min-h-0">
-        <h1 className="font-pixel text-2xl text-glow-red mb-2">⚔️ PvP Battle Arena</h1>
-        <p className="text-sm text-text-dark mb-4">
-          Cost: {BATTLE_COST} souls | Reward: {BATTLE_COST * 2.5} souls if you win!
+    <div className="p-4 animate-fadeIn h-full flex flex-col">
+      <div className="container-glow flex-grow flex flex-col p-6 min-h-0">
+        <h1 className="font-pixel text-3xl text-glow-red mb-3">⚔️ PvP ARENA</h1>
+        <p className="text-base text-text-light mb-6 text-center">
+          Cost: {BATTLE_COST} souls | Win: {BATTLE_COST * 2.5} souls
         </p>
 
         {!battleResult ? (
