@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Scammer } from '../types';
-import { getScammers, searchScammers } from '../utils/scammers';
+import { getScammers } from '../utils/scammers';
 import ScammerCard from './scammers/ScammerCard';
 import ScammerDetailModal from './scammers/ScammerDetailModal';
 import AddScammerModal from './scammers/AddScammerModal';
