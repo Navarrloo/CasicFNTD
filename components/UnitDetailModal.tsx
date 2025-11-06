@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Unit, Rarity } from '../types';
-import { BALANCE_ICON, UNIT_DETAILS, UnitDetails, UnitStatLevel, UnitHistory, UnitPassive } from '../constants';
+import { BALANCE_ICON, UNIT_DETAILS, UnitDetails, UnitStatLevel, UnitHistory, UnitPassive } from './constants';
 
 interface UnitDetailModalProps {
   unit: Unit | null;

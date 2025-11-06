@@ -122,6 +122,13 @@ export interface Database {
           balance: number
           inventory: Unit[] | null
           achievements: string[] | null
+          daily_streak: number | null
+          last_daily_bonus_date: string | null
+          unit_stats: Record<number, number> | null
+          total_spins: number | null
+          total_spent: number | null
+          total_earned: number | null
+          transaction_history: any[] | null
         }
         Insert: {
           id: number
@@ -130,6 +137,13 @@ export interface Database {
           balance?: number
           inventory?: Unit[] | null
           achievements?: string[] | null
+          daily_streak?: number | null
+          last_daily_bonus_date?: string | null
+          unit_stats?: Record<number, number> | null
+          total_spins?: number | null
+          total_spent?: number | null
+          total_earned?: number | null
+          transaction_history?: any[] | null
         }
         Update: {
           id?: number
@@ -138,6 +152,13 @@ export interface Database {
           balance?: number
           inventory?: Unit[] | null
           achievements?: string[] | null
+          daily_streak?: number | null
+          last_daily_bonus_date?: string | null
+          unit_stats?: Record<number, number> | null
+          total_spins?: number | null
+          total_spent?: number | null
+          total_earned?: number | null
+          transaction_history?: any[] | null
         }
         Relationships: []
       }

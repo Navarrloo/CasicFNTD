@@ -1,6 +1,5 @@
-import React, { useContext } from 'react';
-import { GameContext } from '../App';
-import { Unit, Rarity } from '../types';
+import React from 'react';
+import { Rarity } from '../types';
 import { UNITS } from './constants';
 
 interface StatsViewProps {
@@ -16,8 +15,6 @@ const StatsView: React.FC<StatsViewProps> = ({
   totalSpent, 
   totalEarned 
 }) => {
-  const game = useContext(GameContext);
-
   const getRarityColor = (rarity: Rarity): string => {
     switch (rarity) {
       case Rarity.Common: return '#9ca3af';
@@ -50,7 +47,6 @@ const StatsView: React.FC<StatsViewProps> = ({
 
   const totalUnits = Object.values(unitStats).reduce((sum, count) => sum + count, 0);
   const mostCommon = sortedStats[0];
-  const rarest = sortedStats.find(s => s.unit && s.count > 0);
 
   return (
     <div className="flex-grow overflow-y-auto pr-2 min-h-0 space-y-4">
