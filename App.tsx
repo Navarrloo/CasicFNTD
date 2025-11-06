@@ -9,11 +9,22 @@ import AdminPage from './components/AdminPage';
 import WikiPage from './components/WikiPage';
 import TradePage from './components/trade/TradePage';
 import DailyBonusModal from './components/DailyBonusModal';
+import CraftingPage from './components/CraftingPage';
+import WheelOfFortunePage from './components/WheelOfFortunePage';
+import QuestsLivePage from './components/QuestsLivePage';
+import PvPBattlePage from './components/PvPBattlePage';
+import ReferralPage from './components/ReferralPage';
+import GiftsPage from './components/GiftsPage';
+import BattlePassPage from './components/BattlePassPage';
+import LotteryPage from './components/LotteryPage';
+import AdvancedStatsPage from './components/AdvancedStatsPage';
+import SettingsPage from './components/SettingsPage';
+import MorePage from './components/MorePage';
 import { Unit } from './types';
 import { supabase } from './lib/supabase';
 import ToastProvider from './components/shared/ToastProvider';
 
-type Page = 'main' | 'wiki' | 'casino' | 'profile' | 'admin' | 'trade';
+type Page = 'main' | 'wiki' | 'casino' | 'profile' | 'admin' | 'trade' | 'more' | 'crafting' | 'wheel' | 'quests' | 'pvp' | 'referral' | 'gifts' | 'battlepass' | 'lottery' | 'advanced_stats' | 'settings';
 type DbStatus = 'connecting' | 'ok' | 'error';
 
 interface GameContextType {
@@ -34,6 +45,7 @@ interface GameContextType {
   dailyStreak: number;
   recordUnitWin: (unitId: number) => Promise<void>;
   addTransaction: (transaction: { type: 'purchase' | 'sale' | 'cancel', unit: Unit, price: number, otherParty?: string }) => Promise<void>;
+  tradeCount: number;
 }
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -60,6 +72,7 @@ const App: React.FC = () => {
   const [totalSpins, setTotalSpins] = useState<number>(0);
   const [totalSpent, setTotalSpent] = useState<number>(0);
   const [totalEarned, setTotalEarned] = useState<number>(0);
+  const [tradeCount, setTradeCount] = useState<number>(0);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
       setToast({ message, type });
@@ -143,6 +156,7 @@ const App: React.FC = () => {
             setTotalSpins(profile.total_spins || 0);
             setTotalSpent(profile.total_spent || 0);
             setTotalEarned(profile.total_earned || 0);
+            setTradeCount(profile.trade_count || 0);
             
             // Check if daily bonus is available
             const lastDate = profile.last_daily_bonus_date;
@@ -176,6 +190,7 @@ const App: React.FC = () => {
                     total_spent: 0,
                     total_earned: 0,
                     transaction_history: [],
+                    trade_count: 0,
                 })
                 .select()
                 .single();
@@ -193,6 +208,7 @@ const App: React.FC = () => {
                 setTotalSpins(0);
                 setTotalSpent(0);
                 setTotalEarned(0);
+                setTradeCount(0);
                 // Show daily bonus for new users
                 setTimeout(() => setShowDailyBonus(true), 1000);
             }
@@ -339,7 +355,7 @@ const App: React.FC = () => {
 
     const { data: profile, error: fetchError } = await supabase
       .from('profiles')
-      .select('transaction_history')
+      .select('transaction_history, trade_count')
       .eq('id', user.id)
       .single();
 
@@ -365,15 +381,29 @@ const App: React.FC = () => {
     // Keep only last 100 transactions
     const trimmedHistory = newHistory.slice(-100);
 
+    // Track completed trades (purchase only)
+    let newTradeCount = profile?.trade_count || 0;
+    if (transaction.type === 'purchase') {
+      newTradeCount += 1;
+      setTradeCount(newTradeCount);
+      
+      if (newTradeCount >= 10) {
+        unlockAchievement('trader_pro');
+      }
+    }
+
     const { error: updateError } = await supabase
       .from('profiles')
-      .update({ transaction_history: trimmedHistory })
+      .update({ 
+        transaction_history: trimmedHistory,
+        trade_count: newTradeCount
+      })
       .eq('id', user.id);
 
     if (updateError) {
       console.error("Failed to update transaction history", updateError);
     }
-  }, [user, supabase]);
+  }, [user, supabase, unlockAchievement]);
 
   const updateBalance = useCallback(async (newBalance: number) => {
     if (!user || !supabase) return;
@@ -513,6 +543,28 @@ const App: React.FC = () => {
         return <ProfilePage />;
       case 'admin':
         return isAdmin ? <AdminPage /> : <MainPage />;
+      case 'crafting':
+        return <CraftingPage />;
+      case 'wheel':
+        return <WheelOfFortunePage />;
+      case 'quests':
+        return <QuestsLivePage />;
+      case 'pvp':
+        return <PvPBattlePage />;
+      case 'referral':
+        return <ReferralPage />;
+      case 'gifts':
+        return <GiftsPage />;
+      case 'battlepass':
+        return <BattlePassPage />;
+      case 'lottery':
+        return <LotteryPage />;
+      case 'advanced_stats':
+        return <AdvancedStatsPage />;
+      case 'settings':
+        return <SettingsPage />;
+      case 'more':
+        return <MorePage onNavigate={(page) => setActivePage(page as Page)} />;
       default:
         return <MainPage />;
     }
@@ -544,6 +596,7 @@ const App: React.FC = () => {
       dailyStreak,
       recordUnitWin,
       addTransaction,
+      tradeCount,
     }}>
       <ToastProvider toast={toast}>
         <div className="bg-transparent h-full text-text-light font-pixel selection:bg-accent-green selection:text-background-dark flex flex-col">

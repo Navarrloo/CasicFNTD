@@ -24,6 +24,7 @@ export interface Achievement {
     name: string;
     description: string;
     icon: string;
+    reward: number;
 }
 
 export interface Listing {
