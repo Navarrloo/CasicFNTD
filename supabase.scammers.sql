@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS public.scammers (
   damage_amount integer,
   proof_images text[] DEFAULT ARRAY[]::text[],
   status text DEFAULT 'pending' CHECK (status IN ('pending', 'verified')),
-  added_by bigint NOT NULL REFERENCES public.profiles(id),
+  added_by bigint REFERENCES public.profiles(id) ON DELETE SET NULL,
   created_at timestamp with time zone DEFAULT now()
 );
 

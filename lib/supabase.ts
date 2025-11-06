@@ -266,7 +266,7 @@ export interface Database {
           damage_amount: number | null;
           proof_images: string[];
           status: 'pending' | 'verified';
-          added_by: number;
+          added_by: number | null;
           created_at: string;
         }
         Insert: {
@@ -279,7 +279,7 @@ export interface Database {
           damage_amount?: number | null;
           proof_images?: string[];
           status?: 'pending' | 'verified';
-          added_by: number;
+          added_by?: number | null;
           created_at?: string;
         }
         Update: {
@@ -292,7 +292,7 @@ export interface Database {
           damage_amount?: number | null;
           proof_images?: string[];
           status?: 'pending' | 'verified';
-          added_by?: number;
+          added_by?: number | null;
           created_at?: string;
         }
         Relationships: [

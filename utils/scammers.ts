@@ -57,7 +57,7 @@ export async function uploadScammerProofs(files: File[]): Promise<string[]> {
  * Add a new scammer entry to the database
  * @param formData Scammer information
  * @param proofImages Array of proof image URLs
- * @param addedBy User ID of the admin adding the entry
+ * @param addedBy User ID of the admin adding the entry (can be null or 0)
  */
 export async function addScammer(
   formData: ScammerFormData,
@@ -79,7 +79,7 @@ export async function addScammer(
       damage_amount: formData.damage_amount || null,
       proof_images: proofImages,
       status: formData.status || 'pending',
-      added_by: addedBy
+      added_by: addedBy > 0 ? addedBy : null
     });
 
   if (error) {

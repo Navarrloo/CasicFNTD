@@ -57,7 +57,7 @@ export interface Scammer {
   damage_amount: number | null;
   proof_images: string[];
   status: 'pending' | 'verified';
-  added_by: number;
+  added_by: number | null;
   created_at: string;
 }
 
