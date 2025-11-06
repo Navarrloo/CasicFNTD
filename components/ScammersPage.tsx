@@ -66,7 +66,7 @@ const ScammersPage: React.FC<ScammersPageProps> = ({ userId, isAdmin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black pb-24 px-4">
+    <div className="h-full overflow-y-auto bg-gradient-to-b from-gray-900 via-gray-800 to-black pb-24 px-4">
       {/* Header */}
       <div className="max-w-6xl mx-auto pt-6 pb-4">
         <div className="flex items-center justify-between mb-6">
