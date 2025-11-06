@@ -203,32 +203,7 @@ const App: React.FC = () => {
     loadUserProfile();
   }, [user, dbStatus]);
 
-  const checkDailyBonus = useCallback((lastDate: string | null, currentStreak: number) => {
-    if (!lastDate) {
-      // Never claimed, show bonus
-      setTimeout(() => setShowDailyBonus(true), 1000);
-      return;
-    }
-
-    const today = new Date().toISOString().split('T')[0];
-    const lastClaim = new Date(lastDate).toISOString().split('T')[0];
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-    if (lastClaim === today) {
-      // Already claimed today
-      return;
-    }
-
-    if (lastClaim === yesterdayStr) {
-      // Continuous streak
-      setTimeout(() => setShowDailyBonus(true), 1000);
-    } else {
-      // Streak broken, reset to 1
-      setTimeout(() => setShowDailyBonus(true), 1000);
-    }
-  }, []);
+  // Check daily bonus function is now inline in loadUserProfile to avoid dependency issues
 
   const unlockAchievement = useCallback(async (achievementId: string) => {
     if (!user || !supabase || achievements.includes(achievementId)) return;
