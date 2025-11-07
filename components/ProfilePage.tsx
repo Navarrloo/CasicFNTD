@@ -1,15 +1,16 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { useTelegram } from '../hooks/useTelegram';
 import UnitCard from './shared/UnitCard';
 import { GameContext } from '../App';
 import { BALANCE_ICON } from './constants';
 import UnitDetailModal from './shared/UnitDetailModal';
 import { Unit } from '../types';
-import { ProfileIcon } from './shared/Icons';
 import AchievementsList from './achievements/AchievementsList';
 import StatsView from './StatsView';
 import TransactionHistoryView from './TransactionHistoryView';
 import { supabase } from '../lib/supabase';
+import { Card, CardHeader, Avatar, Typography, Box, Tabs, Tab, Grid } from '@mui/material';
+import { Person } from '@mui/icons-material';
 
 type ProfileTab = 'inventory' | 'achievements' | 'stats' | 'history' | 'leaderboard';
 
@@ -19,7 +20,7 @@ const LeaderboardView: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const fetchLeaderboard = async () => {
             if (!supabase) {
                 setError("Database connection not available.");
@@ -39,7 +40,7 @@ const LeaderboardView: React.FC = () => {
                 setError("Could not load leaderboard data.");
                 setLeaderboard([]);
             } else {
-                setLeaderboard(data);
+                setLeaderboard(data as any);
                 setError(null);
             }
             setLoading(false);
@@ -97,7 +98,6 @@ const LeaderboardView: React.FC = () => {
     );
 };
 
-
 const ProfilePage: React.FC = () => {
   const { user } = useTelegram();
   const game = useContext(GameContext);
@@ -111,43 +111,30 @@ const ProfilePage: React.FC = () => {
   const closeModal = () => {
     setSelectedUnit(null);
   };
-  
-  const TabButton: React.FC<{label: string, tabName: ProfileTab}> = ({ label, tabName }) => (
-      <button 
-        onClick={() => setActiveTab(tabName)}
-        className={`stats-tab ${activeTab === tabName ? 'active' : ''}`}
-      >
-        {label}
-      </button>
-  );
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: ProfileTab) => {
+    setActiveTab(newValue);
+  };
 
   const renderContent = () => {
     switch(activeTab) {
         case 'inventory':
             return game && game.inventory.length > 0 ? (
-                <div className="flex-grow overflow-y-auto pr-2 min-h-0">
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                    {game.inventory.map((unit, index) => (
-                      <div
-                        key={`${unit.id}-${index}`}
-                        className="animate-staggerIn"
-                        style={{ animationDelay: `${index * 0.05}s` }}
-                      >
-                        <UnitCard
-                          unit={unit}
-                          onClick={() => openModal(unit)}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <Grid container spacing={2} sx={{ p: 2 }}>
+                  {game.inventory.map((unit, index) => (
+                    <Grid item key={`${unit.id}-${index}`} xs={4} sm={3} md={2}>
+                      <UnitCard
+                        unit={unit}
+                        onClick={() => openModal(unit)}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
               ) : (
-                <div className="flex-grow flex items-center justify-center text-center py-10 px-4 bg-black/20 border-2 border-dashed border-border-dark animate-fadeIn">
-                  <div>
-                    <p className="text-text-dark font-pixel text-sm">Inventory is empty.</p>
-                    <p className="text-text-dark/50 mt-2 text-sm">Win units in the Casino or buy on the Market!</p>
-                  </div>
-                </div>
+                <Box sx={{ p: 3, textAlign: 'center' }}>
+                  <Typography variant="h6">Inventory is empty.</Typography>
+                  <Typography variant="body2">Win units in the Casino or buy on the Market!</Typography>
+                </Box>
               );
         case 'achievements':
             return <AchievementsList />;
@@ -171,36 +158,29 @@ const ProfilePage: React.FC = () => {
 
   return (
     <>
-      <div className="p-4 animate-fadeIn flex flex-col h-full">
-        <div className="container-glow flex-grow flex flex-col p-6 min-h-0">
-          <div className="flex-shrink-0 flex items-center gap-4 mb-6 pb-6 border-b-2 border-border-light">
-            <div className="w-20 h-20 bg-black/50 border-2 border-border-light flex items-center justify-center">
-              <ProfileIcon className="w-12 h-12 text-accent-green" />
-            </div>
-            <div>
-              <h1 className="font-pixel text-3xl text-glow-green">
-                {user?.username || 'Player Profile'}
-              </h1>
-              <div className="flex items-center gap-3 mt-3">
-                <img src={BALANCE_ICON} alt="Souls" className="w-8 h-8" />
-                <span className="font-pixel text-2xl text-glow-yellow">
-                  {game?.balance.toLocaleString()}
-                </span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex gap-2 mb-4 flex-shrink-0 flex-wrap">
-            <TabButton label="Inventory" tabName="inventory" />
-            <TabButton label="Achievements" tabName="achievements" />
-            <TabButton label="Stats" tabName="stats" />
-            <TabButton label="History" tabName="history" />
-            <TabButton label="Leaderboard" tabName="leaderboard" />
-          </div>
-
-          {renderContent()}
-        </div>
-      </div>
+      <Card sx={{ mb: 2 }}>
+        <CardHeader
+          avatar={
+            <Avatar>
+              <Person />
+            </Avatar>
+          }
+          title={user?.username || 'Player Profile'}
+          subheader={`Souls: ${game?.balance.toLocaleString()}`}
+        />
+      </Card>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={activeTab} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
+          <Tab label="Inventory" value="inventory" />
+          <Tab label="Achievements" value="achievements" />
+          <Tab label="Stats" value="stats" />
+          <Tab label="History" value="history" />
+          <Tab label="Leaderboard" value="leaderboard" />
+        </Tabs>
+      </Box>
+      <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
+        {renderContent()}
+      </Box>
       <UnitDetailModal
         isOpen={!!selectedUnit}
         unit={selectedUnit}

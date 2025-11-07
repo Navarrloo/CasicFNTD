@@ -1,7 +1,6 @@
 import React, { useState, useMemo, createContext, useEffect, useCallback } from 'react';
 import { useTelegram } from './hooks/useTelegram';
 import { ADMIN_USERNAMES, STARTING_BALANCE, ACHIEVEMENTS, CASINO_COST } from './components/constants';
-import NavBar from './components/layout/NavBar';
 import MainPage from './components/MainPage';
 import CasinoPage from './components/CasinoPage';
 import ProfilePage from './components/ProfilePage';
@@ -26,6 +25,7 @@ import { Unit } from './types';
 import { supabase } from './lib/supabase';
 import ToastProvider from './components/shared/ToastProvider';
 import { UNITS } from './components/constants';
+import MainLayout from './components/layout/MainLayout';
 
 type Page = 'main' | 'wiki' | 'casino' | 'profile' | 'admin' | 'trade' | 'scammers' | 'more' | 'crafting' | 'wheel' | 'quests' | 'pvp' | 'referral' | 'gifts' | 'battlepass' | 'lottery' | 'advanced_stats' | 'settings';
 type DbStatus = 'connecting' | 'ok' | 'error';
@@ -644,37 +644,38 @@ const App: React.FC = () => {
       tutorialStep,
       setActivePage,
     }}>
-      <ToastProvider toast={toast}>
-        <div className="bg-transparent h-full text-text-light font-pixel selection:bg-accent-green selection:text-background-dark flex flex-col">
-          <main className="flex-grow pt-4 px-2 pb-24 flex flex-col min-h-0">
-            {renderPage()}
-          </main>
-          <NavBar activePage={activePage} setActivePage={setActivePage} isAdmin={isAdmin} />
-          <DailyBonusModal
-            isOpen={showDailyBonus && !showTutorial}
-            onClose={() => setShowDailyBonus(false)}
-            onClaim={claimDailyBonus}
-            streakDays={dailyStreak}
-            nextBonus={getDailyBonusAmount()}
-          />
-          {showTutorial && (
-            <TutorialOverlay
-              step={tutorialStep}
-              onNext={() => setTutorialStep(s => s + 1)}
-              onComplete={async () => {
-                setShowTutorial(false);
-                if (userProfile && supabase) {
-                  await supabase.from('profiles')
-                    .update({ tutorial_completed: true })
-                    .eq('id', userProfile.id);
-                }
-              }}
-              activePage={activePage}
-              setActivePage={setActivePage}
+      <MainLayout>
+        <ToastProvider toast={toast}>
+          <div className="bg-transparent h-full text-text-light font-pixel selection:bg-accent-green selection:text-background-dark flex flex-col">
+            <main className="flex-grow pt-4 px-2 pb-24 flex flex-col min-h-0">
+              {renderPage()}
+            </main>
+            <DailyBonusModal
+              isOpen={showDailyBonus && !showTutorial}
+              onClose={() => setShowDailyBonus(false)}
+              onClaim={claimDailyBonus}
+              streakDays={dailyStreak}
+              nextBonus={getDailyBonusAmount()}
             />
-          )}
-        </div>
-      </ToastProvider>
+            {showTutorial && (
+              <TutorialOverlay
+                step={tutorialStep}
+                onNext={() => setTutorialStep(s => s + 1)}
+                onComplete={async () => {
+                  setShowTutorial(false);
+                  if (userProfile && supabase) {
+                    await supabase.from('profiles')
+                      .update({ tutorial_completed: true })
+                      .eq('id', userProfile.id);
+                  }
+                }}
+                activePage={activePage}
+                setActivePage={setActivePage}
+              />
+            )}
+          </div>
+        </ToastProvider>
+      </MainLayout>
     </GameContext.Provider>
   );
 };
