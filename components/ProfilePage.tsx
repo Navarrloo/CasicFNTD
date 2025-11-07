@@ -128,16 +128,21 @@ const ProfilePage: React.FC = () => {
                 <div className="flex-grow overflow-y-auto pr-2 min-h-0">
                   <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
                     {game.inventory.map((unit, index) => (
-                      <UnitCard
+                      <div
                         key={`${unit.id}-${index}`}
-                        unit={unit}
-                        onClick={() => openModal(unit)}
-                      />
+                        className="animate-staggerIn"
+                        style={{ animationDelay: `${index * 0.05}s` }}
+                      >
+                        <UnitCard
+                          unit={unit}
+                          onClick={() => openModal(unit)}
+                        />
+                      </div>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className="flex-grow flex items-center justify-center text-center py-10 px-4 bg-black/20 border-2 border-dashed border-border-dark">
+                <div className="flex-grow flex items-center justify-center text-center py-10 px-4 bg-black/20 border-2 border-dashed border-border-dark animate-fadeIn">
                   <div>
                     <p className="text-text-dark font-pixel text-sm">Inventory is empty.</p>
                     <p className="text-text-dark/50 mt-2 text-sm">Win units in the Casino or buy on the Market!</p>

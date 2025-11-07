@@ -25,6 +25,8 @@ const CasinoPage: React.FC = () => {
   const [displayedUnit, setDisplayedUnit] = useState<Unit | null>(null);
   const [wonUnit, setWonUnit] = useState<Unit | null>(null);
   const [showWinModal, setShowWinModal] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [screenShake, setScreenShake] = useState(false);
   const game = useContext(GameContext);
 
   const handleSpin = useCallback(() => {
@@ -79,10 +81,26 @@ const CasinoPage: React.FC = () => {
         game.addToInventory(finalUnit);
         game.recordUnitWin(finalUnit.id);
         
-        // Check for rare unit achievement
-        if ([Rarity.Mythic, Rarity.Secret, Rarity.Nightmare, Rarity.Hero, Rarity.Legendary].includes(finalUnit.rarity)) {
+        // Check for rare unit achievement and trigger special effects
+        const isRareUnit = [Rarity.Mythic, Rarity.Secret, Rarity.Nightmare, Rarity.Hero, Rarity.Legendary].includes(finalUnit.rarity);
+        if (isRareUnit) {
           game.unlockAchievement('lucky_7');
           SoundManager.play('rare');
+          
+          // Trigger confetti for rare wins
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 3000);
+          
+          // Trigger screen shake for legendary/hero wins
+          if ([Rarity.Hero, Rarity.Legendary].includes(finalUnit.rarity)) {
+            setScreenShake(true);
+            setTimeout(() => setScreenShake(false), 500);
+            
+            // Haptic feedback for rare wins
+            if (window.Telegram?.WebApp?.HapticFeedback) {
+              window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+            }
+          }
         } else {
           SoundManager.play('win');
         }
@@ -109,13 +127,40 @@ const CasinoPage: React.FC = () => {
 
 
   return (
-    <div className="p-4 flex flex-col items-center justify-center animate-fadeIn">
-      <h1 className="font-pixel text-5xl text-center mb-4 text-glow-purple">CASINO</h1>
+    <div className={`p-4 flex flex-col items-center justify-center animate-fadeIn relative ${screenShake ? 'animate-shake' : ''}`}>
+      {/* Confetti Effect for rare wins */}
+      {showConfetti && (
+        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 animate-confetti"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: '-10px',
+                backgroundColor: ['#fcee63', '#ff3232', '#b456f0', '#32ff91', '#00ffff'][Math.floor(Math.random() * 5)],
+                animationDelay: `${Math.random() * 0.5}s`,
+                animationDuration: `${2 + Math.random() * 2}s`,
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      <h1 className="font-pixel text-5xl text-center mb-4 text-glow-purple animate-bounceIn">CASINO</h1>
       <p className="text-center text-text-light mb-8 font-pixel text-xl">Cost: {CASINO_COST} soul</p>
 
+      {/* Slot machine display with improved animations */}
       <div className="relative w-56 h-72 mb-8 flex items-center justify-center p-4 container-glow">
+        {/* Slot reel effect background */}
+        {isSpinning && (
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent-purple/20 to-transparent animate-scanline pointer-events-none" />
+        )}
+        
         {displayedUnit ? (
-          <div className={`transition-all duration-300 transform ${wonUnit ? 'scale-110' : ''}`}>
+          <div className={`transition-all duration-300 transform ${
+            wonUnit ? 'scale-110 animate-bounceIn' : ''
+          } ${isSpinning ? 'blur-sm' : ''}`}>
             <UnitCard unit={displayedUnit} />
           </div>
         ) : (
@@ -128,13 +173,13 @@ const CasinoPage: React.FC = () => {
       <button
         onClick={handleSpin}
         disabled={isSpinning || !game || (game.balance < CASINO_COST && !game.tutorialActive)}
-        className="btn btn-green font-pixel text-2xl px-8 py-4"
+        className="btn btn-green font-pixel text-2xl px-8 py-4 active:animate-buttonPress hover:animate-pulseGlow"
         data-tutorial="spin-button"
       >
         {isSpinning ? 'Spinning...' : 'Spin!'}
       </button>
       {game && game.balance < CASINO_COST && !isSpinning && (
-         <p className="text-glow-red mt-4 font-pixel text-lg">Not enough souls</p>
+         <p className="text-glow-red mt-4 font-pixel text-lg animate-blink">Not enough souls</p>
       )}
 
       {/* Win Modal with Enhanced Effects */}
@@ -161,11 +206,10 @@ const CasinoPage: React.FC = () => {
           )}
           
           <div 
-            className="relative p-6 text-center bg-background-dark border-2 animate-fadeIn"
+            className="relative p-6 text-center bg-background-dark border-2 animate-modalSlideIn"
             style={{ 
               borderColor: rarityStyles.color, 
               boxShadow: `0 0 30px ${rarityStyles.shadow}, inset 0 0 20px rgba(0,0,0,0.5)`,
-              animation: 'pulse 2s ease-in-out infinite'
             }}
           >
             {/* Glow effect for rare units */}
@@ -195,9 +239,9 @@ const CasinoPage: React.FC = () => {
                  wonUnit.rarity === Rarity.Mythic ? 'MYTHIC WIN!' : 'YOU WON!'}
               </h2>
               
-              <div className="mx-auto w-40 h-56 mb-4 transform scale-110 transition-transform duration-300">
+              <div className="mx-auto w-40 h-56 mb-4 transform scale-110 transition-transform duration-300 animate-bounceIn">
                 <div 
-                  className="relative"
+                  className="relative animate-float"
                   style={{
                     filter: `drop-shadow(0 0 15px ${rarityStyles.shadow})`,
                   }}

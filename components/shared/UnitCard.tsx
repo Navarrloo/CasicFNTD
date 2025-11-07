@@ -35,29 +35,59 @@ const RarityGem: React.FC<{rarity: Rarity}> = ({ rarity }) => {
 const UnitCard: React.FC<UnitCardProps> = ({ unit, onClick, isSelected = false }) => {
   const rarityStyles = getRarityStyles(unit.rarity);
   const Tag = onClick ? 'button' : 'div';
+  const [isHovered, setIsHovered] = React.useState(false);
 
   return (
     <Tag
       onClick={onClick}
-      className={`relative w-full aspect-[4/5] bg-black/50 p-px group transition-all duration-300 ${onClick ? 'hover:scale-105 cursor-pointer' : ''} ${isSelected ? 'ring-2 ring-accent-cyan' : ''}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`relative w-full aspect-[4/5] bg-black/50 p-px group transition-all duration-300 ${onClick ? 'hover:scale-105 hover:-translate-y-1 cursor-pointer' : ''} ${isSelected ? 'ring-2 ring-accent-cyan' : ''}`}
       style={{
-        border: `1px solid ${rarityStyles.color}`,
-        boxShadow: `0 0 8px -2px ${rarityStyles.shadow}`
+        border: `2px solid ${rarityStyles.color}`,
+        boxShadow: isHovered 
+          ? `0 0 20px ${rarityStyles.shadow}, 0 0 40px ${rarityStyles.shadow}` 
+          : `0 0 8px -2px ${rarityStyles.shadow}`,
+        transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
       }}
     >
+        {/* Animated glow overlay on hover */}
+        <div 
+          className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(circle at center, ${rarityStyles.color}20 0%, transparent 70%)`,
+            opacity: isHovered ? 1 : 0,
+          }}
+        />
+        
         <div className="absolute inset-0 bg-black/50 opacity-50 group-hover:opacity-0 transition-opacity"></div>
       <div className="relative w-full h-full flex flex-col items-center justify-center p-1 bg-background-dark/80">
         
         <RarityGem rarity={unit.rarity} />
 
         <div className="flex-grow flex items-center justify-center w-full h-full overflow-hidden my-1">
-             <img src={unit.image} alt={unit.name} className="max-w-full max-h-full object-contain transform group-hover:scale-110 transition-transform duration-300" 
-             style={{ filter: `drop-shadow(0 0 5px ${rarityStyles.shadow})`}}
+             <img 
+               src={unit.image} 
+               alt={unit.name} 
+               className="max-w-full max-h-full object-contain transform group-hover:scale-110 transition-transform duration-300" 
+               style={{ 
+                 filter: isHovered 
+                   ? `drop-shadow(0 0 10px ${rarityStyles.shadow}) drop-shadow(0 0 20px ${rarityStyles.shadow})` 
+                   : `drop-shadow(0 0 5px ${rarityStyles.shadow})`
+               }}
              />
         </div>
 
         <div className="text-center h-5 flex-shrink-0 flex items-center justify-center">
-          <p className="font-pixel text-xs" style={{ color: rarityStyles.color }}>{unit.cost}$</p>
+          <p 
+            className="font-pixel text-xs transition-all duration-300" 
+            style={{ 
+              color: rarityStyles.color,
+              textShadow: isHovered ? `0 0 8px ${rarityStyles.shadow}` : 'none'
+            }}
+          >
+            {unit.cost}$
+          </p>
         </div>
       </div>
     </Tag>

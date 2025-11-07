@@ -16,43 +16,70 @@ const NavItem: React.FC<{
   icon: React.ReactNode;
   activeColor: string;
 }> = ({ label, icon, isActive, onClick, activeColor }) => {
+  const [isPressed, setIsPressed] = React.useState(false);
+
+  const handleClick = () => {
+    // Haptic feedback for Telegram WebApp
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+      window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+    }
+    
+    setIsPressed(true);
+    setTimeout(() => setIsPressed(false), 100);
+    onClick();
+  };
+
   return (
     <button 
-        onClick={onClick} 
+        onClick={handleClick}
+        onMouseDown={() => setIsPressed(true)}
+        onMouseUp={() => setIsPressed(false)}
+        onMouseLeave={() => setIsPressed(false)}
         className="relative flex flex-col items-center justify-center w-16 h-full transition-all duration-300 group focus:outline-none pt-2"
         aria-label={label}
     >
-        {/* Top Glow Indicator */}
+        {/* Top Glow Indicator with pulse animation */}
         <div 
-            className="absolute top-0 h-1 w-8 rounded-full transition-all duration-300"
+            className={`absolute top-0 h-1 w-8 rounded-full transition-all duration-300 ${isActive ? 'animate-pulseGlow' : ''}`}
             style={{ 
                 backgroundColor: isActive ? activeColor : 'transparent',
-                boxShadow: isActive ? `0 0 8px ${activeColor}, 0 0 12px ${activeColor}` : 'none',
                 opacity: isActive ? 1 : 0,
             }}
         />
 
-        {/* Icon */}
+        {/* Icon with bounce animation on active */}
         <div 
-            className={`w-8 h-8 mb-1 flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${isActive ? 'text-white' : 'text-text-dark group-hover:text-text-light'}`}
+            className={`w-8 h-8 mb-1 flex items-center justify-center transition-all duration-300 ${
+              isPressed ? 'animate-buttonPress' : ''
+            } ${
+              isActive ? 'animate-bounceIn' : ''
+            } group-hover:scale-110 ${isActive ? 'text-white' : 'text-text-dark group-hover:text-text-light'}`}
             style={{
-                filter: isActive ? `drop-shadow(0 0 6px ${activeColor})` : 'none',
-                transform: isActive ? 'scale(1.1)' : 'scale(1)'
+                filter: isActive ? `drop-shadow(0 0 8px ${activeColor}) drop-shadow(0 0 12px ${activeColor})` : 'none',
+                transform: isActive && !isPressed ? 'scale(1.15)' : 'scale(1)'
             }}
         >
             {icon}
         </div>
         
-        {/* Label */}
+        {/* Label with glow effect */}
         <span 
             className={`text-xs uppercase font-pixel font-bold transition-colors duration-300 ${!isActive ? 'text-text-dark group-hover:text-text-light' : ''}`}
             style={{ 
                 color: isActive ? activeColor : undefined, 
-                textShadow: isActive ? `0 0 4px ${activeColor}` : 'none' 
+                textShadow: isActive ? `0 0 6px ${activeColor}, 0 0 10px ${activeColor}` : 'none' 
             }}
         >
             {label}
         </span>
+
+        {/* Ripple effect on click */}
+        {isPressed && (
+          <div 
+            className="absolute inset-0 rounded-full opacity-30 animate-pulse"
+            style={{ backgroundColor: activeColor }}
+          />
+        )}
     </button>
   );
 };
