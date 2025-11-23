@@ -7,6 +7,7 @@ export enum Rarity {
   Secret = 'Secret',
   Nightmare = 'Nightmare',
   Hero = 'Hero',
+  Apex = 'Apex',
   Legendary = 'Legendary'
 }
 
@@ -20,21 +21,21 @@ export interface Unit {
 }
 
 export interface Achievement {
-    id: string;
-    name: string;
-    description: string;
-    icon: string;
-    reward: number;
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  reward: number;
 }
 
 export interface Listing {
-    id: string; // uuid
-    created_at: string;
-    seller_id: number;
-    seller_username: string;
-    asking_price: number;
-    status: 'active' | 'completed' | 'cancelled';
-    unit_data: Unit; 
+  id: string; // uuid
+  created_at: string;
+  seller_id: number;
+  seller_username: string;
+  asking_price: number;
+  status: 'active' | 'completed' | 'cancelled';
+  unit_data: Unit;
 }
 
 

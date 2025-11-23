@@ -4,7 +4,7 @@ import { GameContext } from '../App';
 import FazRatingPage from './FazRatingPage';
 import UnitEncyclopediaPage from './UnitEncyclopediaPage';
 import EnchantmentsPage from './EnchantmentsPage';
-import ElementsPage from './ElementsPage'; 
+import ElementsPage from './ElementsPage';
 import AttackTypesPage from './AttackTypesPage';
 import QuestsPage from './QuestsPage';
 import ItemsPage from './ItemsPage';
@@ -29,64 +29,64 @@ const WikiButton: React.FC<WikiButtonProps> = ({ label, imageUrl, onClick }) => 
 
 const wikiNav = {
   units: [
-    { label: 'Units', view: 'units' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/e/ef/Button_Units.png' },
-    { label: 'Elements', view: 'elements' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/c/c4/Button_Elements.png' },
-    { label: 'Attack Types', view: 'attack_types' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/a/a8/Button_Attack_Types.png' },
-    { label: 'Enchantments', view: 'enchantments' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/6/65/Currency_Soul.png'},
+    { label: 'Юниты', view: 'units' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/e/ef/Button_Units.png' },
+    { label: 'Элементы', view: 'elements' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/c/c4/Button_Elements.png' },
+    { label: 'Типы Атак', view: 'attack_types' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/a/a8/Button_Attack_Types.png' },
+    { label: 'Зачарования', view: 'enchantments' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/6/65/Currency_Soul.png' },
   ],
   other: [
-    { label: 'Faz-Rating', view: 'faz_rating' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/3/34/Button_Faz-Rating.png' },
-    { label: 'Items', view: 'items' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/a/af/Button_Items.png' },
-    { label: 'Quests', view: 'quests' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/5/53/Button_Quests.png' },
-    { label: 'Establishments', view: 'establishments' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/a/ac/Button_Establishments.png' },
-    { label: 'Cosmetics', view: 'cosmetics' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/d/d1/Button_Cosmetics.png' },
+    { label: 'Фаз-Рейтинг', view: 'faz_rating' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/3/34/Button_Faz-Rating.png' },
+    { label: 'Предметы', view: 'items' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/a/af/Button_Items.png' },
+    { label: 'Квесты', view: 'quests' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/5/53/Button_Quests.png' },
+    { label: 'Заведения', view: 'establishments' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/a/ac/Button_Establishments.png' },
+    { label: 'Косметика', view: 'cosmetics' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/d/d1/Button_Cosmetics.png' },
   ],
   wikiContent: [
-     { label: 'Guidelines', view: 'coming_soon' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/d/de/Button_Guidelines.png' },
-     { label: 'Staff', view: 'coming_soon' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/0/02/Button_Staff.png' },
+    { label: 'Правила', view: 'coming_soon' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/d/de/Button_Guidelines.png' },
+    { label: 'Персонал', view: 'coming_soon' as WikiView, imageUrl: 'https://images.weserv.nl/?url=static.wikitide.net/fivenightstowerdefense2wiki/0/02/Button_Staff.png' },
   ]
 };
 
 const ComingSoonView: React.FC<{ onBack: () => void }> = ({ onBack }) => (
   <div className="container-glow h-full flex flex-col items-center justify-center">
-    <h1 className="font-pixel text-3xl text-glow-yellow mb-4">COMING SOON</h1>
-    <p className="text-text-dark text-center mb-8">This section is under construction.</p>
-    <button onClick={onBack} className="btn btn-yellow">Back to Wiki</button>
+    <h1 className="font-pixel text-3xl text-glow-yellow mb-4">СКОРО</h1>
+    <p className="text-text-dark text-center mb-8">Этот раздел находится в разработке.</p>
+    <button onClick={onBack} className="btn btn-yellow">Назад в Вики</button>
   </div>
 );
 
 const WikiMenuView: React.FC<{ setView: (view: WikiView) => void }> = ({ setView }) => (
   <div className="container-glow p-4 h-full flex flex-col">
-      <h1 className="font-pixel text-2xl text-glow-cyan tracking-widest text-center mb-6 border-b border-accent-cyan/20 pb-4 flex-shrink-0">FNTD 2 WIKI</h1>
-      
-      <div className="flex-grow overflow-y-auto pr-2 space-y-4 min-h-0">
-        <div>
-          <h2 className="font-pixel text-lg text-glow-green mb-3">Units & Mechanics</h2>
-          <div className="flex flex-col gap-2">
-            {wikiNav.units.map(item => (
-              <WikiButton key={item.label} {...item} onClick={() => setView(item.view)} />
-            ))}
-          </div>
-        </div>
+    <h1 className="font-pixel text-2xl text-glow-cyan tracking-widest text-center mb-6 border-b border-accent-cyan/20 pb-4 flex-shrink-0">ВИКИ FNTD 2</h1>
 
-        <div>
-            <h2 className="font-pixel text-lg text-glow-yellow mb-3">Game Content</h2>
-            <div className="flex flex-col gap-2">
-                {wikiNav.other.map(item => (
-                <WikiButton key={item.label} {...item} onClick={() => setView(item.view)} />
-                ))}
-            </div>
-        </div>
-
-        <div>
-            <h2 className="font-pixel text-lg text-glow-purple mb-3">Community</h2>
-            <div className="flex flex-col gap-2">
-                {wikiNav.wikiContent.map(item => (
-                <WikiButton key={item.label} {...item} onClick={() => setView(item.view)} />
-                ))}
-            </div>
+    <div className="flex-grow overflow-y-auto pr-2 space-y-4 min-h-0">
+      <div>
+        <h2 className="font-pixel text-lg text-glow-green mb-3">Юниты и Механики</h2>
+        <div className="flex flex-col gap-2">
+          {wikiNav.units.map(item => (
+            <WikiButton key={item.label} {...item} onClick={() => setView(item.view)} />
+          ))}
         </div>
       </div>
+
+      <div>
+        <h2 className="font-pixel text-lg text-glow-yellow mb-3">Игровой Контент</h2>
+        <div className="flex flex-col gap-2">
+          {wikiNav.other.map(item => (
+            <WikiButton key={item.label} {...item} onClick={() => setView(item.view)} />
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h2 className="font-pixel text-lg text-glow-purple mb-3">Сообщество</h2>
+        <div className="flex flex-col gap-2">
+          {wikiNav.wikiContent.map(item => (
+            <WikiButton key={item.label} {...item} onClick={() => setView(item.view)} />
+          ))}
+        </div>
+      </div>
+    </div>
   </div>
 );
 
@@ -98,18 +98,18 @@ const WikiPage: React.FC = () => {
 
   useEffect(() => {
     if (view !== 'main' && !visited.has(view)) {
-        const newVisited = new Set(visited);
-        newVisited.add(view);
-        setVisited(newVisited);
+      const newVisited = new Set(visited);
+      newVisited.add(view);
+      setVisited(newVisited);
 
-        if (newVisited.size >= 4) { // main + 3 others
-            game?.unlockAchievement('wiki_explorer');
-        }
+      if (newVisited.size >= 4) { // main + 3 others
+        game?.unlockAchievement('wiki_explorer');
+      }
     }
   }, [view, visited, game]);
 
   const renderContent = () => {
-    switch(view) {
+    switch (view) {
       case 'units':
         return <UnitEncyclopediaPage setView={setView} title="Unit Encyclopedia" />;
       case 'elements':
@@ -138,7 +138,7 @@ const WikiPage: React.FC = () => {
 
   return (
     <div className="animate-fadeIn h-full flex flex-col">
-       {renderContent()}
+      {renderContent()}
     </div>
   );
 };

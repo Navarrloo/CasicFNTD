@@ -2,14 +2,13 @@ import React, { useContext, useState } from 'react';
 import { useTelegram } from '../hooks/useTelegram';
 import UnitCard from './shared/UnitCard';
 import { GameContext } from '../App';
-import { BALANCE_ICON } from './constants';
 import UnitDetailModal from './shared/UnitDetailModal';
 import { Unit } from '../types';
 import AchievementsList from './achievements/AchievementsList';
 import StatsView from './StatsView';
 import TransactionHistoryView from './TransactionHistoryView';
 import { supabase } from '../lib/supabase';
-import { Card, CardHeader, Avatar, Typography, Box, Tabs, Tab, Grid } from '@mui/material';
+import { Card, CardHeader, Avatar, Typography, Box, Tabs, Tab } from '@mui/material';
 import { Person, Add } from '@mui/icons-material';
 import TopUpModal from './shared/TopUpModal';
 import { Button } from '@mui/material';
@@ -107,7 +106,7 @@ const ProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ProfileTab>('inventory');
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
 
-  const handlePurchase = async (amount: number, cost: number) => {
+  const handlePurchase = async (amount: number, _cost: number) => {
     if (!game || !game.userProfile) return;
 
     // Simulate API call delay
@@ -140,7 +139,7 @@ const ProfilePage: React.FC = () => {
     setSelectedUnit(null);
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: ProfileTab) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: ProfileTab) => {
     setActiveTab(newValue);
   };
 
@@ -148,16 +147,16 @@ const ProfilePage: React.FC = () => {
     switch (activeTab) {
       case 'inventory':
         return game && game.inventory.length > 0 ? (
-          <Grid container spacing={2} sx={{ p: 2 }}>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 p-2">
             {game.inventory.map((unit, index) => (
-              <Grid item key={`${unit.id}-${index}`} xs={4} sm={3} md={2}>
+              <div key={`${unit.id}-${index}`}>
                 <UnitCard
                   unit={unit}
                   onClick={() => openModal(unit)}
                 />
-              </Grid>
+              </div>
             ))}
-          </Grid>
+          </div>
         ) : (
           <Box sx={{ p: 3, textAlign: 'center' }}>
             <Typography variant="h6">Инвентарь пуст.</Typography>

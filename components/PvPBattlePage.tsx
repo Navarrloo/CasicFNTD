@@ -10,7 +10,7 @@ const BATTLE_COST = 100;
 
 const PvPBattlePage: React.FC = () => {
   const game = useContext(GameContext);
-  const [selectedUnits, setSelectedUnits] = useState<{unit: Unit, index: number}[]>([]);
+  const [selectedUnits, setSelectedUnits] = useState<{ unit: Unit, index: number }[]>([]);
   const [battleResult, setBattleResult] = useState<'won' | 'lost' | null>(null);
   const [enemyUnits, setEnemyUnits] = useState<Unit[]>([]);
   const [reward, setReward] = useState(0);
@@ -19,7 +19,7 @@ const PvPBattlePage: React.FC = () => {
   if (!game) return null;
 
   const getRarityPower = (rarity: Rarity): number => {
-    const powers = {
+    const powers: Record<Rarity, number> = {
       [Rarity.Common]: 1,
       [Rarity.Uncommon]: 2,
       [Rarity.Rare]: 4,
@@ -29,6 +29,7 @@ const PvPBattlePage: React.FC = () => {
       [Rarity.Nightmare]: 64,
       [Rarity.Hero]: 100,
       [Rarity.Legendary]: 150,
+      [Rarity.Apex]: 250,
     };
     return powers[rarity] || 1;
   };
@@ -37,9 +38,9 @@ const PvPBattlePage: React.FC = () => {
     return units.reduce((total, unit) => total + getRarityPower(unit.rarity), 0);
   };
 
-  const toggleUnit = (unitItem: {unit: Unit, index: number}) => {
+  const toggleUnit = (unitItem: { unit: Unit, index: number }) => {
     const isSelected = selectedUnits.some(s => s.index === unitItem.index);
-    
+
     if (isSelected) {
       setSelectedUnits(selectedUnits.filter(s => s.index !== unitItem.index));
     } else {
@@ -78,7 +79,7 @@ const PvPBattlePage: React.FC = () => {
     setTimeout(() => {
       const playerPower = calculateTeamPower(selectedUnits.map(s => s.unit));
       const enemyPower = calculateTeamPower(enemyTeam);
-      
+
       // Add some randomness (80-120%)
       const playerActualPower = playerPower * (0.8 + Math.random() * 0.4);
       const enemyActualPower = enemyPower * (0.8 + Math.random() * 0.4);
@@ -92,22 +93,22 @@ const PvPBattlePage: React.FC = () => {
           const winReward = BATTLE_COST * 2.5; // 2.5x return
           setReward(winReward);
           game.updateBalance(game.balance + winReward);
-          
+
           // Track PvP wins
           const response = await supabase?.from('profiles')
             .select('pvp_wins')
             .eq('id', game.userProfile!.id)
             .single();
-          
+
           const newWins = (response?.data?.pvp_wins || 0) + 1;
           await supabase?.from('profiles')
             .update({ pvp_wins: newWins })
             .eq('id', game.userProfile!.id);
-          
+
           if (newWins >= 5) {
             game.unlockAchievement('battle_winner');
           }
-          
+
           SoundManager.play('success');
           game.showToast(`Victory! Won ${winReward} souls!`, 'success');
         } else {
@@ -115,11 +116,11 @@ const PvPBattlePage: React.FC = () => {
             .select('pvp_losses')
             .eq('id', game.userProfile!.id)
             .single();
-          
+
           await supabase?.from('profiles')
             .update({ pvp_losses: (lossResponse?.data?.pvp_losses || 0) + 1 })
             .eq('id', game.userProfile!.id);
-          
+
           setReward(0);
           SoundManager.play('error');
           game.showToast('Defeat! Better luck next time.', 'error');
@@ -161,12 +162,11 @@ const PvPBattlePage: React.FC = () => {
                   {game.inventory.map((unit, index) => (
                     <div
                       key={index}
-                      onClick={() => toggleUnit({unit, index})}
-                      className={`cursor-pointer transition-all ${
-                        selectedUnits.some(s => s.index === index)
-                          ? 'ring-2 ring-accent-green scale-95'
-                          : 'hover:scale-105'
-                      }`}
+                      onClick={() => toggleUnit({ unit, index })}
+                      className={`cursor-pointer transition-all ${selectedUnits.some(s => s.index === index)
+                        ? 'ring-2 ring-accent-green scale-95'
+                        : 'hover:scale-105'
+                        }`}
                     >
                       <UnitCard unit={unit} />
                     </div>
@@ -195,9 +195,8 @@ const PvPBattlePage: React.FC = () => {
           <>
             {/* Battle Result */}
             <div className="flex-grow flex flex-col items-center justify-center text-center">
-              <h2 className={`font-pixel text-4xl mb-4 ${
-                battleResult === 'won' ? 'text-glow-green' : 'text-glow-red'
-              }`}>
+              <h2 className={`font-pixel text-4xl mb-4 ${battleResult === 'won' ? 'text-glow-green' : 'text-glow-red'
+                }`}>
                 {battleResult === 'won' ? '🏆 VICTORY!' : '💀 DEFEAT!'}
               </h2>
 

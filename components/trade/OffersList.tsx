@@ -86,7 +86,8 @@ const OffersList: React.FC<OffersListProps> = ({ userId }) => {
             }
         }
 
-        const newStatus = action === 'cancel' ? 'rejected' : action === 'accept' ? 'accepted' : 'rejected';
+        // action cannot be 'accept' here due to early return above
+        const newStatus = 'rejected';
 
         // If cancelling own offer, delete it
         if (action === 'cancel') {
@@ -131,8 +132,8 @@ const OffersList: React.FC<OffersListProps> = ({ userId }) => {
 
                 <div className="flex flex-col items-end gap-2">
                     <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${offer.status === 'pending' ? 'bg-yellow-900/20 text-yellow-500 border border-yellow-900/50' :
-                            offer.status === 'accepted' ? 'bg-green-900/20 text-green-500 border border-green-900/50' :
-                                'bg-red-900/20 text-red-500 border border-red-900/50'
+                        offer.status === 'accepted' ? 'bg-green-900/20 text-green-500 border border-green-900/50' :
+                            'bg-red-900/20 text-red-500 border border-red-900/50'
                         }`}>
                         {offer.status === 'pending' ? 'ОЖИДАЕТ' : offer.status === 'accepted' ? 'ПРИНЯТО' : 'ОТКЛОНЕНО'}
                     </span>

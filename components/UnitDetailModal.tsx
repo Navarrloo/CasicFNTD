@@ -45,75 +45,75 @@ const UnitDetailModal: React.FC<UnitDetailModalProps> = ({ unit, isOpen, onClose
     setShowDetails(false);
     onClose();
   };
-  
+
   const renderStatsTable = (stats: UnitStatLevel[]) => (
-     <div className="overflow-x-auto">
-        <table className="stats-table">
-            <thead>
-                <tr>
-                    <th>Lvl</th>
-                    <th>Stats</th>
-                    <th>Cost</th>
-                </tr>
-            </thead>
-            <tbody>
-                {stats.map((lvl) => (
-                    <tr key={lvl.level}>
-                        <td className="text-accent-yellow font-bold text-center">{lvl.level}</td>
-                        <td>
-                            <p>Dmg: {lvl.damage}</p>
-                            <p>Rng: {lvl.range}</p>
-                            <p>CD: {lvl.cooldown}</p>
-                            {lvl.attackType && <p className="text-xs text-text-dark">{lvl.attackType}</p>}
-                        </td>
-                        <td className="text-accent-green">${lvl.cost.toLocaleString()}</td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
+    <div className="overflow-x-auto">
+      <table className="stats-table">
+        <thead>
+          <tr>
+            <th>Ур.</th>
+            <th>Статы</th>
+            <th>Цена</th>
+          </tr>
+        </thead>
+        <tbody>
+          {stats.map((lvl) => (
+            <tr key={lvl.level}>
+              <td className="text-accent-yellow font-bold text-center">{lvl.level}</td>
+              <td>
+                <p>Урон: {lvl.damage}</p>
+                <p>Даль: {lvl.range}</p>
+                <p>КД: {lvl.cooldown}</p>
+                {lvl.attackType && <p className="text-xs text-text-dark">{lvl.attackType}</p>}
+              </td>
+              <td className="text-accent-green">${lvl.cost.toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn p-4"
       onClick={handleClose}
     >
-      <div 
+      <div
         className={`modal-content w-full font-pixel transition-all duration-300 ${showDetails ? 'max-w-md' : 'max-w-xs'}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <button 
-          onClick={handleClose} 
+        <button
+          onClick={handleClose}
           className="absolute w-8 h-8 bg-background-med text-accent-red text-lg flex items-center justify-center border border-accent-red"
-          style={{ top: '-1px', right: '-1px'}}
+          style={{ top: '-1px', right: '-1px' }}
           aria-label="Close modal"
         >
           X
         </button>
 
         <div className="flex items-center gap-3">
-            <div className={`w-16 h-16 p-1 bg-black border flex-shrink-0 ${rarityStyles.border}`}>
-                <img src={unit.image} alt={unit.name} className="w-full h-full object-contain" />
+          <div className={`w-16 h-16 p-1 bg-black border flex-shrink-0 ${rarityStyles.border}`}>
+            <img src={unit.image} alt={unit.name} className="w-full h-full object-contain" />
+          </div>
+          <div className="text-left flex-grow">
+            <h2 className={`text-lg text-white uppercase ${rarityStyles.text}`} style={{ textShadow: `0 0 5px var(--accent-cyan)` }}>{unit.name}</h2>
+            <div className="flex items-center gap-2 mt-2">
+              <div className={`px-2 py-0.5 border ${rarityStyles.border}`}>
+                <p className={`text-xs uppercase ${rarityStyles.text}`}>{unit.rarity}</p>
+              </div>
+              <div className="flex items-center border border-text-dark px-2 py-0.5">
+                <img src={BALANCE_ICON} alt="Cost" className="w-4 h-4 mr-1.5" />
+                <p className="text-base text-white">{unit.cost.toLocaleString()}</p>
+              </div>
             </div>
-            <div className="text-left flex-grow">
-                <h2 className={`text-lg text-white uppercase ${rarityStyles.text}`} style={{textShadow: `0 0 5px var(--accent-cyan)`}}>{unit.name}</h2>
-                <div className="flex items-center gap-2 mt-2">
-                  <div className={`px-2 py-0.5 border ${rarityStyles.border}`}>
-                    <p className={`text-xs uppercase ${rarityStyles.text}`}>{unit.rarity}</p>
-                  </div>
-                  <div className="flex items-center border border-text-dark px-2 py-0.5">
-                        <img src={BALANCE_ICON} alt="Cost" className="w-4 h-4 mr-1.5"/>
-                        <p className="text-base text-white">{unit.cost.toLocaleString()}</p>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
 
         <div className="border-t border-accent-cyan/20 my-3"></div>
-        
+
         <p className="text-white text-sm leading-tight uppercase">{unit.description}</p>
-        
+
         {unitDetails && (
           <>
             <div className="border-t border-accent-cyan/20 my-3"></div>
@@ -121,41 +121,41 @@ const UnitDetailModal: React.FC<UnitDetailModalProps> = ({ unit, isOpen, onClose
               <div className="animate-fadeIn">
                 <div className="modal-details-container">
                   {unitDetails.passives && unitDetails.passives.length > 0 && (
-                      <div className="mb-4">
-                          <h3 className="font-pixel text-lg text-glow-purple mb-2">Passives</h3>
-                          {unitDetails.passives.map((passive: UnitPassive) => (
-                              <div key={passive.name} className="bg-black/30 p-2 border-l-2 border-accent-purple">
-                                  <p className="font-bold text-text-light">{passive.name}</p>
-                                  <p className="text-sm text-text-dark">{passive.description}</p>
-                              </div>
-                          ))}
-                      </div>
+                    <div className="mb-4">
+                      <h3 className="font-pixel text-lg text-glow-purple mb-2">Пассивки</h3>
+                      {unitDetails.passives.map((passive: UnitPassive) => (
+                        <div key={passive.name} className="bg-black/30 p-2 border-l-2 border-accent-purple">
+                          <p className="font-bold text-text-light">{passive.name}</p>
+                          <p className="text-sm text-text-dark">{passive.description}</p>
+                        </div>
+                      ))}
+                    </div>
                   )}
 
                   <div className="flex gap-2 mb-2">
-                      <button onClick={() => setActiveTab('regular')} className={`stats-tab ${activeTab === 'regular' ? 'active' : ''}`}>Regular</button>
-                      <button onClick={() => setActiveTab('shiny')} className={`stats-tab ${activeTab === 'shiny' ? 'active' : ''}`}>Shiny</button>
+                    <button onClick={() => setActiveTab('regular')} className={`stats-tab ${activeTab === 'regular' ? 'active' : ''}`}>Обычный</button>
+                    <button onClick={() => setActiveTab('shiny')} className={`stats-tab ${activeTab === 'shiny' ? 'active' : ''}`}>Шайни</button>
                   </div>
-                  
+
                   {renderStatsTable(unitDetails.stats[activeTab])}
 
                   {unitDetails.history && unitDetails.history.length > 0 && (
-                      <div className="mt-4">
-                          <h3 className="font-pixel text-lg text-glow-purple mb-2">History</h3>
-                          <div className="bg-black/30 p-2 border-l-2 border-accent-purple text-sm">
-                              {unitDetails.history.map((entry: UnitHistory) => (
-                                  <p key={entry.date} className="text-text-dark">
-                                      <span className="text-text-light">{entry.date}:</span> {entry.change}
-                                  </p>
-                              ))}
-                          </div>
+                    <div className="mt-4">
+                      <h3 className="font-pixel text-lg text-glow-purple mb-2">История</h3>
+                      <div className="bg-black/30 p-2 border-l-2 border-accent-purple text-sm">
+                        {unitDetails.history.map((entry: UnitHistory) => (
+                          <p key={entry.date} className="text-text-dark">
+                            <span className="text-text-light">{entry.date}:</span> {entry.change}
+                          </p>
+                        ))}
                       </div>
+                    </div>
                   )}
                 </div>
-                <button onClick={() => setShowDetails(false)} className="btn btn-yellow w-full mt-3 !py-1 !px-2 !text-sm">Hide Stats</button>
+                <button onClick={() => setShowDetails(false)} className="btn btn-yellow w-full mt-3 !py-1 !px-2 !text-sm">Скрыть статы</button>
               </div>
             ) : (
-              <button onClick={() => setShowDetails(true)} className="btn btn-green w-full !py-1 !px-2 !text-sm">Show Stats</button>
+              <button onClick={() => setShowDetails(true)} className="btn btn-green w-full !py-1 !px-2 !text-sm">Показать статы</button>
             )}
           </>
         )}

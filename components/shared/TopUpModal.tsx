@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Box, Typography, Button, Grid, CircularProgress } from '@mui/material';
+import { Modal, Box, Typography, Button, CircularProgress } from '@mui/material';
 import { SoundManager } from '../../utils/sounds';
 
 interface TopUpModalProps {
@@ -64,9 +64,9 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ isOpen, onClose, onPurchase }) 
                     SOUL STORE
                 </Typography>
 
-                <Grid container spacing={2}>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {SOUL_PACKS.map((pack, index) => (
-                        <Grid item xs={6} sm={4} key={index}>
+                        <div key={index}>
                             <Box sx={{
                                 border: '1px solid #44403c', // stone-700
                                 borderRadius: 1,
@@ -104,9 +104,9 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ isOpen, onClose, onPurchase }) 
                                     )}
                                 </Button>
                             </Box>
-                        </Grid>
+                        </div>
                     ))}
-                </Grid>
+                </div>
 
                 <Box sx={{ mt: 4, textAlign: 'center' }}>
                     <Typography variant="caption" sx={{ color: '#57534e' }}>

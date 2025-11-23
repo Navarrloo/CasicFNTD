@@ -6,30 +6,31 @@ import { WikiView } from './WikiPage';
 
 
 interface UnitEncyclopediaPageProps {
-  setView: (view: WikiView) => void;
-  title: string;
+    setView: (view: WikiView) => void;
+    title: string;
 }
 
-const rarities = {
-  [Rarity.Common]: { text: 'Common', colors: ["#d1d5db", "#9ca3af"] },
-  [Rarity.Uncommon]: { text: 'Uncommon', colors: ["#32ff91", "#32ff91"] },
-  [Rarity.Rare]: { text: 'Rare', colors: ["#58a5fe", "#58a5fe"] },
-  [Rarity.Epic]: { text: 'Epic', colors: ["#b456f0", "#b456f0"] },
-  [Rarity.Mythic]: { text: 'Mythic', colors: ["#fcee63", "#fcee63"] },
-  [Rarity.Secret]: { text: 'Secret', colors: ["#ff3232", "#ff3232"] },
-  [Rarity.Nightmare]: { text: 'Nightmare', colors: ["#6366f1", "#6366f1"] },
-  [Rarity.Hero]: { text: 'Hero', colors: ["#fde047", "#fde047"] },
-  [Rarity.Legendary]: { text: 'Legendary', colors: ["#f97316", "#f97316"]},
+const rarities: Record<Rarity, { text: string, colors: string[] }> = {
+    [Rarity.Common]: { text: 'Common', colors: ["#d1d5db", "#9ca3af"] },
+    [Rarity.Uncommon]: { text: 'Uncommon', colors: ["#32ff91", "#32ff91"] },
+    [Rarity.Rare]: { text: 'Rare', colors: ["#58a5fe", "#58a5fe"] },
+    [Rarity.Epic]: { text: 'Epic', colors: ["#b456f0", "#b456f0"] },
+    [Rarity.Mythic]: { text: 'Mythic', colors: ["#fcee63", "#fcee63"] },
+    [Rarity.Secret]: { text: 'Secret', colors: ["#ff3232", "#ff3232"] },
+    [Rarity.Nightmare]: { text: 'Nightmare', colors: ["#6366f1", "#6366f1"] },
+    [Rarity.Hero]: { text: 'Hero', colors: ["#fde047", "#fde047"] },
+    [Rarity.Legendary]: { text: 'Legendary', colors: ["#f97316", "#f97316"] },
+    [Rarity.Apex]: { text: 'Apex', colors: ["#ef4444", "#b91c1c"] },
 };
 
 const RarityTag: React.FC<{ rarityKey: Rarity }> = ({ rarityKey }) => {
-  const rarity = rarities[rarityKey];
-  if (!rarity) return null;
-  return (
-    <span style={{ color: rarity.colors[0], textShadow: `0 0 5px ${rarity.colors[1]}`}} className="font-bold">
-      {rarity.text}
-    </span>
-  );
+    const rarity = rarities[rarityKey];
+    if (!rarity) return null;
+    return (
+        <span style={{ color: rarity.colors[0], textShadow: `0 0 5px ${rarity.colors[1]}` }} className="font-bold">
+            {rarity.text}
+        </span>
+    );
 };
 
 const UnitWikiCard: React.FC<{ unit: Unit; onClick: () => void }> = ({ unit, onClick }) => {
@@ -47,57 +48,57 @@ const UnitWikiCard: React.FC<{ unit: Unit; onClick: () => void }> = ({ unit, onC
 
 
 const UnitEncyclopediaPage: React.FC<UnitEncyclopediaPageProps> = ({ setView, title }) => {
-  const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
+    const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
 
-  const openModal = (unit: Unit) => setSelectedUnit(unit);
-  const closeModal = () => setSelectedUnit(null);
+    const openModal = (unit: Unit) => setSelectedUnit(unit);
+    const closeModal = () => setSelectedUnit(null);
 
-  return (
-    <>
-        <div className="container-glow p-4 flex flex-col h-full">
-            <div className="flex justify-between items-center mb-6 flex-shrink-0">
-                <h1 className="font-pixel text-lg text-text-light tracking-widest text-glow-cyan">
-                    {title}
-                </h1>
-                <button onClick={() => setView('main')} className="btn btn-yellow">Back</button>
-            </div>
-            
-            <div className="overflow-y-auto pr-2 space-y-6 flex-grow min-h-0">
-                <div className="bg-black/20 p-4 border border-border-dark">
-                    <p className="text-text-light">
-                        Units are the main Mechanic of the game. There are currently 9 Rarities of Units: <RarityTag rarityKey={Rarity.Common} />, <RarityTag rarityKey={Rarity.Uncommon} />, <RarityTag rarityKey={Rarity.Rare} />, <RarityTag rarityKey={Rarity.Epic} />, <RarityTag rarityKey={Rarity.Mythic} />, <RarityTag rarityKey={Rarity.Secret} />, <RarityTag rarityKey={Rarity.Nightmare} />, <RarityTag rarityKey={Rarity.Hero} />, and <RarityTag rarityKey={Rarity.Legendary} />.
-                    </p>
+    return (
+        <>
+            <div className="container-glow p-4 flex flex-col h-full">
+                <div className="flex justify-between items-center mb-6 flex-shrink-0">
+                    <h1 className="font-pixel text-lg text-text-light tracking-widest text-glow-cyan">
+                        {title}
+                    </h1>
+                    <button onClick={() => setView('main')} className="btn btn-yellow">Назад</button>
                 </div>
-                
-                <div>
-                    <h2 className="font-pixel text-xl text-glow-green mb-3">Obtainability</h2>
+
+                <div className="overflow-y-auto pr-2 space-y-6 flex-grow min-h-0">
                     <div className="bg-black/20 p-4 border border-border-dark">
                         <p className="text-text-light">
-                            Units are obtained through <a onClick={(e) => { e.preventDefault(); setView('coming_soon');}} className="text-accent-green underline cursor-pointer hover:text-accent-yellow">Summoning</a>.
+                            Юниты — это основная механика игры. В настоящее время существует 9 редкостей юнитов: <RarityTag rarityKey={Rarity.Common} />, <RarityTag rarityKey={Rarity.Uncommon} />, <RarityTag rarityKey={Rarity.Rare} />, <RarityTag rarityKey={Rarity.Epic} />, <RarityTag rarityKey={Rarity.Mythic} />, <RarityTag rarityKey={Rarity.Secret} />, <RarityTag rarityKey={Rarity.Nightmare} />, <RarityTag rarityKey={Rarity.Hero} /> и <RarityTag rarityKey={Rarity.Legendary} />.
                         </p>
                     </div>
-                </div>
 
-                <div>
-                    <h2 className="font-pixel text-xl text-glow-green mb-3">List of Units</h2>
-                    <div className="bg-black/20 p-4 border border-border-dark">
-                        <h3 className="font-pixel text-lg text-glow-purple mb-4 tracking-widest">Season 1</h3>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                            {UNITS.map((unit: Unit) => (
-                                <UnitWikiCard key={unit.id} unit={unit} onClick={() => openModal(unit)} />
-                            ))}
+                    <div>
+                        <h2 className="font-pixel text-xl text-glow-green mb-3">Получение</h2>
+                        <div className="bg-black/20 p-4 border border-border-dark">
+                            <p className="text-text-light">
+                                Юнитов можно получить через <a onClick={(e) => { e.preventDefault(); setView('coming_soon'); }} className="text-accent-green underline cursor-pointer hover:text-accent-yellow">Призыв</a>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 className="font-pixel text-xl text-glow-green mb-3">Список Юнитов</h2>
+                        <div className="bg-black/20 p-4 border border-border-dark">
+                            <h3 className="font-pixel text-lg text-glow-purple mb-4 tracking-widest">Сезон 1</h3>
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                                {UNITS.map((unit: Unit) => (
+                                    <UnitWikiCard key={unit.id} unit={unit} onClick={() => openModal(unit)} />
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <UnitDetailModal 
-            isOpen={!!selectedUnit}
-            unit={selectedUnit}
-            onClose={closeModal}
-        />
-    </>
-  );
+            <UnitDetailModal
+                isOpen={!!selectedUnit}
+                unit={selectedUnit}
+                onClose={closeModal}
+            />
+        </>
+    );
 };
 
 export default UnitEncyclopediaPage;
