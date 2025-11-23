@@ -1,41 +1,30 @@
 import React from 'react';
-import { ThemeProvider, createTheme, CssBaseline, Box, Container } from '@mui/material';
 import NavBar from './NavBar';
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#32ff91', // accent-green
-    },
-    secondary: {
-      main: '#fcee63', // accent-yellow
-    },
-    background: {
-      default: '#02040a', // background-dark
-      paper: '#0d111c', // background-med
-    },
-    text: {
-      primary: '#f0f1f6', // text-light
-      secondary: '#b0b5be', // text-dark
-    },
-  },
-  typography: {
-    fontFamily: '"VT323", monospace',
-  },
-});
+interface MainLayoutProps {
+  children: React.ReactNode;
+  activePage: string;
+  setActivePage: (page: any) => void;
+  isAdmin: boolean;
+}
 
-const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const MainLayout: React.FC<MainLayoutProps> = ({ children, activePage, setActivePage, isAdmin }) => {
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <NavBar />
-        <Container component="main" sx={{ flexGrow: 1, py: 2 }}>
-          {children}
-        </Container>
-      </Box>
-    </ThemeProvider>
+    <div className="min-h-screen flex flex-col font-rust text-stone-200 selection:bg-orange-500/30 selection:text-orange-200">
+      <NavBar activePage={activePage} setActivePage={setActivePage} isAdmin={isAdmin} />
+
+      <main className="flex-grow relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24">
+        <div className="bg-stone-950/80 backdrop-blur-md border border-stone-800 rounded-lg shadow-2xl min-h-[80vh] relative">
+          {/* Inner glow effect */}
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-orange-500/5 to-transparent opacity-50"></div>
+
+          {/* Content Container */}
+          <div className="relative z-10 p-4 sm:p-6">
+            {children}
+          </div>
+        </div>
+      </main>
+    </div>
   );
 };
 

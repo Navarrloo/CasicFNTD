@@ -20,6 +20,8 @@ import LotteryPage from './components/LotteryPage';
 import AdvancedStatsPage from './components/AdvancedStatsPage';
 import SettingsPage from './components/SettingsPage';
 import MorePage from './components/MorePage';
+import CalculatorPage from './components/CalculatorPage';
+import ModeratorPage from './components/ModeratorPage';
 import TutorialOverlay from './components/TutorialOverlay';
 import { Unit } from './types';
 import { supabase } from './lib/supabase';
@@ -27,7 +29,7 @@ import ToastProvider from './components/shared/ToastProvider';
 import { UNITS } from './components/constants';
 import MainLayout from './components/layout/MainLayout';
 
-type Page = 'main' | 'wiki' | 'casino' | 'profile' | 'admin' | 'trade' | 'scammers' | 'more' | 'crafting' | 'wheel' | 'quests' | 'pvp' | 'referral' | 'gifts' | 'battlepass' | 'lottery' | 'advanced_stats' | 'settings';
+type Page = 'main' | 'wiki' | 'casino' | 'profile' | 'admin' | 'trade' | 'scammers' | 'more' | 'crafting' | 'wheel' | 'quests' | 'pvp' | 'referral' | 'gifts' | 'battlepass' | 'lottery' | 'advanced_stats' | 'settings' | 'calculator' | 'moderator';
 type DbStatus = 'connecting' | 'ok' | 'error';
 
 interface GameContextType {
@@ -59,34 +61,34 @@ export const GameContext = createContext<GameContextType | null>(null);
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState<Page>('main');
   const { user } = useTelegram();
-  const [userProfile, setUserProfile] = useState<{id: number, username: string} | null>(null);
+  const [userProfile, setUserProfile] = useState<{ id: number, username: string } | null>(null);
   const [balance, setBalance] = useState<number>(0);
   const [inventory, setInventory] = useState<Unit[]>([]);
   const [achievements, setAchievements] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [dbStatus, setDbStatus] = useState<DbStatus>('connecting');
   const [connectionError, setConnectionError] = useState<string | null>(null);
-  const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
-  
+  const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
+
   // Daily bonus state
   const [dailyStreak, setDailyStreak] = useState<number>(0);
   const [lastDailyBonusDate, setLastDailyBonusDate] = useState<string | null>(null);
   const [showDailyBonus, setShowDailyBonus] = useState<boolean>(false);
-  
+
   // Statistics state
   const [unitStats, setUnitStats] = useState<Record<number, number>>({});
   const [totalSpins, setTotalSpins] = useState<number>(0);
   const [totalSpent, setTotalSpent] = useState<number>(0);
   const [totalEarned, setTotalEarned] = useState<number>(0);
   const [tradeCount, setTradeCount] = useState<number>(0);
-  
+
   // Tutorial state
   const [showTutorial, setShowTutorial] = useState<boolean>(false);
   const [tutorialStep, setTutorialStep] = useState<number>(0);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-      setToast({ message, type });
-      setTimeout(() => setToast(null), 3000);
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
   };
 
   useEffect(() => {
@@ -97,25 +99,25 @@ const App: React.FC = () => {
         setConnectionError("Supabase credentials are not set. Please edit `lib/supabase.ts` and replace the placeholder values.");
         return;
       }
-      
+
       const { error } = await supabase.from('profiles').select('id').limit(1);
 
       if (error) {
         setConnectionError(error.message);
-        const isFatalError = 
-            error.message.includes('Failed to fetch') || 
-            error.message.includes('JWT') ||
-            error.message.includes('Invalid API key');
-        
+        const isFatalError =
+          error.message.includes('Failed to fetch') ||
+          error.message.includes('JWT') ||
+          error.message.includes('Invalid API key');
+
         if (isFatalError) {
-           console.error("Supabase connection error:", error.message);
-           setDbStatus('error');
+          console.error("Supabase connection error:", error.message);
+          setDbStatus('error');
         } else {
-           console.warn("Supabase query warning (e.g., RLS or missing table):", error.message);
-           setDbStatus('ok'); 
+          console.warn("Supabase query warning (e.g., RLS or missing table):", error.message);
+          setDbStatus('ok');
         }
       } else {
-         setDbStatus('ok');
+        setDbStatus('ok');
       }
     };
     checkConnection();
@@ -125,136 +127,136 @@ const App: React.FC = () => {
     if (dbStatus !== 'ok' || !supabase) return;
 
     if (!user) {
-        if (window.Telegram?.WebApp?.initData === "") setIsLoading(false);
-        return;
+      if (window.Telegram?.WebApp?.initData === "") setIsLoading(false);
+      return;
     };
 
     const loadUserProfile = async () => {
-        setIsLoading(true);
-        if (!supabase) {
-            console.error("Supabase client not available for profile load.");
-            setIsLoading(false);
-            return;
+      setIsLoading(true);
+      if (!supabase) {
+        console.error("Supabase client not available for profile load.");
+        setIsLoading(false);
+        return;
+      }
+
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 = row not found
+        console.error('Error fetching profile', error);
+        setIsLoading(false);
+        return;
+      }
+
+      if (profile) {
+        setBalance(profile.balance);
+        const userInventory = Array.isArray(profile.inventory) ? profile.inventory : [];
+        const userAchievements = Array.isArray(profile.achievements) ? profile.achievements : [];
+        setInventory(userInventory);
+        setAchievements(userAchievements);
+        setUserProfile({ id: profile.id, username: profile.username || 'unknown' });
+
+        // Check if tutorial should be shown
+        if (!profile.tutorial_completed && userInventory.length === 0) {
+          // Give starter units if somehow missing
+          const starterUnits = UNITS.filter(u => [101, 102, 103].includes(u.id));
+          await supabase.from('profiles')
+            .update({ inventory: starterUnits })
+            .eq('id', profile.id);
+          setInventory(starterUnits);
+
+          setTimeout(() => {
+            setShowTutorial(true);
+            setTutorialStep(0);
+          }, 500);
         }
-        
-        const { data: profile, error } = await supabase
+
+        // Load daily bonus data
+        setDailyStreak(profile.daily_streak || 0);
+        setLastDailyBonusDate(profile.last_daily_bonus_date || null);
+
+        // Load statistics
+        setUnitStats(profile.unit_stats || {});
+        setTotalSpins(profile.total_spins || 0);
+        setTotalSpent(profile.total_spent || 0);
+        setTotalEarned(profile.total_earned || 0);
+        setTradeCount(profile.trade_count || 0);
+
+        // Check if daily bonus is available
+        const lastDate = profile.last_daily_bonus_date;
+        if (!lastDate) {
+          setTimeout(() => setShowDailyBonus(true), 1000);
+        } else {
+          const today = new Date().toISOString().split('T')[0];
+          const lastClaim = new Date(lastDate).toISOString().split('T')[0];
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+          if (lastClaim !== today && (lastClaim === yesterdayStr || lastClaim !== yesterdayStr)) {
+            setTimeout(() => setShowDailyBonus(true), 1000);
+          }
+        }
+      } else {
+        const { data: newProfile, error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            username: user.username,
+            first_name: user.first_name,
+            balance: STARTING_BALANCE,
+            inventory: [],
+            achievements: [],
+            daily_streak: 0,
+            last_daily_bonus_date: null,
+            unit_stats: {},
+            total_spins: 0,
+            total_spent: 0,
+            total_earned: 0,
+            transaction_history: [],
+            trade_count: 0,
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error('Error creating profile', insertError);
+        } else if (newProfile) {
+          // Give starter units (Freddy, Bonnie, Chica)
+          const starterUnits = UNITS.filter(u => [101, 102, 103].includes(u.id));
+
+          const { data: updatedProfile } = await supabase
             .from('profiles')
-            .select('*')
-            .eq('id', user.id)
+            .update({ inventory: starterUnits })
+            .eq('id', newProfile.id)
+            .select()
             .single();
 
-        if (error && error.code !== 'PGRST116') { // PGRST116 = row not found
-            console.error('Error fetching profile', error);
-            setIsLoading(false);
-            return;
-        }
+          const finalProfile = updatedProfile || newProfile;
 
-        if (profile) {
-            setBalance(profile.balance);
-            const userInventory = Array.isArray(profile.inventory) ? profile.inventory : [];
-            const userAchievements = Array.isArray(profile.achievements) ? profile.achievements : [];
-            setInventory(userInventory);
-            setAchievements(userAchievements);
-            setUserProfile({id: profile.id, username: profile.username || 'unknown' });
-            
-            // Check if tutorial should be shown
-            if (!profile.tutorial_completed && userInventory.length === 0) {
-                // Give starter units if somehow missing
-                const starterUnits = UNITS.filter(u => [101, 102, 103].includes(u.id));
-                await supabase.from('profiles')
-                    .update({ inventory: starterUnits })
-                    .eq('id', profile.id);
-                setInventory(starterUnits);
-                
-                setTimeout(() => {
-                    setShowTutorial(true);
-                    setTutorialStep(0);
-                }, 500);
-            }
-            
-            // Load daily bonus data
-            setDailyStreak(profile.daily_streak || 0);
-            setLastDailyBonusDate(profile.last_daily_bonus_date || null);
-            
-            // Load statistics
-            setUnitStats(profile.unit_stats || {});
-            setTotalSpins(profile.total_spins || 0);
-            setTotalSpent(profile.total_spent || 0);
-            setTotalEarned(profile.total_earned || 0);
-            setTradeCount(profile.trade_count || 0);
-            
-            // Check if daily bonus is available
-            const lastDate = profile.last_daily_bonus_date;
-            if (!lastDate) {
-              setTimeout(() => setShowDailyBonus(true), 1000);
-            } else {
-              const today = new Date().toISOString().split('T')[0];
-              const lastClaim = new Date(lastDate).toISOString().split('T')[0];
-              const yesterday = new Date();
-              yesterday.setDate(yesterday.getDate() - 1);
-              const yesterdayStr = yesterday.toISOString().split('T')[0];
-              
-              if (lastClaim !== today && (lastClaim === yesterdayStr || lastClaim !== yesterdayStr)) {
-                setTimeout(() => setShowDailyBonus(true), 1000);
-              }
-            }
-        } else {
-            const { data: newProfile, error: insertError } = await supabase
-                .from('profiles')
-                .insert({
-                    id: user.id,
-                    username: user.username,
-                    first_name: user.first_name,
-                    balance: STARTING_BALANCE,
-                    inventory: [],
-                    achievements: [],
-                    daily_streak: 0,
-                    last_daily_bonus_date: null,
-                    unit_stats: {},
-                    total_spins: 0,
-                    total_spent: 0,
-                    total_earned: 0,
-                    transaction_history: [],
-                    trade_count: 0,
-                })
-                .select()
-                .single();
-            
-            if (insertError) {
-                console.error('Error creating profile', insertError);
-            } else if (newProfile) {
-                // Give starter units (Freddy, Bonnie, Chica)
-                const starterUnits = UNITS.filter(u => [101, 102, 103].includes(u.id));
-                
-                const { data: updatedProfile } = await supabase
-                    .from('profiles')
-                    .update({ inventory: starterUnits })
-                    .eq('id', newProfile.id)
-                    .select()
-                    .single();
+          setBalance(finalProfile.balance);
+          setInventory(starterUnits);
+          setAchievements(finalProfile.achievements || []);
+          setUserProfile({ id: finalProfile.id, username: finalProfile.username || 'unknown' });
+          setDailyStreak(0);
+          setLastDailyBonusDate(null);
+          setUnitStats({});
+          setTotalSpins(0);
+          setTotalSpent(0);
+          setTotalEarned(0);
+          setTradeCount(0);
 
-                const finalProfile = updatedProfile || newProfile;
-                
-                setBalance(finalProfile.balance);
-                setInventory(starterUnits);
-                setAchievements(finalProfile.achievements || []);
-                setUserProfile({id: finalProfile.id, username: finalProfile.username || 'unknown' });
-                setDailyStreak(0);
-                setLastDailyBonusDate(null);
-                setUnitStats({});
-                setTotalSpins(0);
-                setTotalSpent(0);
-                setTotalEarned(0);
-                setTradeCount(0);
-                
-                // Start tutorial for new users
-                setTimeout(() => {
-                    setShowTutorial(true);
-                    setTutorialStep(0);
-                }, 500);
-            }
+          // Start tutorial for new users
+          setTimeout(() => {
+            setShowTutorial(true);
+            setTutorialStep(0);
+          }, 500);
         }
-        setIsLoading(false);
+      }
+      setIsLoading(false);
     };
 
     loadUserProfile();
@@ -274,7 +276,7 @@ const App: React.FC = () => {
       .from('profiles')
       .update({ achievements: newAchievements })
       .eq('id', user.id);
-    
+
     if (error) {
       console.error('Failed to save achievements', error);
       showToast('Failed to save achievement progress.', 'error');
@@ -286,42 +288,42 @@ const App: React.FC = () => {
 
   const addToInventory = useCallback(async (unit: Unit) => {
     if (!user || !supabase) return;
-    
+
     const oldInventory = inventory;
     const newInventory = [...inventory, unit];
     setInventory(newInventory);
 
     const { error } = await supabase
-        .from('profiles')
-        .update({ inventory: newInventory })
-        .eq('id', user.id);
-    
+      .from('profiles')
+      .update({ inventory: newInventory })
+      .eq('id', user.id);
+
     if (error) {
-        console.error("Failed to update inventory in DB:", error);
-        setInventory(oldInventory); // Revert on failure
+      console.error("Failed to update inventory in DB:", error);
+      setInventory(oldInventory); // Revert on failure
     } else {
-        if(newInventory.length >= 5){
-            unlockAchievement('novice_collector');
-        }
+      if (newInventory.length >= 5) {
+        unlockAchievement('novice_collector');
+      }
     }
   }, [user, inventory, unlockAchievement, supabase]);
-  
+
   const removeFromInventory = useCallback(async (_unitToRemove: Unit, unitIndex: number) => {
     if (!user || !supabase) return;
-    
+
     const oldInventory = inventory;
     const newInventory = [...inventory];
     newInventory.splice(unitIndex, 1);
     setInventory(newInventory);
 
     const { error } = await supabase
-        .from('profiles')
-        .update({ inventory: newInventory })
-        .eq('id', user.id);
+      .from('profiles')
+      .update({ inventory: newInventory })
+      .eq('id', user.id);
 
     if (error) {
-        console.error("Failed to update inventory in DB:", error);
-        setInventory(oldInventory); // Revert on failure
+      console.error("Failed to update inventory in DB:", error);
+      setInventory(oldInventory); // Revert on failure
     }
   }, [user, inventory, supabase]);
 
@@ -407,7 +409,7 @@ const App: React.FC = () => {
 
     const history = profile?.transaction_history || [];
     const newHistory = Array.isArray(history) ? [...history] : [];
-    
+
     const newTransaction = {
       id: `${Date.now()}-${Math.random()}`,
       type: transaction.type,
@@ -418,7 +420,7 @@ const App: React.FC = () => {
     };
 
     newHistory.push(newTransaction);
-    
+
     // Keep only last 100 transactions
     const trimmedHistory = newHistory.slice(-100);
 
@@ -427,7 +429,7 @@ const App: React.FC = () => {
     if (transaction.type === 'purchase') {
       newTradeCount += 1;
       setTradeCount(newTradeCount);
-      
+
       if (newTradeCount >= 10) {
         unlockAchievement('trader_pro');
       }
@@ -435,7 +437,7 @@ const App: React.FC = () => {
 
     const { error: updateError } = await supabase
       .from('profiles')
-      .update({ 
+      .update({
         transaction_history: trimmedHistory,
         trade_count: newTradeCount
       })
@@ -449,7 +451,7 @@ const App: React.FC = () => {
   const updateBalance = useCallback(async (newBalance: number) => {
     if (!user || !supabase) return;
     const oldBalance = balance;
-    setBalance(newBalance); 
+    setBalance(newBalance);
 
     const { error } = await supabase
       .from('profiles')
@@ -467,109 +469,118 @@ const App: React.FC = () => {
     return ADMIN_USERNAMES.includes(user.username.toUpperCase());
   }, [user]);
 
+  const isCalculatorAdmin = useMemo(() => {
+    if (isAdmin) return true;
+    if (!achievements) return false;
+    return achievements.includes('admin:calculator');
+  }, [isAdmin, achievements]);
+
   const renderPage = () => {
+    // ... (existing loading checks)
     if (dbStatus === 'connecting') {
-        return (
-            <div className="flex justify-center items-center h-full">
-                <p className="font-pixel text-2xl text-glow-cyan animate-pulse">Connecting to Database...</p>
-            </div>
-        );
+      return (
+        <div className="flex justify-center items-center h-full">
+          <p className="font-pixel text-2xl text-glow-cyan animate-pulse">Подключение к базе данных...</p>
+        </div>
+      );
     }
 
     if (dbStatus === 'error') {
-        const isCorsError = connectionError?.includes('Failed to fetch');
-        return (
-             <div className="p-4 flex items-center justify-center h-full">
-               <div className="container-glow container-glow-red max-w-lg text-left">
-                {isCorsError ? (
-                  <>
-                    <h1 className="font-pixel text-2xl text-glow-red mb-4 text-center">CORS Configuration Required</h1>
-                    <p className="text-text-light text-base mb-4">
-                        The app failed to connect to the database. This is a Cross-Origin Resource Sharing (CORS) issue that must be resolved in your Supabase project settings.
-                    </p>
-                    
-                    <div className="bg-black/30 p-3 border border-border-dark space-y-3">
-                        <p className="font-pixel text-lg text-accent-yellow">How to fix:</p>
-                        <ol className="text-sm text-text-light list-decimal list-inside space-y-2">
-                            <li>
-                                Go to your <span className="font-bold text-white">Supabase Dashboard</span>.
-                            </li>
-                            <li>
-                                Navigate to: <code className="bg-black/50 p-1 rounded-sm text-white">Project Settings &gt; API</code>.
-                            </li>
-                            <li>
-                                Scroll down to <code className="bg-black/50 p-1 rounded-sm text-white">Cross-Origin Resource Sharing (CORS)</code>.
-                            </li>
-                            <li>
-                                Add the following pattern to the text box: <br />
-                                <code className="bg-black/50 p-1 rounded-sm text-accent-green mt-1 inline-block text-lg">*</code>
-                            </li>
-                            <li>
-                                Click <span className="font-bold text-white">"Save"</span> and then reload this app.
-                            </li>
-                        </ol>
-                    </div>
+      // ... (existing error handling)
+      const isCorsError = connectionError?.includes('Failed to fetch');
+      return (
+        // ... (existing error UI)
+        <div className="p-4 flex items-center justify-center h-full">
+          <div className="container-glow container-glow-red max-w-lg text-left">
+            {isCorsError ? (
+              <>
+                <h1 className="font-pixel text-2xl text-glow-red mb-4 text-center">Требуется настройка CORS</h1>
+                <p className="text-text-light text-base mb-4">
+                  Приложению не удалось подключиться к базе данных. Это проблема CORS, которую необходимо решить в настройках вашего проекта Supabase.
+                </p>
 
-                    <p className="text-xs text-text-dark/70 mt-4 text-center">
-                        Note: Using '*' allows requests from any domain. For production, you should restrict this to your specific app's domain.
-                    </p>
-                    
-                    <div className="mt-6 flex justify-center">
-                        <button 
-                            onClick={() => window.location.reload()}
-                            className="btn btn-yellow"
-                        >
-                            Reload App
-                        </button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center">
-                    <h1 className="font-pixel text-2xl text-glow-red mb-4">Supabase Configuration Required</h1>
-                    <p className="text-text-light text-base mb-4">
-                        The app needs to be connected to your database. This is a one-time setup step.
-                    </p>
-                    
-                    <div className="bg-black/30 p-3 border border-border-dark space-y-3 text-left">
-                        <p className="font-pixel text-lg text-accent-yellow">How to fix:</p>
-                        <ol className="text-sm text-text-light list-decimal list-inside space-y-2">
-                            <li>
-                                Open the file: <br /> <code className="bg-black/50 p-1 rounded-sm text-white mt-1 inline-block">lib/supabase.ts</code>
-                            </li>
-                            <li>
-                                Follow the instructions at the top of that file to add your unique Supabase <span className="font-bold text-white">Project URL</span> and <span className="font-bold text-white">Public Key</span>.
-                            </li>
-                            <li>
-                                Save the file and reload this app.
-                            </li>
-                        </ol>
-                    </div>
+                <div className="bg-black/30 p-3 border border-border-dark space-y-3">
+                  <p className="font-pixel text-lg text-accent-yellow">Как исправить:</p>
+                  <ol className="text-sm text-text-light list-decimal list-inside space-y-2">
+                    <li>
+                      Перейдите в <span className="font-bold text-white">Панель управления Supabase</span>.
+                    </li>
+                    <li>
+                      Перейдите в: <code className="bg-black/50 p-1 rounded-sm text-white">Project Settings &gt; API</code>.
+                    </li>
+                    <li>
+                      Прокрутите до <code className="bg-black/50 p-1 rounded-sm text-white">Cross-Origin Resource Sharing (CORS)</code>.
+                    </li>
+                    <li>
+                      Добавьте следующий шаблон в поле: <br />
+                      <code className="bg-black/50 p-1 rounded-sm text-accent-green mt-1 inline-block text-lg">*</code>
+                    </li>
+                    <li>
+                      Нажмите <span className="font-bold text-white">"Save"</span> и перезагрузите приложение.
+                    </li>
+                  </ol>
+                </div>
 
-                    <p className="text-xs text-text-dark/70 mt-4">
-                        Technical Error: {connectionError}
-                    </p>
-                    
-                    <div className="mt-6 flex justify-center">
-                        <button 
-                            onClick={() => window.location.reload()}
-                            className="btn btn-yellow"
-                        >
-                            Reload App
-                        </button>
-                    </div>
-                  </div>
-                )}
+                <p className="text-xs text-text-dark/70 mt-4 text-center">
+                  Примечание: '*' разрешает запросы с любого домена. Для продакшена используйте домен вашего приложения.
+                </p>
+
+                <div className="mt-6 flex justify-center">
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="btn btn-yellow"
+                  >
+                    Перезагрузить
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center">
+                <h1 className="font-pixel text-2xl text-glow-red mb-4">Требуется настройка Supabase</h1>
+                <p className="text-text-light text-base mb-4">
+                  Приложение должно быть подключено к базе данных. Это разовая настройка.
+                </p>
+
+                <div className="bg-black/30 p-3 border border-border-dark space-y-3 text-left">
+                  <p className="font-pixel text-lg text-accent-yellow">Как исправить:</p>
+                  <ol className="text-sm text-text-light list-decimal list-inside space-y-2">
+                    <li>
+                      Откройте файл: <br /> <code className="bg-black/50 p-1 rounded-sm text-white mt-1 inline-block">lib/supabase.ts</code>
+                    </li>
+                    <li>
+                      Следуйте инструкциям в файле, чтобы добавить <span className="font-bold text-white">Project URL</span> и <span className="font-bold text-white">Public Key</span>.
+                    </li>
+                    <li>
+                      Сохраните файл и перезагрузите приложение.
+                    </li>
+                  </ol>
+                </div>
+
+                <p className="text-xs text-text-dark/70 mt-4">
+                  Техническая ошибка: {connectionError}
+                </p>
+
+                <div className="mt-6 flex justify-center">
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="btn btn-yellow"
+                  >
+                    Перезагрузить
+                  </button>
+                </div>
               </div>
-            </div>
-        )
+            )}
+          </div>
+        </div>
+      )
     }
 
     if (isLoading) {
-        return (
-            <div className="flex justify-center items-center h-full">
-                <p className="font-pixel text-2xl text-glow-cyan animate-pulse">Loading Profile...</p>
-            </div>
-        );
+      return (
+        <div className="flex justify-center items-center h-full">
+          <p className="font-pixel text-2xl text-glow-cyan animate-pulse">Загрузка профиля...</p>
+        </div>
+      );
     }
     switch (activePage) {
       case 'main':
@@ -607,7 +618,11 @@ const App: React.FC = () => {
       case 'settings':
         return <SettingsPage />;
       case 'more':
-        return <MorePage onNavigate={(page) => setActivePage(page as Page)} />;
+        return <MorePage onNavigate={(page) => setActivePage(page as Page)} isAdmin={isAdmin} />;
+      case 'calculator':
+        return <CalculatorPage isCalculatorAdmin={isCalculatorAdmin} />;
+      case 'moderator':
+        return isAdmin ? <ModeratorPage /> : <MainPage />;
       default:
         return <MainPage />;
     }
@@ -621,16 +636,16 @@ const App: React.FC = () => {
   }, [dailyStreak]);
 
   return (
-    <GameContext.Provider value={{ 
-      balance, 
-      updateBalance, 
-      inventory, 
-      addToInventory, 
-      removeFromInventory, 
-      isLoading, 
-      achievements, 
-      unlockAchievement, 
-      showToast, 
+    <GameContext.Provider value={{
+      balance,
+      updateBalance,
+      inventory,
+      addToInventory,
+      removeFromInventory,
+      isLoading,
+      achievements,
+      unlockAchievement,
+      showToast,
       userProfile,
       unitStats,
       totalSpins,
@@ -644,7 +659,7 @@ const App: React.FC = () => {
       tutorialStep,
       setActivePage,
     }}>
-      <MainLayout>
+      <MainLayout activePage={activePage} setActivePage={setActivePage} isAdmin={isAdmin}>
         <ToastProvider toast={toast}>
           <div className="bg-transparent h-full text-text-light font-pixel selection:bg-accent-green selection:text-background-dark flex flex-col">
             <main className="flex-grow pt-4 px-2 pb-24 flex flex-col min-h-0">

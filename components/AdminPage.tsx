@@ -9,6 +9,7 @@ interface Profile {
   first_name: string;
   balance: number;
   inventory: Unit[];
+  achievements: string[];
 }
 
 const AdminPage: React.FC = () => {
@@ -43,62 +44,62 @@ const AdminPage: React.FC = () => {
 
   const handleAddSouls = async () => {
     if (!foundUser || soulsToAdd <= 0 || !supabase) return;
-    
+
     const newBalance = foundUser.balance + soulsToAdd;
     const { data, error } = await supabase
-        .from('profiles')
-        .update({ balance: newBalance })
-        .eq('id', foundUser.id)
-        .select()
-        .single();
-    
+      .from('profiles')
+      .update({ balance: newBalance })
+      .eq('id', foundUser.id)
+      .select()
+      .single();
+
     if (error) {
-        setMessage('Error updating balance.');
+      setMessage('Error updating balance.');
     } else if (data) {
-        setMessage(`${soulsToAdd} souls added to ${foundUser.username || 'the user'}.`);
-        setFoundUser(data as Profile);
-        setSoulsToAdd(0);
+      setMessage(`${soulsToAdd} souls added to ${foundUser.username || 'the user'}.`);
+      setFoundUser(data as Profile);
+      setSoulsToAdd(0);
     }
   };
 
   const handleGiveUnit = async () => {
     if (!foundUser || !selectedUnit || !supabase) return;
-    
+
     const currentInventory = Array.isArray(foundUser.inventory) ? foundUser.inventory : [];
     const newInventory = [...currentInventory, selectedUnit];
-    
+
     const { data, error } = await supabase
-        .from('profiles')
-        .update({ inventory: newInventory })
-        .eq('id', foundUser.id)
-        .select()
-        .single();
+      .from('profiles')
+      .update({ inventory: newInventory })
+      .eq('id', foundUser.id)
+      .select()
+      .single();
 
     if (error) {
-        setMessage('Error giving unit.');
+      setMessage('Error giving unit.');
     } else if (data) {
-        setMessage(`${selectedUnit.name} given to ${foundUser.username || 'the user'}.`);
-        setFoundUser(data as Profile);
-        setSelectedUnit(null);
+      setMessage(`${selectedUnit.name} given to ${foundUser.username || 'the user'}.`);
+      setFoundUser(data as Profile);
+      setSelectedUnit(null);
     }
   };
-  
+
   const handleClearInventory = async () => {
     if (!foundUser || !supabase) return;
     if (!window.confirm(`Are you sure you want to clear inventory for ${foundUser.username || 'this user'}?`)) return;
 
-     const { data, error } = await supabase
-        .from('profiles')
-        .update({ inventory: [] })
-        .eq('id', foundUser.id)
-        .select()
-        .single();
-    
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({ inventory: [] })
+      .eq('id', foundUser.id)
+      .select()
+      .single();
+
     if (error) {
-        setMessage('Error clearing inventory.');
+      setMessage('Error clearing inventory.');
     } else if (data) {
-        setMessage(`Inventory cleared for ${foundUser.username || 'the user'}.`);
-        setFoundUser(data as Profile);
+      setMessage(`Inventory cleared for ${foundUser.username || 'the user'}.`);
+      setFoundUser(data as Profile);
     }
   };
 
@@ -108,27 +109,54 @@ const AdminPage: React.FC = () => {
     if (!window.confirm(`Give ${massAmount} souls to ALL users?`)) return;
 
     const { data: allProfiles, error: fetchError } = await supabase
-        .from('profiles')
-        .select('id, balance');
+      .from('profiles')
+      .select('id, balance');
 
     if (fetchError) {
-        setMessage('Failed to fetch users.');
-        return;
+      setMessage('Failed to fetch users.');
+      return;
     }
 
     // Update all users
     let successCount = 0;
     for (const profile of allProfiles || []) {
-        const { error } = await supabase
-            .from('profiles')
-            .update({ balance: profile.balance + massAmount })
-            .eq('id', profile.id);
-        
-        if (!error) successCount++;
+      const { error } = await supabase
+        .from('profiles')
+        .update({ balance: profile.balance + massAmount })
+        .eq('id', profile.id);
+
+      if (!error) successCount++;
     }
 
     setMessage(`Gave ${massAmount} souls to ${successCount} users!`);
   }
+
+  const toggleCalculatorAdmin = async () => {
+    if (!foundUser || !supabase) return;
+    const currentAchievements = foundUser.achievements || [];
+    let newAchievements;
+    const isCalcAdmin = currentAchievements.includes('admin:calculator');
+
+    if (isCalcAdmin) {
+      newAchievements = currentAchievements.filter(a => a !== 'admin:calculator');
+    } else {
+      newAchievements = [...currentAchievements, 'admin:calculator'];
+    }
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({ achievements: newAchievements })
+      .eq('id', foundUser.id)
+      .select()
+      .single();
+
+    if (error) {
+      setMessage('Error updating roles.');
+    } else if (data) {
+      setMessage(isCalcAdmin ? `Revoked Calculator Admin from ${foundUser.username}` : `Granted Calculator Admin to ${foundUser.username}`);
+      setFoundUser(data as Profile);
+    }
+  };
 
   return (
     <div className="p-2 animate-fadeIn h-full flex flex-col">
@@ -181,14 +209,25 @@ const AdminPage: React.FC = () => {
             {/* User Info */}
             <div className="flex justify-between items-start border-b-2 border-[#333] pb-2 mb-4">
               <div className="flex items-center">
-                <img src={UNITS[0].image} alt="avatar" className="w-16 h-16 mr-4 border-2 border-[#333]"/>
+                <img src={UNITS[0].image} alt="avatar" className="w-16 h-16 mr-4 border-2 border-[#333]" />
                 <div>
                   <h2 className="text-xl text-white">{foundUser.first_name}</h2>
                   <p className="text-sm text-gray-400">@{foundUser.username || 'no_username'} [{foundUser.id}]</p>
                   <p className="text-sm text-green-400">STATUS: CLEAR</p>
+                  {foundUser.achievements?.includes('admin:calculator') && (
+                    <p className="text-xs text-accent-cyan font-bold mt-1">🔧 CALCULATOR ADMIN</p>
+                  )}
                 </div>
               </div>
-              <p className="text-lg text-gray-400">ONLINE</p>
+              <div className="text-right">
+                <p className="text-lg text-gray-400">ONLINE</p>
+                <button
+                  onClick={toggleCalculatorAdmin}
+                  className={`mt-2 px-3 py-1 text-xs rounded border ${foundUser.achievements?.includes('admin:calculator') ? 'border-red-500 text-red-500 hover:bg-red-500/10' : 'border-cyan-500 text-cyan-500 hover:bg-cyan-500/10'}`}
+                >
+                  {foundUser.achievements?.includes('admin:calculator') ? 'REVOKE CALC ADMIN' : 'GRANT CALC ADMIN'}
+                </button>
+              </div>
             </div>
 
             {/* Actions Grid */}
@@ -196,10 +235,10 @@ const AdminPage: React.FC = () => {
               {/* Left Column */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-stretch gap-2">
-                  <input 
-                    type="number" 
-                    value={soulsToAdd} 
-                    onChange={e => setSoulsToAdd(parseInt(e.target.value, 10) || 0)} 
+                  <input
+                    type="number"
+                    value={soulsToAdd}
+                    onChange={e => setSoulsToAdd(parseInt(e.target.value, 10) || 0)}
                     className="admin-input w-24 text-center"
                     placeholder="0"
                   />
@@ -215,9 +254,9 @@ const AdminPage: React.FC = () => {
                 <h3 className="text-center text-gray-400 text-sm border-b border-[#333] pb-1">GIVE</h3>
                 <div className="admin-list">
                   {UNITS.map((unit: Unit) => (
-                    <p 
-                      key={unit.id} 
-                      onClick={() => setSelectedUnit(unit)} 
+                    <p
+                      key={unit.id}
+                      onClick={() => setSelectedUnit(unit)}
                       className={`admin-list-item ${selectedUnit?.id === unit.id ? 'selected' : ''}`}
                     >
                       {unit.name}

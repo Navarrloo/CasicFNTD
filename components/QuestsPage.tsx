@@ -4,8 +4,8 @@ import { WikiView } from './WikiPage';
 type QuestTab = 'daily' | 'weekly' | 'special';
 
 interface QuestsPageProps {
-  setView: (view: WikiView) => void;
-  title: string;
+    setView: (view: WikiView) => void;
+    title: string;
 }
 
 interface Reward {
@@ -31,69 +31,69 @@ const PUPPET_PRESENT_ICON = 'https://images.weserv.nl/?url=static.wikitide.net/f
 
 
 const dailyQuests: Quest[] = [
-    { name: 'Night Veteran', tasks: 'Complete 2 Nights', rewards: [{ name: 'Souls', amount: '2', icon: SOUL_ICON }, { name: 'Pizza', amount: '3', icon: PIZZA_ICON }] },
-    { name: 'Night Conqueror', tasks: 'Beat Game 1 Night 2', rewards: [{ name: 'Tokens', amount: '200', icon: TOKEN_ICON }] },
-    { name: 'Wave Grinder', tasks: 'Complete 20 Waves in Game 1 Night 3!', rewards: [{ name: 'Tokens', amount: '250', icon: TOKEN_ICON }, { name: 'Souls', amount: '3', icon: SOUL_ICON }] },
-    { name: 'Difficulty Master', tasks: 'Beat Game 2 Night 3', rewards: [{ name: 'Tokens', amount: '200', icon: TOKEN_ICON }, { name: 'Souls', amount: '2', icon: SOUL_ICON }] },
-    { name: 'Squad Player', tasks: 'Complete a Night with 4 Players', rewards: [{ name: 'Tokens', amount: '500', icon: TOKEN_ICON }, { name: 'Souls', amount: '5', icon: SOUL_ICON }] },
-    { name: 'Endless Challenger', tasks: 'Reach Wave 50 in Endless Normal Mode!', rewards: [{ name: 'Souls', amount: '5', icon: SOUL_ICON }, { name: 'Cupcake', amount: '5', icon: CUPCAKE_ICON }] },
-    { name: 'Boss Slayer', tasks: 'Defeat 5 Bosses', rewards: [{ name: 'Tokens', amount: '300', icon: TOKEN_ICON }, { name: 'Souls', amount: '3', icon: SOUL_ICON }] },
-    { name: 'Mythic Hunter', tasks: 'Summon a Mythic Unit', rewards: [{ name: 'Souls', amount: '5', icon: SOUL_ICON }] },
-    { name: 'Shiny Collector', tasks: 'Obtain a Shiny Unit', rewards: [{ name: 'Tokens', amount: '250', icon: TOKEN_ICON }] },
-    { name: 'Unit Seller', tasks: 'Sell 5 Units', rewards: [{ name: 'Tokens', amount: '250', icon: TOKEN_ICON }, { name: 'Souls', amount: '2', icon: SOUL_ICON }] },
-    { name: 'Enchanter', tasks: 'Roll 5 Enchantments', rewards: [{ name: 'Tokens', amount: '250', icon: TOKEN_ICON }] },
-    { name: 'Reroll Expert', tasks: 'Roll 10 Enchantments', rewards: [{ name: 'Tokens', amount: '500', icon: TOKEN_ICON }] },
-    { name: 'Present Unwrapper', tasks: 'Open 5 Uncommon Presents', rewards: [{ name: 'Tokens', amount: '100', icon: TOKEN_ICON }, { name: 'Souls', amount: '2', icon: SOUL_ICON }] },
-    { name: 'Merchant Buyer', tasks: 'Make 3 Merchant Purchases', rewards: [{ name: 'Tokens', amount: '250', icon: TOKEN_ICON }] },
-    { name: 'Big Spender', tasks: 'Spend 10K Tokens', rewards: [{ name: 'Souls', amount: '10', icon: SOUL_ICON }, { name: 'Oil', amount: '5', icon: OIL_ICON }] },
-    { name: 'Marathon Gamer', tasks: 'Play for 2 Hours', rewards: [{ name: 'Tokens', amount: '450', icon: TOKEN_ICON }, { name: 'Souls', amount: '5', icon: SOUL_ICON }, { name: 'Soda', amount: '5', icon: SODA_ICON }] },
-    { name: 'Battle Pass Grinder', tasks: 'Level up Battlepass twice', rewards: [{ name: 'Tokens', amount: '300', icon: TOKEN_ICON }, { name: 'Souls', amount: '2', icon: SOUL_ICON }] },
+    { name: 'Ветеран Ночи', tasks: 'Прожить 2 ночи', rewards: [{ name: 'Души', amount: '2', icon: SOUL_ICON }, { name: 'Пицца', amount: '3', icon: PIZZA_ICON }] },
+    { name: 'Завоеватель Ночи', tasks: 'Пройти Игру 1 Ночь 2', rewards: [{ name: 'Токены', amount: '200', icon: TOKEN_ICON }] },
+    { name: 'Гриндер Волн', tasks: 'Прожить 20 волн в Игре 1 Ночь 3!', rewards: [{ name: 'Токены', amount: '250', icon: TOKEN_ICON }, { name: 'Души', amount: '3', icon: SOUL_ICON }] },
+    { name: 'Мастер Сложности', tasks: 'Пройти Игру 2 Ночь 3', rewards: [{ name: 'Токены', amount: '200', icon: TOKEN_ICON }, { name: 'Души', amount: '2', icon: SOUL_ICON }] },
+    { name: 'Командный Игрок', tasks: 'Прожить ночь с 4 игроками', rewards: [{ name: 'Токены', amount: '500', icon: TOKEN_ICON }, { name: 'Души', amount: '5', icon: SOUL_ICON }] },
+    { name: 'Бесконечный Претендент', tasks: 'Достичь 50 волны в Бесконечном Нормальном режиме!', rewards: [{ name: 'Души', amount: '5', icon: SOUL_ICON }, { name: 'Кекс', amount: '5', icon: CUPCAKE_ICON }] },
+    { name: 'Убийца Боссов', tasks: 'Победить 5 боссов', rewards: [{ name: 'Токены', amount: '300', icon: TOKEN_ICON }, { name: 'Души', amount: '3', icon: SOUL_ICON }] },
+    { name: 'Охотник на Мификов', tasks: 'Призвать Мифического юнита', rewards: [{ name: 'Души', amount: '5', icon: SOUL_ICON }] },
+    { name: 'Коллекционер Шайни', tasks: 'Получить Шайни юнита', rewards: [{ name: 'Токены', amount: '250', icon: TOKEN_ICON }] },
+    { name: 'Продавец Юнитов', tasks: 'Продать 5 юнитов', rewards: [{ name: 'Токены', amount: '250', icon: TOKEN_ICON }, { name: 'Души', amount: '2', icon: SOUL_ICON }] },
+    { name: 'Зачарователь', tasks: 'Сделать 5 зачарований', rewards: [{ name: 'Токены', amount: '250', icon: TOKEN_ICON }] },
+    { name: 'Эксперт Реролла', tasks: 'Сделать 10 зачарований', rewards: [{ name: 'Токены', amount: '500', icon: TOKEN_ICON }] },
+    { name: 'Открыватель Подарков', tasks: 'Открыть 5 Необычных подарков', rewards: [{ name: 'Токены', amount: '100', icon: TOKEN_ICON }, { name: 'Души', amount: '2', icon: SOUL_ICON }] },
+    { name: 'Покупатель у Торговца', tasks: 'Совершить 3 покупки у Торговца', rewards: [{ name: 'Токены', amount: '250', icon: TOKEN_ICON }] },
+    { name: 'Транжира', tasks: 'Потратить 10К Токенов', rewards: [{ name: 'Души', amount: '10', icon: SOUL_ICON }, { name: 'Масло', amount: '5', icon: OIL_ICON }] },
+    { name: 'Марафонец', tasks: 'Играть 2 часа', rewards: [{ name: 'Токены', amount: '450', icon: TOKEN_ICON }, { name: 'Души', amount: '5', icon: SOUL_ICON }, { name: 'Сода', amount: '5', icon: SODA_ICON }] },
+    { name: 'Гриндер БП', tasks: 'Поднять уровень БП дважды', rewards: [{ name: 'Токены', amount: '300', icon: TOKEN_ICON }, { name: 'Души', amount: '2', icon: SOUL_ICON }] },
 ];
 
 const weeklyQuests: Quest[] = [
-    { name: 'Night Master', tasks: 'Complete 30 Nights', rewards: [{ name: 'Souls', amount: '20', icon: SOUL_ICON }, { name: 'Pizza', amount: '25', icon: PIZZA_ICON }] },
-    { name: 'Shiny Master', tasks: 'Obtain 12 Shiny Units', rewards: [{ name: 'Tokens', amount: '2500', icon: TOKEN_ICON }] },
-    { name: 'Reroll Master', tasks: 'Roll 100 Enchantments', rewards: [{ name: 'Tokens', amount: '3000', icon: TOKEN_ICON }] },
-    { name: 'Avid Merchant Go-er', tasks: 'Make 45 Merchant Purchases', rewards: [{ name: 'Tokens', amount: '2000', icon: TOKEN_ICON }, { name: 'Souls', amount: '15', icon: SOUL_ICON }] },
+    { name: 'Мастер Ночи', tasks: 'Прожить 30 ночей', rewards: [{ name: 'Души', amount: '20', icon: SOUL_ICON }, { name: 'Пицца', amount: '25', icon: PIZZA_ICON }] },
+    { name: 'Мастер Шайни', tasks: 'Получить 12 Шайни юнитов', rewards: [{ name: 'Токены', amount: '2500', icon: TOKEN_ICON }] },
+    { name: 'Мастер Реролла', tasks: 'Сделать 100 зачарований', rewards: [{ name: 'Токены', amount: '3000', icon: TOKEN_ICON }] },
+    { name: 'Заядлый Покупатель', tasks: 'Совершить 45 покупок у Торговца', rewards: [{ name: 'Токены', amount: '2000', icon: TOKEN_ICON }, { name: 'Души', amount: '15', icon: SOUL_ICON }] },
 ];
 
 const specialQuests: Quest[] = [
-    { name: 'Golden Freddy', tasks: 'Beat Game 1 Night 6\nReach Wave 50 in Game 1 Endless\nObtain 3 Mythic Units or 1 Secret Unit', rewards: [{ name: 'Golden Freddy', amount: '1', icon: GOLDEN_FREDDY_PRESENT_ICON }] },
-    { name: 'Puppet', tasks: 'Reach 2500 Faz-Rating\nObtain 3 Shiny Units\nReach Level 60 on 3 Units\nBeat Game 2 Night 6\nObtain all 4 Withered Units\nReach Wave 50 in Game 2 Endless with Withered Units\nEnchant Withered Units 250 Times', rewards: [{ name: 'Puppet', amount: '1', icon: PUPPET_PRESENT_ICON }] },
+    { name: 'Золотой Фредди', tasks: 'Пройти Игру 1 Ночь 6\nДостичь 50 волны в Игре 1 Бесконечно\nПолучить 3 Мифических юнита или 1 Секретного', rewards: [{ name: 'Золотой Фредди', amount: '1', icon: GOLDEN_FREDDY_PRESENT_ICON }] },
+    { name: 'Марионетка', tasks: 'Достичь 2500 Фаз-Рейтинга\nПолучить 3 Шайни юнита\nДостичь 60 уровня на 3 юнитах\nПройти Игру 2 Ночь 6\nПолучить всех 4 Withered юнитов\nДостичь 50 волны в Игре 2 Бесконечно с Withered юнитами\nЗачаровать Withered юнитов 250 раз', rewards: [{ name: 'Марионетка', amount: '1', icon: PUPPET_PRESENT_ICON }] },
 ];
 
 
-const RewardDisplay: React.FC<{reward: Reward}> = ({reward}) => (
+const RewardDisplay: React.FC<{ reward: Reward }> = ({ reward }) => (
     <div className="flex items-center bg-black/30 px-2 py-1 border border-border-dark rounded-sm">
-        <img src={reward.icon} alt={reward.name} className="w-6 h-6 mr-2"/>
+        <img src={reward.icon} alt={reward.name} className="w-6 h-6 mr-2" />
         <span className="font-pixel text-sm text-text-light">{reward.amount}</span>
     </div>
 );
 
 const linkableTerms: Record<string, WikiView> = {
-    'Units': 'units', 'Unit': 'units',
-    'Enchantments': 'enchantments',
-    'Night': 'coming_soon', 'Nights': 'coming_soon',
-    'Summon': 'coming_soon',
-    'Merchant': 'coming_soon',
-    'Battlepass': 'coming_soon',
-    'Withered Units': 'units',
-    'Faz-Rating': 'faz_rating',
+    'Юниты': 'units', 'Юнит': 'units',
+    'Зачарования': 'enchantments',
+    'Ночь': 'coming_soon', 'Ночи': 'coming_soon',
+    'Призыв': 'coming_soon',
+    'Торговец': 'coming_soon',
+    'БП': 'coming_soon',
+    'Withered Юниты': 'units',
+    'Фаз-Рейтинг': 'faz_rating',
 };
 
 const TextWithLinks: React.FC<{ text: string; setView: (view: WikiView) => void }> = ({ text, setView }) => {
     const regex = new RegExp(`(${Object.keys(linkableTerms).join('|')})`, 'g');
     const parts = text.split(regex);
-    
+
     return (
         <span className="whitespace-pre-line">
             {parts.map((part, index) => {
                 const view = linkableTerms[part];
                 if (view) {
                     return (
-                         <a 
-                            key={index} 
-                            onClick={(e) => { e.preventDefault(); setView(view); }} 
+                        <a
+                            key={index}
+                            onClick={(e) => { e.preventDefault(); setView(view); }}
                             className="text-accent-green underline cursor-pointer hover:text-accent-yellow"
                         >
                             {part}
@@ -112,9 +112,9 @@ const QuestTable: React.FC<{ quests: Quest[]; setView: (view: WikiView) => void 
         <table className="stats-table">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Tasks</th>
-                    <th>Rewards</th>
+                    <th>Название</th>
+                    <th>Задачи</th>
+                    <th>Награды</th>
                 </tr>
             </thead>
             <tbody>
@@ -142,7 +142,7 @@ const QuestsPage: React.FC<QuestsPageProps> = ({ setView, title }) => {
     const [activeTab, setActiveTab] = useState<QuestTab>('daily');
 
     const renderContent = () => {
-        switch(activeTab) {
+        switch (activeTab) {
             case 'daily': return <QuestTable quests={dailyQuests} setView={setView} />;
             case 'weekly': return <QuestTable quests={weeklyQuests} setView={setView} />;
             case 'special': return <QuestTable quests={specialQuests} setView={setView} />;
@@ -156,21 +156,21 @@ const QuestsPage: React.FC<QuestsPageProps> = ({ setView, title }) => {
                 <h1 className="font-pixel text-lg text-text-light tracking-widest text-glow-cyan">
                     {title.toUpperCase()}
                 </h1>
-                <button onClick={() => setView('main')} className="btn btn-yellow">Back</button>
+                <button onClick={() => setView('main')} className="btn btn-yellow">Назад</button>
             </div>
 
             <div className="overflow-y-auto pr-2 space-y-6 flex-grow min-h-0">
                 <div className="bg-black/20 p-4 border border-border-dark">
                     <p className="text-text-light">
-                        Quests are missions Players can complete to earn Rewards. There are 3 types of Quests: Daily, Weekly, and Special.
+                        Квесты — это миссии, которые игроки могут выполнять для получения наград. Существует 3 типа квестов: Ежедневные, Еженедельные и Специальные.
                     </p>
                 </div>
 
                 <div>
                     <div className="flex gap-2 mb-3">
-                        <button onClick={() => setActiveTab('daily')} className={`stats-tab ${activeTab === 'daily' ? 'active' : ''}`}>Daily</button>
-                        <button onClick={() => setActiveTab('weekly')} className={`stats-tab ${activeTab === 'weekly' ? 'active' : ''}`}>Weekly</button>
-                        <button onClick={() => setActiveTab('special')} className={`stats-tab ${activeTab === 'special' ? 'active' : ''}`}>Special</button>
+                        <button onClick={() => setActiveTab('daily')} className={`stats-tab ${activeTab === 'daily' ? 'active' : ''}`}>Ежедневные</button>
+                        <button onClick={() => setActiveTab('weekly')} className={`stats-tab ${activeTab === 'weekly' ? 'active' : ''}`}>Еженедельные</button>
+                        <button onClick={() => setActiveTab('special')} className={`stats-tab ${activeTab === 'special' ? 'active' : ''}`}>Специальные</button>
                     </div>
                     <div className="animate-fadeIn">
                         {renderContent()}

@@ -7,12 +7,17 @@ import CreateListingModal from './CreateListingModal';
 import FiltersBar from './FiltersBar';
 import { useRealtimeListings } from '../../hooks/useRealtimeListings';
 
-type TradeTab = 'market' | 'my_listings';
+import MakeOfferModal from './MakeOfferModal';
+import OffersList from './OffersList';
+
+type TradeTab = 'market' | 'my_listings' | 'offers';
 
 const TradePage: React.FC = () => {
     const [listings, setListings] = useState<Listing[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
+    const [selectedListingForOffer, setSelectedListingForOffer] = useState<Listing | null>(null);
     const [activeTab, setActiveTab] = useState<TradeTab>('market');
     const [search, setSearch] = useState<string>('');
     const [rarity, setRarity] = useState<Rarity | 'All'>('All');
@@ -61,13 +66,21 @@ const TradePage: React.FC = () => {
         setPage(1);
     }, [search, rarity, minPrice, maxPrice, sort, activeTab]);
 
-    const TabButton: React.FC<{label: string, tabName: TradeTab}> = ({ label, tabName }) => (
-      <button 
-        onClick={() => setActiveTab(tabName)}
-        className={`stats-tab ${activeTab === tabName ? 'active' : ''}`}
-      >
-        {label}
-      </button>
+    const handleMakeOffer = (listing: Listing) => {
+        setSelectedListingForOffer(listing);
+        setIsOfferModalOpen(true);
+    };
+
+    const TabButton: React.FC<{ label: string, tabName: TradeTab }> = ({ label, tabName }) => (
+        <button
+            onClick={() => setActiveTab(tabName)}
+            className={`px-6 py-2 font-rust text-sm uppercase tracking-wider transition-all border-b-2 ${activeTab === tabName
+                ? 'text-orange-500 border-orange-500 bg-orange-500/10'
+                : 'text-stone-500 border-transparent hover:text-stone-300 hover:border-stone-700'
+                }`}
+        >
+            {label}
+        </button>
     );
 
     const myListings = useMemo(() => listings.filter(l => l.seller_id === game?.userProfile?.id), [listings, game?.userProfile?.id]);
@@ -97,10 +110,14 @@ const TradePage: React.FC = () => {
     }, [marketListings, myListings, activeTab, search, rarity, minPrice, maxPrice, sort, page]);
 
     const renderContent = () => {
+        if (activeTab === 'offers') {
+            return <OffersList userId={game?.userProfile?.id || 0} />;
+        }
+
         if (isLoading) {
             return (
                 <div className="flex-grow flex items-center justify-center">
-                    <p className="text-glow-cyan animate-pulse text-xl">LOADING MARKETPLACE...</p>
+                    <p className="font-rust text-orange-500 animate-pulse text-xl">ЗАГРУЗКА ДАННЫХ...</p>
                 </div>
             );
         }
@@ -109,13 +126,13 @@ const TradePage: React.FC = () => {
 
         if (filteredSortedPaged.total === 0) {
             return (
-                <div className="flex-grow flex items-center justify-center text-center py-10 px-4 bg-black/20 border-2 border-dashed border-border-dark">
+                <div className="flex-grow flex items-center justify-center text-center py-10 px-4 bg-stone-900/30 border-2 border-dashed border-stone-800 rounded-lg">
                     <div>
-                        <p className="text-text-dark font-pixel text-sm">
-                            {activeTab === 'market' ? 'No units matching filters.' : 'No listings matching filters.'}
+                        <p className="text-stone-500 font-rust text-sm uppercase">
+                            {activeTab === 'market' ? 'ЮНИТЫ НЕ НАЙДЕНЫ.' : 'НЕТ АКТИВНЫХ ОБЪЯВЛЕНИЙ.'}
                         </p>
-                        <p className="text-text-dark/50 mt-2 text-sm">
-                            Try changing filters or reset them.
+                        <p className="text-stone-600 mt-2 text-xs">
+                            ПОПРОБУЙТЕ ИЗМЕНИТЬ ФИЛЬТРЫ ИЛИ ЗАЙДИТЕ ПОЗЖЕ.
                         </p>
                     </div>
                 </div>
@@ -123,15 +140,25 @@ const TradePage: React.FC = () => {
         }
 
         return (
-            <div className="flex-grow overflow-y-auto pr-2 min-h-0">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3">
+            <div className="flex-grow overflow-y-auto pr-2 min-h-0 custom-scrollbar">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
                     {listingsToDisplay.map(listing => (
-                        <ListingCard key={listing.id} listing={listing} onAction={fetchListings} />
+                        <ListingCard
+                            key={listing.id}
+                            listing={listing}
+                            onAction={fetchListings}
+                            onMakeOffer={handleMakeOffer}
+                        />
                     ))}
                 </div>
                 {filteredSortedPaged.total > page * pageSize && (
-                    <div className="mt-3 flex justify-center">
-                        <button className="btn btn-yellow" onClick={() => setPage(p => p + 1)}>Load more</button>
+                    <div className="mt-6 flex justify-center">
+                        <button
+                            className="bg-stone-800 hover:bg-stone-700 text-stone-300 font-rust px-6 py-2 border border-stone-600 transition-all uppercase tracking-wider text-sm"
+                            onClick={() => setPage(p => p + 1)}
+                        >
+                            ЗАГРУЗИТЬ ЕЩЕ
+                        </button>
                     </div>
                 )}
             </div>
@@ -141,43 +168,59 @@ const TradePage: React.FC = () => {
     return (
         <>
             <div className="p-4 animate-fadeIn h-full flex flex-col">
-                <div className="container-glow flex flex-col flex-grow">
-                    <div className="flex-shrink-0 p-4 border-b-2 border-border-light">
+                <div className="flex flex-col flex-grow bg-stone-950/50 rounded-lg border border-stone-800 overflow-hidden">
+                    <div className="flex-shrink-0 p-4 border-b border-stone-800 bg-stone-900/80">
                         <div className="flex justify-between items-center mb-4">
-                            <h1 className="font-pixel text-3xl text-glow-cyan">MARKETPLACE</h1>
-                            <button className="btn btn-green" onClick={() => setIsModalOpen(true)}>
-                                Create Listing
+                            <h1 className="font-rust text-3xl text-orange-500 tracking-tighter">ТОРГОВАЯ ПЛОЩАДКА</h1>
+                            <button
+                                className="bg-orange-600 hover:bg-orange-500 text-black font-bold px-4 py-2 uppercase tracking-wider shadow-lg shadow-orange-900/20 transition-all text-sm flex items-center gap-2"
+                                onClick={() => setIsModalOpen(true)}
+                            >
+                                <span className="text-lg leading-none">+</span> СОЗДАТЬ ОБЪЯВЛЕНИЕ
                             </button>
                         </div>
-                        <div className="flex gap-2">
-                           <TabButton label="Market" tabName="market" />
-                           <TabButton label="My Listings" tabName="my_listings" />
+                        <div className="flex gap-2 mb-4 border-b border-stone-800">
+                            <TabButton label="РЫНОК" tabName="market" />
+                            <TabButton label="МОИ ОБЪЯВЛЕНИЯ" tabName="my_listings" />
+                            <TabButton label="ПРЕДЛОЖЕНИЯ" tabName="offers" />
                         </div>
-                        <div className="mt-3">
-                            <FiltersBar 
-                                search={search}
-                                setSearch={setSearch}
-                                rarity={rarity}
-                                setRarity={setRarity}
-                                minPrice={minPrice}
-                                maxPrice={maxPrice}
-                                setMinPrice={setMinPrice}
-                                setMaxPrice={setMaxPrice}
-                                sort={sort}
-                                setSort={setSort}
-                                onReset={resetFilters}
-                            />
-                        </div>
+                        {activeTab !== 'offers' && (
+                            <div className="mt-3">
+                                <FiltersBar
+                                    search={search}
+                                    setSearch={setSearch}
+                                    rarity={rarity}
+                                    setRarity={setRarity}
+                                    minPrice={minPrice}
+                                    maxPrice={maxPrice}
+                                    setMinPrice={setMinPrice}
+                                    setMaxPrice={setMaxPrice}
+                                    sort={sort}
+                                    setSort={setSort}
+                                    onReset={resetFilters}
+                                />
+                            </div>
+                        )}
                     </div>
-                    
-                    {renderContent()}
+
+                    <div className="p-4 flex-grow flex flex-col min-h-0 bg-stone-950/30">
+                        {renderContent()}
+                    </div>
 
                 </div>
             </div>
-            <CreateListingModal 
+            <CreateListingModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onListingCreated={fetchListings}
+            />
+            <MakeOfferModal
+                isOpen={isOfferModalOpen}
+                onClose={() => setIsOfferModalOpen(false)}
+                listing={selectedListingForOffer}
+                userBalance={game?.balance || 0}
+                userId={game?.userProfile?.id || 0}
+                username={game?.userProfile?.username || 'User'}
             />
         </>
     );

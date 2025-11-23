@@ -6,9 +6,62 @@
     <title>FNTD 2 Wiki & Casino</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="/index.css">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Roboto+Condensed:wght@400;700&display=swap');
+
+      body {
+        background-color: #0c0a09; /* stone-950 */
+        color: #e7e5e4; /* stone-200 */
+        font-family: 'Roboto Condensed', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1c1917; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #ea580c; 
+        border-radius: 0;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #c2410c; 
+      }
+
+      /* CRT Scanline Effect */
+      .scanlines {
+        background: linear-gradient(
+          to bottom,
+          rgba(255,255,255,0),
+          rgba(255,255,255,0) 50%,
+          rgba(0,0,0,0.2) 50%,
+          rgba(0,0,0,0.2)
+        );
+        background-size: 100% 4px;
+        position: fixed;
+        pointer-events: none;
+        top: 0; right: 0; bottom: 0; left: 0;
+        z-index: 9999;
+        opacity: 0.15;
+      }
+
+      /* Vignette Effect */
+      .vignette {
+        position: fixed;
+        pointer-events: none;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle, rgba(0,0,0,0) 50%, rgba(0,0,0,0.9) 100%);
+        z-index: 9998;
+      }
+
+      /* Rust-style font utilities */
+      .font-rust {
+        font-family: 'JetBrains Mono', monospace;
+      }
+    </style>
   <script type="importmap">
 {
   "imports": {
@@ -21,8 +74,11 @@
   }
 }
 </script>
+<link rel="stylesheet" href="/index.css">
 </head>
   <body>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>

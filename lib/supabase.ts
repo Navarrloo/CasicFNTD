@@ -104,6 +104,68 @@ begin
 end;
 $$;
 
+-- Create a secure function to handle accepting an offer.
+create or replace function accept_offer(offer_id_param uuid, seller_user_id bigint)
+returns void
+language plpgsql
+as $$
+declare
+  target_offer record;
+  target_listing record;
+  buyer_profile record;
+begin
+  -- Fetch the offer
+  select * into target_offer from public.offers where id = offer_id_param for update;
+  if not found then raise exception 'Offer not found.'; end if;
+  if target_offer.status <> 'pending' then raise exception 'Offer is not pending.'; end if;
+
+  -- Fetch the listing
+  select * into target_listing from public.listings where id = target_offer.listing_id for update;
+  if not found then raise exception 'Listing not found.'; end if;
+  if target_listing.status <> 'active' then raise exception 'Listing is not active.'; end if;
+  if target_listing.seller_id <> seller_user_id then raise exception 'You do not own this listing.'; end if;
+
+  -- Fetch buyer profile to check balance
+  select * into buyer_profile from public.profiles where id = target_offer.buyer_id for update;
+  if not found then raise exception 'Buyer profile not found.'; end if;
+  if buyer_profile.balance < target_offer.offer_amount then raise exception 'Buyer does not have enough souls.'; end if;
+
+  -- EXECUTE TRANSACTION
+  -- 1. Deduct balance from buyer
+  update public.profiles 
+  set balance = balance - target_offer.offer_amount,
+      total_spent = coalesce(total_spent, 0) + target_offer.offer_amount
+  where id = target_offer.buyer_id;
+
+  -- 2. Add balance to seller
+  update public.profiles 
+  set balance = balance + target_offer.offer_amount,
+      total_earned = coalesce(total_earned, 0) + target_offer.offer_amount
+  where id = seller_user_id;
+
+  -- 3. Transfer unit to buyer (add to inventory)
+  update public.profiles 
+  set inventory = inventory || to_jsonb(target_listing.unit_data) 
+  where id = target_offer.buyer_id;
+
+  -- 4. Update listing status
+  update public.listings 
+  set status = 'completed' 
+  where id = target_listing.id;
+
+  -- 5. Update offer status
+  update public.offers 
+  set status = 'accepted' 
+  where id = target_offer.id;
+
+  -- 6. Reject other pending offers for this listing
+  update public.offers
+  set status = 'rejected'
+  where listing_id = target_listing.id and id <> target_offer.id and status = 'pending';
+
+end;
+$$;
+
 
 --  -- END SQL SCRIPT --
  * =============================================================================
@@ -244,15 +306,52 @@ export interface Database {
           status?: 'active' | 'completed' | 'cancelled';
         }
         Update: {
-            status?: 'active' | 'completed' | 'cancelled';
+          status?: 'active' | 'completed' | 'cancelled';
         }
         Relationships: [
-            {
-              foreignKeyName: 'listings_seller_id_fkey'
-              columns: ['seller_id']
-              referencedRelation: 'profiles'
-              referencedColumns: ['id']
-            }
+          {
+            foreignKeyName: 'listings_seller_id_fkey'
+            columns: ['seller_id']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      offers: {
+        Row: {
+          id: string;
+          listing_id: string;
+          buyer_id: number;
+          buyer_username: string;
+          offer_amount: number;
+          status: 'pending' | 'accepted' | 'rejected';
+          created_at: string;
+        }
+        Insert: {
+          id?: string;
+          listing_id: string;
+          buyer_id: number;
+          buyer_username: string;
+          offer_amount: number;
+          status?: 'pending' | 'accepted' | 'rejected';
+          created_at?: string;
+        }
+        Update: {
+          status?: 'pending' | 'accepted' | 'rejected';
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'offers_listing_id_fkey'
+            columns: ['listing_id']
+            referencedRelation: 'listings'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'offers_buyer_id_fkey'
+            columns: ['buyer_id']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
         ]
       }
       scammers: {
@@ -296,13 +395,31 @@ export interface Database {
           created_at?: string;
         }
         Relationships: [
-            {
-              foreignKeyName: 'scammers_added_by_fkey'
-              columns: ['added_by']
-              referencedRelation: 'profiles'
-              referencedColumns: ['id']
-            }
+          {
+            foreignKeyName: 'scammers_added_by_fkey'
+            columns: ['added_by']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
         ]
+      }
+      unit_prices: {
+        Row: {
+          unit_id: number;
+          price: number;
+          updated_at: string;
+        }
+        Insert: {
+          unit_id: number;
+          price: number;
+          updated_at?: string;
+        }
+        Update: {
+          unit_id?: number;
+          price?: number;
+          updated_at?: string;
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -319,6 +436,13 @@ export interface Database {
       cancel_listing: {
         Args: {
           listing_id_to_cancel: string;
+          seller_user_id: number;
+        }
+        Returns: undefined
+      }
+      accept_offer: {
+        Args: {
+          offer_id_param: string;
           seller_user_id: number;
         }
         Returns: undefined
@@ -388,15 +512,15 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 let supabase: SupabaseClient<Database> | null = null;
 
 if (supabaseUrl && supabaseAnonKey && !supabaseUrl.includes('YOUR_PROJECT_ID') && !supabaseAnonKey.includes('YOUR_PUBLIC_ANON_KEY')) {
-    try {
-        supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
-    } catch (error) {
-        console.error("Error creating Supabase client:", error);
-    }
+  try {
+    supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+  } catch (error) {
+    console.error("Error creating Supabase client:", error);
+  }
 } else {
-    // This message will appear in the browser console if the credentials are not set.
-    // The UI in App.tsx will also show a user-friendly error message.
-    console.error("Supabase credentials are not set. Please edit `lib/supabase.ts` and replace the placeholder values.");
+  // This message will appear in the browser console if the credentials are not set.
+  // The UI in App.tsx will also show a user-friendly error message.
+  console.error("Supabase credentials are not set. Please edit `lib/supabase.ts` and replace the placeholder values.");
 }
 
 export { supabase };

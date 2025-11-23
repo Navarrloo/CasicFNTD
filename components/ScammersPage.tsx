@@ -6,6 +6,8 @@ import ScammerDetailModal from './scammers/ScammerDetailModal';
 import AddScammerModal from './scammers/AddScammerModal';
 import ReportScammerModal from './scammers/ReportScammerModal';
 
+import CheckScammerModal from './scammers/CheckScammerModal';
+
 interface ScammersPageProps {
   userId: number;
   isAdmin: boolean;
@@ -21,6 +23,7 @@ const ScammersPage: React.FC<ScammersPageProps> = ({ userId, isAdmin }) => {
   const [selectedScammer, setSelectedScammer] = useState<Scammer | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showCheckModal, setShowCheckModal] = useState(false);
 
   // Load scammers
   const loadScammers = async () => {
@@ -66,33 +69,42 @@ const ScammersPage: React.FC<ScammersPageProps> = ({ userId, isAdmin }) => {
   };
 
   return (
-    <div className="h-full overflow-y-auto bg-gradient-to-b from-gray-900 via-gray-800 to-black pb-24 px-4">
+    <div className="h-full overflow-y-auto bg-stone-950/80 pb-24 px-4 custom-scrollbar">
       {/* Header */}
       <div className="max-w-6xl mx-auto pt-6 pb-4">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-4xl font-pixel font-bold text-white mb-2">
-              🛡️ Список скамеров
+            <h1 className="text-4xl font-rust font-bold text-orange-500 mb-2 tracking-tighter">
+              БАЗА СКАМЕРОВ
             </h1>
-            <p className="text-gray-400 font-pixel text-sm">
-              База данных подтвержденных скамеров
+            <p className="text-stone-400 font-rust text-sm uppercase">
+              ПРОВЕРЕННЫЙ СПИСОК ИЗВЕСТНЫХ СКАМЕРОВ
             </p>
           </div>
           <div className="flex gap-3">
+            <button
+              onClick={() => setShowCheckModal(true)}
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold font-rust uppercase rounded-sm transition-colors shadow-lg shadow-blue-900/20 flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              ПРОВЕРИТЬ
+            </button>
             {!isAdmin && (
               <button
                 onClick={() => setShowReportModal(true)}
-                className="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white font-pixel uppercase rounded-lg transition-colors shadow-lg shadow-yellow-500/30"
+                className="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-black font-bold font-rust uppercase rounded-sm transition-colors shadow-lg shadow-yellow-900/20"
               >
-                ⚠️ Пожаловаться
+                ⚠️ ПОЖАЛОВАТЬСЯ
               </button>
             )}
             {isAdmin && (
               <button
                 onClick={() => setShowAddModal(true)}
-                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-pixel uppercase rounded-lg transition-colors shadow-lg shadow-red-500/30"
+                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold font-rust uppercase rounded-sm transition-colors shadow-lg shadow-red-900/20"
               >
-                + Добавить
+                + ДОБАВИТЬ
               </button>
             )}
           </div>
@@ -101,7 +113,7 @@ const ScammersPage: React.FC<ScammersPageProps> = ({ userId, isAdmin }) => {
         {/* Search Bar */}
         <div className="relative mb-4">
           <svg
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-500"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -117,8 +129,8 @@ const ScammersPage: React.FC<ScammersPageProps> = ({ userId, isAdmin }) => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Поиск по Roblox или Telegram username..."
-            className="w-full pl-12 pr-4 py-4 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:border-red-500/50 focus:outline-none transition-colors"
+            placeholder="ПОИСК ПО ROBLOX ИЛИ TELEGRAM..."
+            className="w-full pl-12 pr-4 py-4 bg-stone-900/50 border border-stone-700 rounded-sm text-stone-200 placeholder-stone-600 focus:border-orange-500 focus:outline-none transition-colors font-rust text-sm"
           />
         </div>
 
@@ -126,79 +138,76 @@ const ScammersPage: React.FC<ScammersPageProps> = ({ userId, isAdmin }) => {
         <div className="flex flex-wrap gap-3 mb-6">
           {/* Status Filter */}
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-400 font-pixel">Статус:</span>
+            <span className="text-sm text-stone-500 font-rust uppercase">СТАТУС:</span>
             <div className="flex gap-2">
               <button
                 onClick={() => setStatusFilter('all')}
-                className={`px-4 py-2 font-pixel text-sm rounded-lg transition-colors ${
-                  statusFilter === 'all'
-                    ? 'bg-red-500 text-white'
-                    : 'bg-gray-800/50 text-gray-400 hover:text-white'
-                }`}
+                className={`px-4 py-2 font-rust text-sm rounded-sm transition-colors uppercase ${statusFilter === 'all'
+                  ? 'bg-stone-700 text-white border border-stone-500'
+                  : 'bg-stone-900/50 text-stone-500 border border-stone-800 hover:text-stone-300'
+                  }`}
               >
-                Все
+                ВСЕ
               </button>
               <button
                 onClick={() => setStatusFilter('verified')}
-                className={`px-4 py-2 font-pixel text-sm rounded-lg transition-colors ${
-                  statusFilter === 'verified'
-                    ? 'bg-red-500 text-white'
-                    : 'bg-gray-800/50 text-gray-400 hover:text-white'
-                }`}
+                className={`px-4 py-2 font-rust text-sm rounded-sm transition-colors uppercase ${statusFilter === 'verified'
+                  ? 'bg-red-900/50 text-red-400 border border-red-500/50'
+                  : 'bg-stone-900/50 text-stone-500 border border-stone-800 hover:text-stone-300'
+                  }`}
               >
-                Подтвержден
+                ПОДТВЕРЖДЕНО
               </button>
               <button
                 onClick={() => setStatusFilter('pending')}
-                className={`px-4 py-2 font-pixel text-sm rounded-lg transition-colors ${
-                  statusFilter === 'pending'
-                    ? 'bg-yellow-500 text-white'
-                    : 'bg-gray-800/50 text-gray-400 hover:text-white'
-                }`}
+                className={`px-4 py-2 font-rust text-sm rounded-sm transition-colors uppercase ${statusFilter === 'pending'
+                  ? 'bg-yellow-900/50 text-yellow-400 border border-yellow-500/50'
+                  : 'bg-stone-900/50 text-stone-500 border border-stone-800 hover:text-stone-300'
+                  }`}
               >
-                На проверке
+                НА ПРОВЕРКЕ
               </button>
             </div>
           </div>
 
           {/* Sort Filter */}
           <div className="flex items-center gap-2 ml-auto">
-            <span className="text-sm text-gray-400 font-pixel">Сортировка:</span>
+            <span className="text-sm text-stone-500 font-rust uppercase">СОРТИРОВКА:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest')}
-              className="px-4 py-2 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white font-pixel text-sm focus:border-red-500/50 focus:outline-none transition-colors"
+              className="px-4 py-2 bg-stone-900/50 border border-stone-700 rounded-sm text-stone-300 font-rust text-sm focus:border-orange-500 focus:outline-none transition-colors uppercase"
             >
-              <option value="newest">Новые</option>
-              <option value="oldest">Старые</option>
+              <option value="newest">НОВЫЕ</option>
+              <option value="oldest">СТАРЫЕ</option>
             </select>
           </div>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-gradient-to-br from-red-500/10 to-red-600/5 border border-red-500/30 rounded-lg p-4">
-            <div className="text-3xl font-pixel font-bold text-red-400 mb-1">
+          <div className="bg-stone-900/50 border border-stone-700 rounded-sm p-4">
+            <div className="text-3xl font-rust font-bold text-stone-200 mb-1">
               {scammers.length}
             </div>
-            <div className="text-xs text-gray-400 font-pixel uppercase">
-              Всего записей
+            <div className="text-xs text-stone-500 font-rust uppercase tracking-wider">
+              ВСЕГО ЗАПИСЕЙ
             </div>
           </div>
-          <div className="bg-gradient-to-br from-red-500/10 to-red-600/5 border border-red-500/30 rounded-lg p-4">
-            <div className="text-3xl font-pixel font-bold text-red-400 mb-1">
+          <div className="bg-red-900/10 border border-red-900/30 rounded-sm p-4">
+            <div className="text-3xl font-rust font-bold text-red-500 mb-1">
               {scammers.filter(s => s.status === 'verified').length}
             </div>
-            <div className="text-xs text-gray-400 font-pixel uppercase">
-              Подтверждено
+            <div className="text-xs text-red-400/70 font-rust uppercase tracking-wider">
+              ПОДТВЕРЖДЕНО
             </div>
           </div>
-          <div className="bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 border border-yellow-500/30 rounded-lg p-4">
-            <div className="text-3xl font-pixel font-bold text-yellow-400 mb-1">
+          <div className="bg-yellow-900/10 border border-yellow-900/30 rounded-sm p-4">
+            <div className="text-3xl font-rust font-bold text-yellow-500 mb-1">
               {scammers.filter(s => s.status === 'pending').length}
             </div>
-            <div className="text-xs text-gray-400 font-pixel uppercase">
-              На проверке
+            <div className="text-xs text-yellow-400/70 font-rust uppercase tracking-wider">
+              НА ПРОВЕРКЕ
             </div>
           </div>
         </div>
@@ -209,50 +218,18 @@ const ScammersPage: React.FC<ScammersPageProps> = ({ userId, isAdmin }) => {
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <svg
-                className="w-12 h-12 mx-auto mb-4 text-red-500 animate-spin"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              <p className="text-gray-400 font-pixel">Загрузка...</p>
+              <p className="text-orange-500 font-rust animate-pulse">ЗАГРУЗКА БАЗЫ...</p>
             </div>
           </div>
         ) : filteredScammers.length === 0 ? (
-          <div className="text-center py-20">
-            <svg
-              className="w-20 h-20 mx-auto mb-4 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <p className="text-gray-400 font-pixel text-lg mb-2">
-              Ничего не найдено
+          <div className="text-center py-20 border-2 border-dashed border-stone-800 rounded-lg bg-stone-900/20">
+            <p className="text-stone-500 font-rust text-lg mb-2 uppercase">
+              ЗАПИСЕЙ НЕ НАЙДЕНО
             </p>
-            <p className="text-gray-500 text-sm">
+            <p className="text-stone-600 text-sm font-rust">
               {searchQuery
-                ? 'Попробуйте изменить поисковый запрос'
-                : 'Скамеров пока нет в базе данных'}
+                ? 'ПОПРОБУЙТЕ ДРУГОЙ ЗАПРОС'
+                : 'БАЗА ДАННЫХ ПУСТА'}
             </p>
           </div>
         ) : (
@@ -294,6 +271,13 @@ const ScammersPage: React.FC<ScammersPageProps> = ({ userId, isAdmin }) => {
           userId={userId}
           onClose={() => setShowReportModal(false)}
           onSuccess={handleAddSuccess}
+        />
+      )}
+
+      {/* Check Modal */}
+      {showCheckModal && (
+        <CheckScammerModal
+          onClose={() => setShowCheckModal(false)}
         />
       )}
     </div>

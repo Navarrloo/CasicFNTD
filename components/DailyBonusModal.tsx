@@ -9,12 +9,12 @@ interface DailyBonusModalProps {
   nextBonus: number;
 }
 
-const DailyBonusModal: React.FC<DailyBonusModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  onClaim, 
-  streakDays, 
-  nextBonus 
+const DailyBonusModal: React.FC<DailyBonusModalProps> = ({
+  isOpen,
+  onClose,
+  onClaim,
+  streakDays,
+  nextBonus
 }) => {
   const [isClaiming, setIsClaiming] = useState(false);
   const [showEffect, setShowEffect] = useState(false);
@@ -48,9 +48,9 @@ const DailyBonusModal: React.FC<DailyBonusModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
-      <div 
+      <div
         className="relative p-6 text-center bg-background-dark border-2"
-        style={{ 
+        style={{
           borderColor: streakDays >= 7 ? '#fcee63' : streakDays >= 3 ? '#b456f0' : '#32ff91',
           boxShadow: `0 0 30px ${streakDays >= 7 ? 'rgba(252, 238, 99, 0.5)' : streakDays >= 3 ? 'rgba(180, 86, 240, 0.5)' : 'rgba(50, 255, 145, 0.5)'}`
         }}
@@ -63,30 +63,30 @@ const DailyBonusModal: React.FC<DailyBonusModalProps> = ({
         )}
 
         <div className="relative z-10">
-          <h2 className="font-pixel text-3xl mb-2" style={{ 
+          <h2 className="font-pixel text-3xl mb-2" style={{
             color: streakDays >= 7 ? '#fcee63' : streakDays >= 3 ? '#b456f0' : '#32ff91',
             textShadow: `0 0 10px ${streakDays >= 7 ? '#fcee63' : streakDays >= 3 ? '#b456f0' : '#32ff91'}`
           }}>
-            DAILY BONUS
+            ЕЖЕДНЕВНЫЙ БОНУС
           </h2>
-          
+
           <div className="mb-4">
-            <p className="text-text-light text-sm mb-2">Login Streak</p>
+            <p className="text-text-light text-sm mb-2">Серия входов</p>
             <div className="flex items-center justify-center gap-2">
               <span className="font-pixel text-2xl text-glow-yellow">{streakDays}</span>
-              <span className="text-text-dark">days</span>
+              <span className="text-text-dark">дней</span>
             </div>
           </div>
 
           <div className="bg-black/50 p-4 border border-border-dark mb-4">
-            <p className="text-text-dark text-sm mb-2">Today's Reward</p>
+            <p className="text-text-dark text-sm mb-2">Награда сегодня</p>
             <div className="flex items-center justify-center gap-3">
               <img src={BALANCE_ICON} alt="Souls" className="w-8 h-8" />
               <span className="font-pixel text-4xl text-glow-yellow">{totalReward}</span>
             </div>
             {multiplier > 1 && (
               <p className="text-accent-green text-sm mt-2">
-                {multiplier}x Multiplier Active!
+                {multiplier}x Множитель активен!
               </p>
             )}
           </div>
@@ -97,13 +97,13 @@ const DailyBonusModal: React.FC<DailyBonusModalProps> = ({
               disabled={isClaiming}
               className="btn btn-green flex-1"
             >
-              {isClaiming ? 'Claiming...' : 'Claim Bonus'}
+              {isClaiming ? 'Забираем...' : 'Забрать'}
             </button>
             <button
               onClick={onClose}
               className="btn btn-yellow"
             >
-              Later
+              Позже
             </button>
           </div>
         </div>
